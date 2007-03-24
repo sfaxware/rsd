@@ -5,6 +5,7 @@
     <Version Value="5"/>
     <General>
       <MainUnit Value="0"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <ActiveEditorIndexAtStart Value="0"/>
     </General>
@@ -30,27 +31,78 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="7">
       <Unit0>
         <Filename Value="dtsl_ide.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="dtsl_ide"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="17" Y="16"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="dtsl-ide.pas"/>
-        <ComponentName Value="Form1"/>
+        <Filename Value="mainwindow.pas"/>
+        <ComponentName Value="dtslIdeMainWindow"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="dtsl-ide.lrs"/>
-        <UnitName Value="dtsl_ide"/>
-        <CursorPos X="19" Y="24"/>
+        <ResourceFilename Value="mainwindow.lrs"/>
+        <UnitName Value="mainWindow"/>
+        <CursorPos X="24" Y="37"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="/usr/lib/lazarus/lcl/interfaces/gtk/interfaces.pp"/>
+        <UnitName Value="Interfaces"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../src/lazarus/lcl/grids.pas"/>
+        <UnitName Value="Grids"/>
+        <CursorPos X="1" Y="6564"/>
+        <TopLine Value="6542"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../src/lazarus/lcl/lclclasses.pp"/>
+        <UnitName Value="LCLClasses"/>
+        <CursorPos X="3" Y="32"/>
+        <TopLine Value="9"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../src/lazarus/lcl/forms.pp"/>
+        <UnitName Value="Forms"/>
+        <CursorPos X="15" Y="1016"/>
+        <TopLine Value="994"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../src/lazarus/lcl/include/application.inc"/>
+        <CursorPos X="16" Y="1041"/>
+        <TopLine Value="1006"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="21" Column="61" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="dtsl_ide.lpr"/>
+        <Caret Line="16" Column="17" TopLine="1"/>
+      </Position2>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
@@ -72,25 +124,13 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
+    <Exceptions Count="2">
       <Item1>
-        <Source Value="../../../../UTF8BIDI/src/lazarus/uniteditor.pp"/>
-        <Line Value="957"/>
-      </Item1>
-    </BreakPoints>
-    <Watches Count="4">
-      <Item1>
-        <Expression Value="temp"/>
+        <Name Value="ECodetoolError"/>
       </Item1>
       <Item2>
-        <Expression Value="achar"/>
+        <Name Value="EFOpenError"/>
       </Item2>
-      <Item3>
-        <Expression Value="temp[0]"/>
-      </Item3>
-      <Item4>
-        <Expression Value="temp[215]"/>
-      </Item4>
-    </Watches>
+    </Exceptions>
   </Debugging>
 </CONFIG>

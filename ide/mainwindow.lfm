@@ -1,0 +1,28 @@
+object dtslIdeMainWindow: TdtslIdeMainWindow
+  Left = 196
+  Height = 973
+  Top = 25
+  Width = 1076
+  HorzScrollBar.Page = 1075
+  VertScrollBar.Page = 972
+  Caption = 'D.T.S.L. IDE'
+  Menu = dtslIdeMainMenu
+  object dtslIdeMainMenu: TMainMenu
+    object dtslIdeFileMenuItem: TMenuItem
+      Caption = '&File'
+      object dtslIdeFileNewMenuItem: TMenuItem
+        Caption = '&New'
+      end
+      object dtslIdeFileOpenMenuItem: TMenuItem
+        Caption = '&Open'
+      end
+      object dtslIdeFileExitMenuItem: TMenuItem
+        Caption = 'E&xit'
+        OnClick = dtslIdeFileExitMenuItemClick
+      end
+    end
+    object dtslIdeEditMenuItem: TMenuItem
+      Caption = '&Edit'
+    end
+  end
+end
