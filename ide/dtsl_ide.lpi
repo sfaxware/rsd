@@ -104,7 +104,12 @@
         <UsageCount Value="10"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="3" Column="71" TopLine="1"/>
+      </Position1>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
