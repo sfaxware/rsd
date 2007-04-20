@@ -9,12 +9,12 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   Menu = dtslIdeMainMenu
   object TabControl: TTabControl
     Left = 328
-    Height = 926
+    Height = 900
     Width = 748
     Anchors = [akTop, akLeft, akRight, akBottom]
     DockSite = True
     OnChange = TabControlChange
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     Tabs.Strings = (
       'editor'
@@ -24,14 +24,17 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     )
     TabStop = False
     object PaintBox1: TPaintBox
-      Height = 826
-      Top = 56
-      Anchors = [akTop, akLeft, akRight, akBottom]
+      Left = 2
+      Height = 868
+      Top = 30
+      Width = 744
+      Align = alClient
       PopupMenu = PopupMenu1
+      OnPaint = PaintBox1Paint
     end
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 894
+      Height = 868
       Top = 30
       Width = 744
       Align = alClient
@@ -40,6 +43,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       ParentColor = False
       PopupMenu = PopupMenu1
       TabOrder = 1
+      BookMarkOptions.OnChange = nil
+      Gutter.OnChange = nil
       Gutter.CodeFoldingWidth = 14
       Highlighter = SynPasSyn1
       Keystrokes = <      
@@ -366,6 +371,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Lines.Strings = (
         'SynEdit1'
       )
+      SelectedColor.OnChange = nil
       TabWidth = 4
     end
   end

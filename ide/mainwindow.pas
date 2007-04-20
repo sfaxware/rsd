@@ -43,6 +43,7 @@ type
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
     procedure Notebook1ChangeBounds(Sender: TObject);
+    procedure PaintBox1Paint(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
   private
@@ -66,6 +67,19 @@ end;
 procedure TdtslIdeMainWindow.Notebook1ChangeBounds(Sender: TObject);
 begin
 
+end;
+
+procedure TdtslIdeMainWindow.PaintBox1Paint(Sender: TObject);
+begin
+  if Sender is TPaintBox then
+  with TPaintBox(Sender).Canvas do begin
+    Color := clRed;
+    FillRect(50, 50, 150, 150);
+    FillRect(250, 250, 300, 300);
+    Line(150, 50, 200, 50);
+    Line(200, 50, 200, 250);
+    Line(200, 250, 300, 250);
+  end;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
