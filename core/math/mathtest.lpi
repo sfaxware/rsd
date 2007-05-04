@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="5"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+      <ActiveEditorIndexAtStart Value="1"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="mathtest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="55" Y="9"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mathvectors.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mathvectors"/>
+        <UsageCount Value="22"/>
+        <SyntaxHighlighter Value="Text"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="mathbasics.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MathBasics"/>
+        <CursorPos X="3" Y="28"/>
+        <TopLine Value="23"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="mathmatrices.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mathmatrices"/>
+        <UsageCount Value="22"/>
+        <SyntaxHighlighter Value="Text"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="mathsetn.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="mathsetn"/>
+        <UsageCount Value="22"/>
+        <SyntaxHighlighter Value="Text"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../../src/fpc/compiler/htypechk.pas"/>
+        <UnitName Value="htypechk"/>
+        <CursorPos X="59" Y="31"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../src/fpc/compiler/pass_2.pas"/>
+        <UnitName Value="pass_2"/>
+        <CursorPos X="19" Y="67"/>
+        <TopLine Value="129"/>
+        <UsageCount Value="11"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../../src/fpc/compiler/pdecl.pas"/>
+        <UnitName Value="pdecl"/>
+        <CursorPos X="51" Y="196"/>
+        <TopLine Value="180"/>
+        <UsageCount Value="11"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../../src/fpc/compiler/pexpr.pas"/>
+        <UnitName Value="pexpr"/>
+        <CursorPos X="1" Y="1939"/>
+        <TopLine Value="1916"/>
+        <UsageCount Value="11"/>
+      </Unit8>
+    </Units>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="mathbasics.pas"/>
+        <Caret Line="57" Column="12" TopLine="34"/>
+      </Position1>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="2">
+      <Item1>
+        <Name Value="ECodetoolError"/>
+      </Item1>
+      <Item2>
+        <Name Value="EFOpenError"/>
+      </Item2>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

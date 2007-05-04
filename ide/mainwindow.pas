@@ -42,6 +42,7 @@ type
     SynEdit1: TSynEdit;
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
+    procedure MenuItem5Click(Sender: TObject);
     procedure Notebook1ChangeBounds(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
@@ -69,6 +70,11 @@ begin
 
 end;
 
+procedure TdtslIdeMainWindow.MenuItem5Click(Sender: TObject);
+begin
+
+end;
+
 procedure TdtslIdeMainWindow.PaintBox1Paint(Sender: TObject);
 begin
   if Sender is TPaintBox then
@@ -88,12 +94,12 @@ begin
   with TTabControl(Sender) do begin
     case TabIndex of
          0:begin
-             PaintBox1.Visible := False;
-             SynEdit1.Visible := True;
-           end;
-         1:begin
              SynEdit1.Visible := False;
              PaintBox1.Visible := True;
+           end;
+         1:begin
+             PaintBox1.Visible := False;
+             SynEdit1.Visible := True;
            end;
     end;
   end;
