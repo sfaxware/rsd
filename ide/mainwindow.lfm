@@ -7,10 +7,11 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   ClientHeight = 825
   ClientWidth = 1089
   Menu = dtslIdeMainMenu
+  OnCreate = FormCreate
   object TabControl: TTabControl
-    Left = 352
+    Left = 280
     Height = 804
-    Width = 1369
+    Width = 809
     Align = alCustom
     DockSite = True
     Font.CharSet = ANSI_CHARSET
@@ -18,7 +19,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     Font.Height = 12
     Font.Name = 'Arial 12'
     OnChange = TabControlChange
-    Style = tsButtons
     TabIndex = 0
     TabOrder = 0
     Tabs.Strings = (
@@ -30,7 +30,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Left = 2
       Height = 772
       Top = 30
-      Width = 1365
+      Width = 805
       Align = alClient
       PopupMenu = PopupMenu1
       OnPaint = PaintBox1Paint
@@ -39,7 +39,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Left = 2
       Height = 772
       Top = 30
-      Width = 1365
+      Width = 805
       Align = alClient
       Font.Height = -15
       Font.Name = 'courier'
@@ -494,13 +494,15 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object dtslIdeEditMenuItem: TMenuItem
       Caption = '&Edit'
-      object MenuItem6: TMenuItem
-        Caption = 'New Item7'
-        object MenuItem7: TMenuItem
-          Caption = 'New Item8'
+      object dtslEditGraphSubMenu: TMenuItem
+        Caption = 'Graph'
+        object dtslEditGraphInsertBlockMenuItem: TMenuItem
+          Caption = '&Insert Block'
+          OnClick = dtslEditGraphInsertBlockMenuItemClick
         end
-        object MenuItem10: TMenuItem
-          Caption = 'New Item11'
+        object dtslEditGraphDeleteBlockMenuItem: TMenuItem
+          Caption = '&Delete Block'
+          OnClick = dtslEditGraphDeleteBlockMenuItemClick
         end
       end
       object MenuItem8: TMenuItem
@@ -512,7 +514,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object MenuItem5: TMenuItem
       Caption = 'View'
-      OnClick = MenuItem5Click
       object MenuItem11: TMenuItem
         Caption = 'New Item12'
         object MenuItem12: TMenuItem

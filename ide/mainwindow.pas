@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion,
+  ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
   SynEdit, RTTICtrls;
 
 type
@@ -21,7 +21,7 @@ type
     dtslIdeFileOpenMenuItem: TMenuItem;
     dtslIdeFileExitMenuItem: TMenuItem;
     MenuItem1: TMenuItem;
-    MenuItem10: TMenuItem;
+    dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
@@ -31,8 +31,8 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
-    MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
+    dtslEditGraphSubMenu: TMenuItem;
+    dtslEditGraphInsertBlockMenuItem: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     PaintBox1: TPaintBox;
@@ -42,15 +42,18 @@ type
     SynEdit1: TSynEdit;
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
-    procedure MenuItem5Click(Sender: TObject);
-    procedure Notebook1ChangeBounds(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
+    procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
+    procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
   private
-    { private declarations }
+    _blocks:TFPList;
+    _selectedBlock:TCGraphBlock;
   public
-    { public declarations }
+    procedure InsertBlock(Block:TCGraphBlock);
+    procedure RemoveBlock(Block:TCGraphBlock);
   end; 
 
 var
@@ -65,28 +68,30 @@ begin
   Application.Terminate;
 end;
 
-procedure TdtslIdeMainWindow.Notebook1ChangeBounds(Sender: TObject);
+procedure TdtslIdeMainWindow.InsertBlock(Block:TCGraphBlock);
 begin
-
+  _blocks.Add(Block);
 end;
 
-procedure TdtslIdeMainWindow.MenuItem5Click(Sender: TObject);
+procedure TdtslIdeMainWindow.RemoveBlock(Block:TCGraphBlock);
 begin
-
+  _blocks.Remove(Block);
 end;
 
 procedure TdtslIdeMainWindow.PaintBox1Paint(Sender: TObject);
+var
+  proc2call:TListCallback;
 begin
   if Sender is TPaintBox then
-  with TPaintBox(Sender).Canvas do begin
-    Brush.Color := clRed;
-    Brush.Style := bsSolid;
-    FillRect(50, 50, 150, 150);
-    FillRect(250, 250, 300, 300);
-    Line(150, 55, 200, 55);
-    Line(200, 55, 200, 255);
-    Line(200, 255, 250, 255);
+  with _blocks do begin
+    proc2call := @_selectedBlock.Draw;
+    ForEachCall(proc2call, Nil);
   end;
+end;
+
+procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
+begin
+  _blocks := TFPList.Create;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -103,6 +108,20 @@ begin
            end;
     end;
   end;
+end;
+
+procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(
+  Sender: TObject);
+begin
+  RemoveBlock(_selectedBlock);
+  _selectedBlock.Destroy;
+end;
+
+procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
+begin
+  _selectedBlock := TCGraphBlock.Create(PaintBox1);
+  _selectedBlock.Parent := Self;
+  InsertBlock(_selectedBlock);
 end;
 
 initialization
