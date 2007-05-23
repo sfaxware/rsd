@@ -35,8 +35,8 @@ type
     dtslEditGraphInsertBlockMenuItem: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
-    PaintBox1: TPaintBox;
     PopupMenu1: TPopupMenu;
+    ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
     SynEdit1: TSynEdit;
@@ -84,8 +84,8 @@ var
 begin
   if Sender is TPaintBox then
   with _blocks do begin
-    proc2call := @_selectedBlock.Draw;
-    ForEachCall(proc2call, Nil);
+    //proc2call := @_selectedBlock.Draw;
+    //ForEachCall(proc2call, Nil);
   end;
 end;
 
@@ -100,27 +100,28 @@ begin
     case TabIndex of
          0:begin
              SynEdit1.Visible := False;
-             PaintBox1.Visible := True;
+//             PaintBox1.Visible := True;
            end;
          1:begin
-             PaintBox1.Visible := False;
+  //           PaintBox1.Visible := False;
              SynEdit1.Visible := True;
            end;
     end;
   end;
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(
-  Sender: TObject);
+procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
+  WriteLn('Removing block');
   RemoveBlock(_selectedBlock);
+  WriteLn('Destroying block');
   _selectedBlock.Destroy;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  _selectedBlock := TCGraphBlock.Create(PaintBox1);
-  _selectedBlock.Parent := Self;
+  _selectedBlock := TCGraphBlock.Create(ScrollBox1);
+  _selectedBlock.Parent := ScrollBox1;
   InsertBlock(_selectedBlock);
 end;
 

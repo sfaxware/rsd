@@ -1,8 +1,11 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
+  Left = 183
   Height = 852
+  Top = 146
   Width = 1089
   HorzScrollBar.Page = 1088
   VertScrollBar.Page = 824
+  ActiveControl = SynEdit1
   Caption = 'D.T.S.L. IDE'
   ClientHeight = 825
   ClientWidth = 1089
@@ -26,15 +29,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       'editor'
     )
     TabStop = False
-    object PaintBox1: TPaintBox
-      Left = 2
-      Height = 772
-      Top = 30
-      Width = 805
-      Align = alClient
-      PopupMenu = PopupMenu1
-      OnPaint = PaintBox1Paint
-    end
     object SynEdit1: TSynEdit
       Left = 2
       Height = 772
@@ -374,6 +368,16 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         'SynEdit1'
       )
       TabWidth = 4
+    end
+    object ScrollBox1: TScrollBox
+      Left = 2
+      Height = 772
+      Top = 30
+      Width = 805
+      HorzScrollBar.Page = 804
+      VertScrollBar.Page = 771
+      Align = alClient
+      TabOrder = 2
     end
   end
   object StatusBar1: TStatusBar

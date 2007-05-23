@@ -11,7 +11,6 @@ type
   TCGraphBlock = class(TGraphicControl)
   public
     constructor Create(AOwner:TComponent);override;
-    procedure Draw(data, arg:Pointer);
   protected
     procedure Paint; override;
   published
@@ -49,14 +48,11 @@ constructor TCGraphBlock.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
   Width := 100;
-  Height:= 100;
+  Height := 100;
+  Left := Random(256);
+  Top := Random(256);
   Color := clRed;
   Caption:= 'Hello';
-end;
-
-procedure TCGraphBlock.Draw(data, arg:Pointer);
-begin
-  Paint;
 end;
 
 procedure TCGraphBlock.Paint;
@@ -65,15 +61,12 @@ var
   GlyphWidth, GlyphHeight: Integer;
   Offset, OffsetCap: TPoint;
   ClientSize, TotalSize, TextSize, GlyphSize: TSize;
-  M, S : integer;
   TXTStyle : TTextStyle;
   SIndex : Longint;
-  TMP : String;
   myparent:TCustomControl;
 begin
   WriteLn('TCGraphBlock.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
   PaintRect:=ClientRect;
-//  TWSSpeedButtonClass(WidgetSetClass).DrawFrame(Self, FLastDrawFlags, PaintRect);
   ClientSize.cx:= PaintRect.Right - PaintRect.Left;
   ClientSize.cy:= PaintRect.Bottom - PaintRect.Top;
   TextSize.CY := PaintRect.Bottom - PaintRect.Top;
@@ -109,12 +102,12 @@ begin
       OffsetRect(PaintRect, -1, -1);
       end;
       WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
+      Brush.Color:= Color;
       FillRect(PaintRect);
       TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
     end;
   end;
   inherited Paint;
-  WriteLn(Caption);
 end;
 
 end.
