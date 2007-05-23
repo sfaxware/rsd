@@ -125,16 +125,18 @@
         <UnitName Value="Controls"/>
         <CursorPos X="13" Y="1461"/>
         <TopLine Value="1446"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <CursorPos X="15" Y="880"/>
-        <TopLine Value="865"/>
+        <CursorPos X="22" Y="83"/>
+        <TopLine Value="67"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="../../src/lazarus/ideintf/objectinspector.pp"/>
@@ -174,8 +176,8 @@
         <Filename Value="graph/graphcomponents.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="GraphComponents"/>
-        <CursorPos X="1" Y="66"/>
-        <TopLine Value="51"/>
+        <CursorPos X="15" Y="43"/>
+        <TopLine Value="30"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
@@ -238,9 +240,11 @@
       </Unit27>
       <Unit28>
         <Filename Value="../../src/fpcbuild-2.1.5/fpcsrc/rtl/objpas/classes/classesh.inc"/>
-        <CursorPos X="67" Y="1436"/>
-        <TopLine Value="1421"/>
+        <CursorPos X="3" Y="87"/>
+        <TopLine Value="72"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="../../src/lazarus/ideintf/imagelisteditor.pp"/>
@@ -271,11 +275,67 @@
         <UsageCount Value="10"/>
       </Unit32>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="66" Column="1" TopLine="66"/>
+        <Caret Line="105" Column="20" TopLine="85"/>
       </Position1>
+      <Position2>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="62" Column="3" TopLine="47"/>
+      </Position2>
+      <Position3>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="64" Column="18" TopLine="64"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
+        <Caret Line="83" Column="22" TopLine="67"/>
+      </Position4>
+      <Position5>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="103" Column="32" TopLine="86"/>
+      </Position5>
+      <Position6>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="115" Column="1" TopLine="86"/>
+      </Position6>
+      <Position7>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="102" Column="9" TopLine="76"/>
+      </Position7>
+      <Position8>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="70" Column="73" TopLine="46"/>
+      </Position8>
+      <Position9>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="62" Column="15" TopLine="47"/>
+      </Position9>
+      <Position10>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="64" Column="1" TopLine="47"/>
+      </Position10>
+      <Position11>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="62" Column="15" TopLine="47"/>
+      </Position11>
+      <Position12>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="60" Column="20" TopLine="46"/>
+      </Position12>
+      <Position13>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="62" Column="15" TopLine="55"/>
+      </Position13>
+      <Position14>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="61" Column="3" TopLine="53"/>
+      </Position14>
+      <Position15>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="45" Column="13" TopLine="30"/>
+      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
