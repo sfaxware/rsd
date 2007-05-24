@@ -43,7 +43,6 @@ type
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
     procedure FormCreate(Sender: TObject);
-    procedure PaintBox1Paint(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
@@ -78,17 +77,6 @@ begin
   _blocks.Remove(Block);
 end;
 
-procedure TdtslIdeMainWindow.PaintBox1Paint(Sender: TObject);
-var
-  proc2call:TListCallback;
-begin
-  if Sender is TPaintBox then
-  with _blocks do begin
-    //proc2call := @_selectedBlock.Draw;
-    //ForEachCall(proc2call, Nil);
-  end;
-end;
-
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
@@ -100,10 +88,10 @@ begin
     case TabIndex of
          0:begin
              SynEdit1.Visible := False;
-//             PaintBox1.Visible := True;
+             ScrollBox1.Visible := True;
            end;
          1:begin
-  //           PaintBox1.Visible := False;
+             ScrollBox1.Visible := False;
              SynEdit1.Visible := True;
            end;
     end;
@@ -121,7 +109,13 @@ end;
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
   _selectedBlock := TCGraphBlock.Create(ScrollBox1);
-  _selectedBlock.Parent := ScrollBox1;
+  with _selectedBlock do begin
+    Parent := ScrollBox1;
+    Left := Random(ScrollBox1.Width - Width);
+    Top := Random(ScrollBox1.Height - Height);
+    Color := clRed;
+    Caption:= 'Block';
+  end;
   InsertBlock(_selectedBlock);
 end;
 
