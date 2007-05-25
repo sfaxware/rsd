@@ -1,13 +1,13 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
-  Left = 214
+  Left = 217
   Height = 852
   Top = 146
   Width = 1036
   HorzScrollBar.Page = 1035
-  VertScrollBar.Page = 851
+  VertScrollBar.Page = 824
   ActiveControl = SynEdit1
   Caption = 'D.T.S.L. IDE'
-  ClientHeight = 852
+  ClientHeight = 825
   ClientWidth = 1036
   Menu = dtslIdeMainMenu
   OnCreate = FormCreate
@@ -19,7 +19,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 827
+    Height = 800
     Top = 2
     Width = 842
     Align = alCustom
@@ -43,7 +43,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 795
+      Height = 768
       Top = 30
       Width = 838
       Align = alClient
@@ -53,6 +53,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
+      Gutter.OnChange = nil
       Gutter.CodeFoldingWidth = 14
       Highlighter = SynPasSyn1
       Keystrokes = <      
@@ -377,18 +379,39 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
           ShortCut = 24642
         end>
       Lines.Strings = (
-        'SynEdit1'
+        'program Simulation;'
+        ''
+        'uses dtslSimCore;'
+        ''
+        'type'
+        '  TCustomSimulator = class(TSimulator)'
+        '    procedure Execute; virtual;'
+        '  end;'
+        ''
+        'procedure TCustomSimulator.Execute;'
+        'begin'
+        'end;'
+        ''
+        'var'
+        '  Simulator: TCustomSimulator;'
+        ''
+        'begin'
+        '  Simulator := TCustomSimulator.Init;'
+        '  Simulator.Run;'
+        '  Simulator.Done;'
+        'end.'
       )
+      SelectedColor.OnChange = nil
       TabWidth = 4
     end
     object ScrollBox1: TScrollBox
       Left = 2
-      Height = 795
+      Height = 768
       Top = 30
       Width = 838
       HorzScrollBar.Page = 814
       HorzScrollBar.Visible = True
-      VertScrollBar.Page = 771
+      VertScrollBar.Page = 744
       VertScrollBar.Visible = True
       Align = alClient
       TabOrder = 2
@@ -396,8 +419,9 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object StatusBar1: TStatusBar
     Height = 21
-    Top = 831
+    Top = 804
     Width = 1036
+    AutoSize = False
     Panels = <    
       item
         Text = 'Pannel 0'
@@ -417,7 +441,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         Width = 50
       end>
     SimplePanel = False
-    Visible = False
+    Color = clBlue
   end
   object dtslIdeMainMenu: TMainMenu
     object dtslIdeFileMenuItem: TMenuItem

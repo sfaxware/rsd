@@ -276,28 +276,7 @@
         <UsageCount Value="10"/>
       </Unit33>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="101" Column="9" TopLine="79"/>
-      </Position1>
-      <Position2>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="75" Column="15" TopLine="69"/>
-      </Position2>
-      <Position3>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="61" Column="19" TopLine="46"/>
-      </Position3>
-      <Position4>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="96" Column="15" TopLine="76"/>
-      </Position4>
-      <Position5>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="59" Column="1" TopLine="53"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
