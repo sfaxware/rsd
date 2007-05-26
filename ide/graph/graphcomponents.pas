@@ -12,8 +12,11 @@ type
   public
     constructor Create(AOwner:TComponent);override;
   protected
+    FSelected: Boolean;
+    procedure SetSeleted(AValue: Boolean);
     procedure Paint; override;
   published
+    property Selected: Boolean read FSelected write SetSeleted;
 //    property Action;
 //    property Align;
 //    property Anchors;
@@ -47,6 +50,15 @@ begin
   inherited Create(AOwner);
   Width := 100;
   Height := 100;
+  FSelected := False;
+end;
+
+procedure TCGraphBlock.SetSeleted(AValue: Boolean);
+begin
+  if FSelected <> AValue then begin
+    FSelected := AValue;
+    Refresh;
+  end
 end;
 
 procedure TCGraphBlock.Paint;
@@ -58,6 +70,11 @@ begin
   PaintRect:=ClientRect;
   with Canvas do begin
     //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
+    if FSelected then begin
+      Color := clBlack;
+      Rectangle(PaintRect);
+      InflateRect(PaintRect, -2, -2);
+    end;
     If not Enabled then
       Color := clBtnShadow
     else

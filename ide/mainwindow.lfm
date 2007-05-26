@@ -1,10 +1,10 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
-  Left = 217
+  Left = 236
   Height = 852
   Top = 146
   Width = 1036
   HorzScrollBar.Page = 1035
-  VertScrollBar.Page = 824
+  VertScrollBar.Page = 851
   ActiveControl = SynEdit1
   Caption = 'D.T.S.L. IDE'
   ClientHeight = 825
@@ -19,7 +19,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 800
+    Height = 827
     Top = 2
     Width = 842
     Align = alCustom
@@ -43,7 +43,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 768
+      Height = 795
       Top = 30
       Width = 838
       Align = alClient
@@ -53,8 +53,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
-      Gutter.OnChange = nil
       Gutter.CodeFoldingWidth = 14
       Highlighter = SynPasSyn1
       Keystrokes = <      
@@ -401,17 +399,16 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         '  Simulator.Done;'
         'end.'
       )
-      SelectedColor.OnChange = nil
       TabWidth = 4
     end
     object ScrollBox1: TScrollBox
       Left = 2
-      Height = 768
+      Height = 795
       Top = 30
       Width = 838
-      HorzScrollBar.Page = 814
+      HorzScrollBar.Page = 837
       HorzScrollBar.Visible = True
-      VertScrollBar.Page = 744
+      VertScrollBar.Page = 794
       VertScrollBar.Visible = True
       Align = alClient
       TabOrder = 2
@@ -419,7 +416,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object StatusBar1: TStatusBar
     Height = 21
-    Top = 804
+    Top = 831
     Width = 1036
     AutoSize = False
     Panels = <    

@@ -47,6 +47,7 @@ type
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
+    procedure SelectBlock(Sender: TObject);
   private
     _blocks:TFPList;
     _selectedBlock:TCGraphBlock;
@@ -100,23 +101,41 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  WriteLn('Removing block');
-  RemoveBlock(_selectedBlock);
-  WriteLn('Destroying block');
-  _selectedBlock.Destroy;
+  if _selectedBlock = Nil then
+    WriteLn('No selected block')
+  else begin
+    WriteLn('Removing block');
+    RemoveBlock(_selectedBlock);
+    WriteLn('Destroying block');
+    _selectedBlock.Destroy;
+    _selectedBlock := Nil;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
+  if Assigned(_selectedBlock) then
+    _selectedBlock.Selected := False;
   _selectedBlock := TCGraphBlock.Create(ScrollBox1);
   with _selectedBlock do begin
     Parent := ScrollBox1;
     Left := Random(ScrollBox1.Width - Width);
     Top := Random(ScrollBox1.Height - Height);
     Color := clRed;
-    Caption:= 'Block';
+    Caption := 'Block';
+    OnClick := @SelectBlock;
+    Selected := True;
   end;
   InsertBlock(_selectedBlock);
+end;
+
+procedure TdtslIdeMainWindow.SelectBlock(Sender: TObject);
+begin
+  if Sender is TCGraphBlock then begin
+    _selectedBlock.Selected := False;
+    _selectedBlock := TCGraphBlock(Sender);
+    _selectedBlock.Selected := True;
+  end;
 end;
 
 initialization
