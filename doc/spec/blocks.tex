@@ -1,0 +1,88 @@
+\newcommand{\Rectangle}[3]
+{
+  \realmult{#1}{0.5}\resultx
+  \realmult{#2}{0.5}\resulty
+  \rmove({\resultx} 0)
+  \bsegment
+    \move({-\resultx} {\resulty})
+    \lvec({\resultx} {\resulty})
+    \lvec({\resultx} {-\resulty})
+    \lvec({-\resultx} {-\resulty})
+    \lvec({-\resultx} {\resulty})
+    \textref h:C v:C
+    \htext(0 0){\hbox{#3}}
+    \savepos({\resultx} 0)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+\newcommand{\CylindreV}[4]
+{
+  \rmove(#1 0)
+  \bsegment
+    \move(0 #3)
+    \lellip rx:#1 ry:#2
+    \move(-#1 #3)
+    \lvec(-#1 -#3)
+    \move(0 -#3)
+    \lellip rx:#1 ry:#2
+    \move(#1 #3)
+    \lvec(#1 -#3)
+    \textref h:C v:C
+    \htext(0 0){\vbox{#4}}
+    \savepos(#1 0)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+\newcommand{\CylindreH}[4]
+{
+  \realmult{#3}{0.5}\result
+  \rmove({\result} 0)
+  \bsegment
+    \move({-\result} 0)
+    \lellip rx:#1 ry:#2
+    \move({-\result} -#2)
+    \lvec({\result} -#2)
+    \move({\result} 0)
+    \lellip rx:#1 ry:#2
+    \move({-\result} #2)
+    \lvec({\result} #2)
+    \textref h:C v:C
+    \htext(0 0){\hbox{#4}}
+    \savepos({\result} 0)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+\newcommand{\Cercle}[2]
+{
+  \rmove(#1 0)
+  \bsegment
+    \lcir r:#1
+    \textref h:C v:C
+    \htext(0 0){\vbox{#2}}
+    \savepos(#1 0)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+\newcommand{\Vecteur}[3]
+{
+  \realmult{#1}{0.5}\result
+  \bsegment
+    \ravec(#1 #2)
+    \textref h:C v:C
+    \htext({\result} 0.1){\hbox{#3}}
+    \savepos(#1 #2)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+\newcommand{\LigneV}[3]
+{
+  \realmult{#2}{0.5}\result
+  \bsegment
+    \rlvec(#1 #2)
+    \textref h:C v:C
+    \htext(0.1 {\result}){\vbox{#3}}
+    \savepos(#1 0)(*ex *ey)
+  \esegment
+  \move(*ex *ey)
+}
+
