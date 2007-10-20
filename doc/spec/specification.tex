@@ -55,6 +55,27 @@ The main problem discussed in this document is the creation of a set of tools ea
 The block scheduler should ensure efficient scheduling which means that only non blocked blocks should be scheduled.
 \par A block is blocked if it has no input (input FIFO is empty) or if it has no mean to stop its output (output FIFO is full) which could be caused by the block consuming its output not being scheduled.
 \par \underline{Please note} : a block could need to be scheduled several times to can produce a single output (eg. a packetizer).
+\begin{figure}[h]
+\begin{texdraw}
+  \Cercle{0.15}{$s(t)$}
+  \Vecteur{0.5}{0.0}{$x_0$}
+  \Rectangle{0.3}{0.2}{$f_1$}
+  \Vecteur{0.5}{0.0}{$x_1$}
+  \Rectangle{0.3}{0.2}{$f_2$}
+  \Vecteur{0.5}{0.0}{$x_2$}
+  \Rectangle{0.3}{0.2}{$f_3$}
+  \Vecteur{0.5}{0.0}{$x_3$}
+  \Cercle{0.15}{$r(t)$}
+  \move(0.4 0)
+  \LigneV{0}{-0.5}{$x_0$}
+  \Vecteur{0.5}{0.0}{$x_0$}
+  \Rectangle{0.3}{0.2}{$f_4$}
+  \Vecteur{0.5}{0.0}{$x_4$}
+  \Rectangle{0.3}{0.2}{$f_5$}
+  \Vecteur{0.5}{0.0}{$x_5$}
+\end{texdraw}
+\caption{example of draw}
+\end{figure}
 \end{otherlanguage}
 \par
 تم والحمد لله رب العالمين
