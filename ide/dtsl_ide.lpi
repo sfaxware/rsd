@@ -2,12 +2,12 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -26,15 +26,15 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="SynEdit"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
         <PackageName Value="RunTimeTypeInfoControls"/>
         <MinVersion Minor="1" Valid="True"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
     <Units Count="38">
@@ -45,7 +45,7 @@
         <CursorPos X="62" Y="10"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -54,10 +54,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
-        <CursorPos X="7" Y="138"/>
-        <TopLine Value="113"/>
+        <CursorPos X="8" Y="136"/>
+        <TopLine Value="115"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -172,11 +172,9 @@
         <Filename Value="graph/graphcomponents.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="GraphComponents"/>
-        <CursorPos X="36" Y="76"/>
-        <TopLine Value="54"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
+        <CursorPos X="1" Y="58"/>
+        <TopLine Value="43"/>
+        <UsageCount Value="40"/>
       </Unit18>
       <Unit19>
         <Filename Value="../../src/fpc/rtl/objpas/classes/classesh.inc"/>
@@ -302,7 +300,48 @@
         <UsageCount Value="10"/>
       </Unit37>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="10" HistoryIndex="9">
+      <Position1>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="135" Column="19" TopLine="115"/>
+      </Position1>
+      <Position2>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="136" Column="19" TopLine="115"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="137" Column="19" TopLine="115"/>
+      </Position3>
+      <Position4>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="136" Column="5" TopLine="115"/>
+      </Position4>
+      <Position5>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="135" Column="5" TopLine="115"/>
+      </Position5>
+      <Position6>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="129" Column="15" TopLine="114"/>
+      </Position6>
+      <Position7>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="120" Column="8" TopLine="105"/>
+      </Position7>
+      <Position8>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="119" Column="3" TopLine="104"/>
+      </Position8>
+      <Position9>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="118" Column="5" TopLine="103"/>
+      </Position9>
+      <Position10>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="117" Column="15" TopLine="102"/>
+      </Position10>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
