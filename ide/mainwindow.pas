@@ -33,8 +33,9 @@ type
     MenuItem5: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
     dtslEditGraphInsertBlockMenuItem: TMenuItem;
-    MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
+    dtslEditCopyMenuItem: TMenuItem;
+    dtslEditPastMenuItem: TMenuItem;
+    dtslEditCutMenuItem: TMenuItem;
     PopupMenu1: TPopupMenu;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
@@ -49,8 +50,8 @@ type
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
     procedure SelectBlock(Sender: TObject);
   private
-    _blocks:TFPList;
-    _selectedBlock:TCGraphBlock;
+    _Blocks:TFPList;
+    _SelectedBlock:TCGraphBlock;
   public
     procedure InsertBlock(Block:TCGraphBlock);
     procedure RemoveBlock(Block:TCGraphBlock);
