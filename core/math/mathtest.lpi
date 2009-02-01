@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="4"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -30,20 +30,20 @@
       <Unit0>
         <Filename Value="mathtest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="49" Y="9"/>
+        <CursorPos X="62" Y="6"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="mathvectors.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathVectors"/>
-        <CursorPos X="39" Y="3"/>
-        <TopLine Value="1"/>
+        <CursorPos X="1" Y="14"/>
+        <TopLine Value="2"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -52,28 +52,28 @@
         <UnitName Value="MathBasics"/>
         <CursorPos X="39" Y="3"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="22"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="mathmatrices.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathMatrices"/>
-        <CursorPos X="39" Y="3"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="22"/>
+        <CursorPos X="26" Y="11"/>
+        <TopLine Value="3"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="mathsetn.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathSetN"/>
-        <CursorPos X="39" Y="3"/>
+        <CursorPos X="1" Y="20"/>
         <TopLine Value="1"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -105,19 +105,11 @@
         <UsageCount Value="11"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="mathvectors.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="mathtest.lpr"/>
+        <Caret Line="6" Column="62" TopLine="1"/>
       </Position1>
-      <Position2>
-        <Filename Value="mathsetn.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="mathmatrices.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

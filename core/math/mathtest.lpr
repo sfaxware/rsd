@@ -1,4 +1,4 @@
-program MathTest;
+program MathUnitTest;
 
 {$mode objfpc}{$H+}
 
