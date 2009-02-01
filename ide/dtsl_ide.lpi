@@ -52,16 +52,17 @@
         <Filename Value="mainwindow.pas"/>
         <ComponentName Value="dtslIdeMainWindow"/>
         <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
         <CursorPos X="8" Y="136"/>
-        <TopLine Value="115"/>
+        <TopLine Value="105"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="/usr/lib/lazarus/lcl/interfaces/gtk/interfaces.pp"/>
+        <Filename Value="../../../../../../usr/lib/lazarus/lcl/interfaces/gtk/interfaces.pp"/>
         <UnitName Value="Interfaces"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
@@ -344,14 +345,11 @@
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <SearchPaths>
       <OtherUnitFiles Value="graph/"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>
