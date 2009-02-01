@@ -43,7 +43,7 @@ var
   i:Integer;
 begin
   Sz := Size;
-  {Usally allocate Sz elements as fifo is full when Wr = Rd + 1 mod Sz}
+  {Usally allocate Sz + 1 elements as fifo is full when Wr = Rd + 1 mod Sz}
   SetLength(Buffer, Sz + 1);
   Rd := 0;
   Wr := 0;
