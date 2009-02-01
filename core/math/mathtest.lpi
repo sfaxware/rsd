@@ -2,12 +2,12 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="4"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -30,7 +30,7 @@
       <Unit0>
         <Filename Value="mathtest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="55" Y="9"/>
+        <CursorPos X="49" Y="9"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="22"/>
@@ -39,16 +39,19 @@
       <Unit1>
         <Filename Value="mathvectors.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mathvectors"/>
+        <UnitName Value="MathVectors"/>
+        <CursorPos X="39" Y="3"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="22"/>
-        <SyntaxHighlighter Value="Text"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="mathbasics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathBasics"/>
-        <CursorPos X="12" Y="57"/>
-        <TopLine Value="34"/>
+        <CursorPos X="39" Y="3"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
@@ -56,16 +59,22 @@
       <Unit3>
         <Filename Value="mathmatrices.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mathmatrices"/>
+        <UnitName Value="MathMatrices"/>
+        <CursorPos X="39" Y="3"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="22"/>
-        <SyntaxHighlighter Value="Text"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="mathsetn.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="mathsetn"/>
+        <UnitName Value="MathSetN"/>
+        <CursorPos X="39" Y="3"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="22"/>
-        <SyntaxHighlighter Value="Text"/>
+        <Loaded Value="True"/>
       </Unit4>
       <Unit5>
         <Filename Value="../../../src/fpc/compiler/htypechk.pas"/>
@@ -96,13 +105,23 @@
         <UsageCount Value="11"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="mathsetn.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mathmatrices.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
+    <Version Value="8"/>
     <Linking>
       <Options>
         <Win32>
