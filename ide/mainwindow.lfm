@@ -34,7 +34,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     Font.Name = 'Arial 12'
     OnChange = TabControlChange
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     Tabs.Strings = (
       'schema'
@@ -55,6 +55,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Highlighter = SynPasSyn1
       Keystrokes = <      
         item
@@ -400,6 +401,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         '  Simulator.Done;'
         'end.'
       )
+      SelectedColor.OnChange = nil
       TabWidth = 4
     end
     object ScrollBox1: TScrollBox
@@ -408,6 +410,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Top = 30
       Width = 838
       Align = alClient
+      Color = clCream
+      ParentColor = False
       TabOrder = 2
     end
   end

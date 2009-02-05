@@ -55,6 +55,7 @@ type
   public
     procedure InsertBlock(Block:TCGraphBlock);
     procedure RemoveBlock(Block:TCGraphBlock);
+    procedure ViewFile(Sender: TObject);
   end; 
 
 var
@@ -86,7 +87,7 @@ end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
 begin
-  with TTabControl(Sender) do begin
+  with Sender as TTabControl do begin
     case TabIndex of
          0:begin
              SynEdit1.Visible := False;
@@ -98,6 +99,40 @@ begin
            end;
     end;
   end;
+end;
+
+procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
+var
+  f: System.Text;
+begin
+  if Sender is TCGraphBlock then
+    with Sender as TCGraphBlock do begin
+      if not FileExists(Caption) then begin
+        System.Assign(f, Caption + '.pas');
+        ReWrite(f);
+        WriteLn(f, 'unit ', Caption, ';');
+        WriteLn(f, 'interface');
+        WriteLn(f, 'type');
+        WriteLn(f, '  T', Caption, ' = Calss(TBlock)');
+        WriteLn(f, '    procedure Execute;');
+        WriteLn(f, '  end;');
+        WriteLn(f);
+        WriteLn(f, 'implementation');
+        WriteLn(f, 'procedure T', Caption, '.Execute;');
+        WriteLn(f, 'begin;');
+        WriteLn(f, '  {Write here your code}');
+        WriteLn(f, 'end;');
+        WriteLn(f);
+        WriteLn(f, 'initialization');
+        WriteLn(f);
+        WriteLn(f, 'finalization');
+        WriteLn(f);
+        WriteLn(f, 'end.');
+        System.Close(f);
+      end;
+      SynEdit1.Lines.LoadFromFile(Caption + '.pas');
+    end;
+  TabControl.TabIndex := 1;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
@@ -125,6 +160,7 @@ begin
     Color := clRed;
     Caption := 'Block';
     OnClick := @SelectBlock;
+    OnDblClick := @ViewFile;
     Selected := True;
   end;
   InsertBlock(_selectedBlock);
