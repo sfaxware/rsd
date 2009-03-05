@@ -5,9 +5,10 @@ unit GraphComponents;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, Types;
+  Classes, SysUtils, Graphics, Controls, Types, CodeCache;
   
 type
+  TCodeType = (ctSource, ctDescription);
   TCGraphBlock = class(TGraphicControl)
   private
     _MouseDown: Boolean;
@@ -18,6 +19,8 @@ type
     procedure MouseLeaved(Sender: TObject);
   public
     constructor Create(AOwner:TComponent);override;
+    CodeBuffer: array[TCodeType] of TCodeBuffer;
+    CodeCache: array[TCodeType] of TCodeCache;
   protected
     FSelected: Boolean;
     FType: string;
@@ -46,6 +49,8 @@ type
 implementation
 
 constructor TCGraphBlock.Create(AOwner:TComponent);
+var
+  CodeType: TCodeType;
 begin
   inherited Create(AOwner);
   Width := 100;
@@ -56,6 +61,8 @@ begin
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
   FType := 'TCGraphBlock';
+  for CodeType := Low(TCodeType) To High(TCodeType) do
+    CodeCache[CodeType] := TCodeCache.Create;
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
