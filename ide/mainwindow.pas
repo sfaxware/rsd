@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
   ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
-  SynEdit, RTTICtrls, XMLCfg, CodeCache;
+  SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees;
 
 type
   { TdtslIdeMainWindow }
@@ -54,6 +54,7 @@ type
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
     procedure SelectBlock(Sender: TObject);
+    function GetBlockDescription(Block: TCGraphBlock): TLFMTree;
   private
     _Blocks:TFPList;
     _SelectedBlock:TCGraphBlock;
@@ -71,7 +72,7 @@ var
 implementation
 
 uses
-  LFMTrees, StdCodeTools, CodeToolManager, LinkScanner;
+  StdCodeTools, CodeToolManager, LinkScanner;
   
 type
   PProjectSettings = ^ TProjectSettings;
@@ -91,6 +92,23 @@ begin
   Application.Terminate;
 end;
 
+function TdtslIdeMainWindow.GetBlockDescription(Block: TCGraphBlock): TLFMTree;
+var
+  SrcFile: string;
+begin
+  with Block do begin
+    Save;
+    SrcFile := '/tmp/' + Name + '.pas';
+    SynEdit1.Lines.LoadFromFile(srcFile);
+    with CodeToolBoss do begin
+      OnSearchUsedUnit := @SearchUsedUnit;
+      GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+      if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
+        Result := nil;
+    end;
+  end;
+end;
+
 procedure TdtslIdeMainWindow.InsertBlock(Block:TCGraphBlock);
 begin
   _blocks.Add(Block);
@@ -100,6 +118,8 @@ procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
 var
   Path, BlockPath: string;
   BlocksCount: integer;
+  BlockDescription: TLFMTree;
+  PropertyNode: TLFMPropertyNode;
 begin
   with Project, TProjectSettings(_ProjectSettings^) do begin
     if OpenDialog1.Execute then
@@ -125,6 +145,8 @@ begin
           _selectedBlock := nil;
           continue;
         end;
+        BlockDescription := GetBlockDescription(_SelectedBlock);
+        PropertyNode := BlockDescription.FindProperty(BlockPath + '.Left', nil);
         Left := Random(ScrollBox1.Width - Width);
         Top := Random(ScrollBox1.Height - Height);
         Color := clRed;
@@ -213,21 +235,13 @@ var
   SrcFile: string;
 begin
   if Sender is TCGraphBlock then
-    with Sender as TCGraphBlock do begin
-      Save;
-      SrcFile := '/tmp/' + Name + '.pas';
-      SynEdit1.Lines.LoadFromFile(srcFile);
-      with CodeToolBoss do begin
-        OnSearchUsedUnit := @SearchUsedUnit;
-        GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-        if CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], LFMTree, False, False) then begin
-          TabControl.TabIndex := 1;
-          SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
-          SynEdit1.EnsureCursorPosVisible;
-        end else
-          ShowMessage('False');
-      end;
-    end;
+    LFMTree := GetBlockDescription(Sender as TCGraphBlock);
+    if Assigned(LFMTree) then begin
+      TabControl.TabIndex := 1;
+      SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
+      SynEdit1.EnsureCursorPosVisible;
+    end else
+      ShowMessage('False');
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
