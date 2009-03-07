@@ -8,8 +8,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   ClientWidth = 1036
   Menu = dtslIdeMainMenu
   OnCreate = FormCreate
-  ParentFont = False
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.26.3'
   object TabControl: TTabControl
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -50,11 +49,19 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Font.Height = -15
       Font.Name = 'courier'
       Font.Pitch = fpFixed
+      Font.Quality = fqNonAntialiased
       ParentColor = False
       ParentFont = False
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
+      Gutter.RightOffset = 0
+      Gutter.LeftOffset = 0
+      Gutter.ShowCodeFolding = True
+      Gutter.CodeFoldingWidth = 10
+      Gutter.ShowChanges = True
+      Gutter.ShowLineNumbers = True
       Highlighter = SynPasSyn1
       Keystrokes = <      
         item
@@ -400,6 +407,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         '  Simulator.Done;'
         'end.'
       )
+      SelectedColor.OnChange = nil
+      BracketHighlightStyle = sbhsBoth
       TabWidth = 4
     end
     object ScrollBox1: TScrollBox
@@ -707,6 +716,15 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
+    AsmAttri.FrameColor = clNone
+    CommentAttri.FrameColor = clNone
+    IdentifierAttri.FrameColor = clNone
+    KeyAttri.FrameColor = clNone
+    NumberAttri.FrameColor = clNone
+    SpaceAttri.FrameColor = clNone
+    StringAttri.FrameColor = clNone
+    SymbolAttri.FrameColor = clNone
+    DirectiveAttri.FrameColor = clNone
     CompilerMode = pcmDelphi
     left = 32
   end
