@@ -10,7 +10,6 @@ uses
   SynEdit, RTTICtrls, XMLCfg, CodeCache;
 
 type
-
   { TdtslIdeMainWindow }
 
   TdtslIdeMainWindow = class(TForm)
@@ -37,6 +36,7 @@ type
     dtslEditPastMenuItem: TMenuItem;
     dtslEditCutMenuItem: TMenuItem;
     dtslIdeFileSaveMenuItem: TMenuItem;
+    OpenDialog1: TOpenDialog;
     PopupMenu1: TPopupMenu;
     SaveDialog1: TSaveDialog;
     ScrollBox1: TScrollBox;
@@ -47,7 +47,8 @@ type
     TabControl: TTabControl;
     Project: TXMLConfig;
     procedure FormCreate(Sender: TObject);
-    procedure SaveProject ( Sender: TObject ) ;
+    procedure LoadProject(Sender: TObject);
+    procedure SaveProject(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
@@ -56,6 +57,7 @@ type
   private
     _Blocks:TFPList;
     _SelectedBlock:TCGraphBlock;
+    _ProjectSettings: pointer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
     procedure InsertBlock(Block:TCGraphBlock);
@@ -70,6 +72,17 @@ implementation
 
 uses
   LFMTrees, StdCodeTools, CodeToolManager, LinkScanner;
+  
+type
+  PProjectSettings = ^ TProjectSettings;
+  TProjectSettings = record
+    Name: string;
+    Core: record
+      Blocks: record
+        Path: string;
+      end;
+    end;
+  end;
 
 { TdtslIdeMainWindow }
 
@@ -83,6 +96,48 @@ begin
   _blocks.Add(Block);
 end;
 
+procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
+var
+  Path, BlockPath: string;
+  BlocksCount: integer;
+begin
+  with Project, TProjectSettings(_ProjectSettings^) do begin
+    if OpenDialog1.Execute then
+      FileName := OpenDialog1.FileName
+    else
+      Exit;
+    Name := GetValue('name', 'Unnamed design');
+    Path := 'settings/core/blocks/';
+    Core.Blocks.Path := GetValue(Path + 'path', '');
+    Path :=  'design/blocks/';
+    for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
+      BlockPath := 'Block' + IntToStr(BlocksCount);
+      if Assigned(_selectedBlock) then
+        _selectedBlock.Selected := False;
+      _selectedBlock := TCGraphBlock.Create(ScrollBox1);
+      with _selectedBlock do begin
+        Parent := ScrollBox1;
+        try
+          Name := 'Block' + IntToStr(BlocksCount);
+        except
+          ShowMessage('Invalid block name "' + BlockPath + '"');
+          _selectedBlock.Destroy;
+          _selectedBlock := nil;
+          continue;
+        end;
+        Left := Random(ScrollBox1.Width - Width);
+        Top := Random(ScrollBox1.Height - Height);
+        Color := clRed;
+        Caption := GetValue(Path + BlockPath + '/name', BlockPath);
+        OnClick := @SelectBlock;
+        OnDblClick := @ViewFile;
+        Selected := True;
+      end;
+      InsertBlock(_selectedBlock);
+    end;
+  end;
+end;
+
 procedure TdtslIdeMainWindow.RemoveBlock(Block:TCGraphBlock);
 begin
   _blocks.Remove(Block);
@@ -93,25 +148,26 @@ var
   Path: string;
 begin
   with TXMLConfig(arg), TCGraphBlock(data) do begin
-    Path := 'design/blocks/' + name + '/';
+    Path := 'design/blocks/' + Name + '/';
     SetValue(Path + 'name', Caption);
-    SetValue(Path + 'type', Typ);
-    SetValue(Path + 'left', Left);
-    SetValue(Path + 'top', Top);
-    SetValue(Path + 'width', Width);
-    SetValue(Path + 'height', Height);
   end;
 end;
 
-procedure TdtslIdeMainWindow.SaveProject ( Sender: TObject ) ;
+procedure TdtslIdeMainWindow.SaveProject( Sender: TObject);
+var
+  Path: string;
 begin
-  with Project do begin
+  with Project, TProjectSettings(_ProjectSettings^) do begin
     if Filename = '' then
       if SaveDialog1.Execute then
         FileName := SaveDialog1.FileName
       else
         Exit;
     Clear;
+    SetValue('design/name', Name);
+    Path := 'design/sttings/core/blocks/';
+    SetValue(Path + 'path', Core.Blocks.Path);
+    SetValue('design/blocks/count', _Blocks.Count);
     _Blocks.ForEachCall(@StreamBlock, Project);
     Flush;
   end;
@@ -120,20 +176,21 @@ end;
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
+  New(PProjectSettings(_ProjectSettings));
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
 begin
   with Sender as TTabControl do begin
     case TabIndex of
-         0:begin
-             SynEdit1.Visible := False;
-             ScrollBox1.Visible := True;
-           end;
-         1:begin
-             ScrollBox1.Visible := False;
-             SynEdit1.Visible := True;
-           end;
+      0:begin
+        SynEdit1.Visible := False;
+        ScrollBox1.Visible := True;
+      end;
+      1:begin
+        ScrollBox1.Visible := False;
+        SynEdit1.Visible := True;
+      end;
     end;
   end;
 end;
@@ -175,14 +232,14 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  if _selectedBlock = Nil then
+  if _selectedBlock = nil then
     WriteLn('No selected block')
   else begin
     WriteLn('Removing block');
     RemoveBlock(_selectedBlock);
     WriteLn('Destroying block');
     _selectedBlock.Destroy;
-    _selectedBlock := Nil;
+    _selectedBlock := nil;
   end;
 end;
 
