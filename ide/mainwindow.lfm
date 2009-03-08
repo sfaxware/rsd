@@ -418,7 +418,12 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Width = 838
       Align = alClient
       Color = clCream
+      Font.CharSet = ANSI_CHARSET
+      Font.Color = clBtnText
+      Font.Height = 12
+      Font.Name = 'Arial 12'
       ParentColor = False
+      ParentFont = False
       TabOrder = 2
     end
   end
