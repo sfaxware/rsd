@@ -6,9 +6,23 @@ interface
 
 uses
   Classes, SysUtils, Graphics, Controls, Types, CodeCache;
-  
+
+const
+  DefaultBlockWidth = 100;
+  DefaultBlockHeight = 100;
+  DefaultPortWidth = 8;
+  DefaultPortHeight = 4;
+  MinPortSpacing = 10;
+
 type
   TCodeType = (ctSource, ctDescription);
+  TCGraphPort = class(TGraphicControl)
+  public
+    constructor Create(AOwner: TComponent); override;
+  protected
+    procedure Paint; override;
+    procedure ValidateContainer(AComponent: TComponent); override;
+  end;
   TCGraphBlock = class(TGraphicControl)
   private
     _MouseDown: Boolean;
@@ -27,6 +41,7 @@ type
     FType: string;
     procedure SetSeleted(AValue: Boolean);
     procedure Paint; override;
+    procedure ValidateInsert(AComponent: TComponent); override;
   published
     property Selected: Boolean read FSelected write SetSeleted;
     property BorderSpacing;
@@ -48,11 +63,63 @@ type
 
 implementation
 
+constructor TCGraphPort.Create(AOwner: TComponent);
+var
+  dy, PortTop, PortLeft: Integer;
+begin
+  Inherited Create(AOwner);
+  with AOwner as TCGraphBlock do begin
+    dy := Height div ComponentCount;
+    PortTop := Top + ComponentCount * dy - dy div 2;
+    PortLeft := Left - DefaultPortWidth;
+  end;
+  //WriteLn('dy = ', dy, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
+  ChangeBounds(PortLeft, PortTop - DefaultPortHeight div 2, DefaultPortWidth, DefaultPortHeight);
+end;
+
+procedure TCGraphPort.Paint;
+var
+  PaintRect: TRect;
+  TXTStyle : TTextStyle;
+begin
+  //WriteLn('TCGraphPort.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
+  PaintRect:=ClientRect;
+  with Canvas do begin
+    //WriteLn('TCGraphPort.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
+    If not Enabled then
+      Brush.Color := clBtnShadow
+    else
+      Brush.Color:= clBlack;
+    Rectangle(PaintRect);
+    if Caption <> '' then begin
+      TXTStyle := Canvas.TextStyle;
+      with TXTStyle do begin
+        Opaque := False;
+        Clipping := True;
+        ShowPrefix := False;
+        Alignment := taCenter;
+        Layout := tlCenter;
+      end;
+    // set color here, otherwise SystemFont is wrong if the button was disabled before
+      Font.Color := Self.Font.Color;
+      TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
+    end;
+  end;
+  inherited Paint;
+end;
+
+procedure TCGraphPort.ValidateContainer(AComponent: TComponent);
+begin
+  if AComponent is TCGraphBlock then with AComponent as TCGraphBlock do begin
+    ValidateInsert(Self);
+  end;
+end;
+
 constructor TCGraphBlock.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  Width := 100;
-  Height := 100;
+  Width := DefaultBlockWidth;
+  Height := DefaultBlockHeight;
   FSelected := False;
   OnMouseDown := @StartMove;
   OnMouseUp := @EndMove;
@@ -139,14 +206,17 @@ begin
   Result := true;
 end;
 
-procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var MousePos: TPoint;
 begin
-  if Sender = Self then
-    case Button of
+  if Sender = Self then case Button of
     mbLeft:begin
       _MouseDown := True;
       _MousePos.x := X + Left;
       _MousePos.y := Y + Top;
+    end;
+    mbRight:begin
+      PopupMenu.PopUp;
     end;
   end;
 end;
@@ -164,15 +234,19 @@ end;
 procedure TCGraphBlock.Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   dx, dy: Integer;
+  i: Integer;
 begin
   if(Sender = Self)and _MouseDown then begin
-    X += Left;
+    X += Left;           
     Y += Top;
     dx := X - _MousePos.x;
     dy := Y - _MousePos.y;
     _MousePos.x := X;
     _MousePos.y := Y;
     ChangeBounds(Left + dx, Top + dy, Width, Height);
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      ChangeBounds(Left + dx, Top + dy, Width, Height);
+    end;
   end;
 end;
 
@@ -219,6 +293,21 @@ begin
     end;
   end;
   inherited Paint;
+end;
+
+procedure TCGraphBlock.ValidateInsert(AComponent: TComponent);
+var
+  i: Integer;
+  dy, PortTop: Integer;
+begin
+  if AComponent is TCGraphPort then begin
+    dy := Height div (ComponentCount + 1);
+    PortTop := Top + dy div 2;
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      ChangeBounds(Left, PortTop - Height div 2, Width, Height);
+      PortTop += dy;
+    end;
+  end;
 end;
 
 end.

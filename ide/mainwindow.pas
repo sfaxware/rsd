@@ -19,7 +19,7 @@ type
     dtslIdeFileNewMenuItem: TMenuItem;
     dtslIdeFileOpenMenuItem: TMenuItem;
     dtslIdeFileExitMenuItem: TMenuItem;
-    MenuItem1: TMenuItem;
+    PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
@@ -28,7 +28,7 @@ type
     MenuItem15: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
+    AddPortMenuItem: TMenuItem;
     MenuItem5: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
     dtslEditGraphInsertBlockMenuItem: TMenuItem;
@@ -49,6 +49,7 @@ type
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
     Project: TXMLConfig;
+    procedure AddPortMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
@@ -182,6 +183,7 @@ begin
         OnClick := @SelectBlock;
         OnDblClick := @ViewFile;
         Selected := True;
+        PopupMenu := PopupMenu1;
       end;
       InsertBlock(_selectedBlock);
     end;
@@ -228,6 +230,16 @@ procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
   New(PProjectSettings(_ProjectSettings));
+end;
+
+procedure TdtslIdeMainWindow.AddPortMenuItemClick(Sender: TObject);
+var
+  Port: TCGraphPort;
+begin
+  Port := TCGraphPort.Create(_SelectedBlock);
+  with Port do begin
+    Parent := ScrollBox1;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -316,6 +328,7 @@ begin
     Caption := 'Block ' + IntToStr(BlockQuantity);
     OnClick := @SelectBlock;
     OnDblClick := @ViewFile;
+    PopupMenu := PopupMenu1;
     Selected := True;
   end;
   InsertBlock(_selectedBlock);
