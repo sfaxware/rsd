@@ -20,6 +20,7 @@ type
     dtslIdeFileOpenMenuItem: TMenuItem;
     dtslIdeFileExitMenuItem: TMenuItem;
     AddOutputPortMenuItem: TMenuItem;
+    ConnectPortsMenuItem: TMenuItem;
     PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
@@ -52,6 +53,7 @@ type
     Project: TXMLConfig;
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
+    procedure ConnectPortsMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
@@ -245,12 +247,27 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
-var
+var             
   Port: TCGraphOutputPort;
 begin
   Port := TCGraphOutputPort.Create(_SelectedBlock);
   with Port do begin
     Parent := ScrollBox1;
+    end;
+end;
+
+procedure TdtslIdeMainWindow.ConnectPortsMenuItemClick(Sender: TObject);
+var
+  Connector: TCGraphConnector;
+  AOutputPort: TCGraphOutputPort;
+  AInputPort:TCGraphInputPort;
+begin
+  AOutputPort := TCGraphOutputPort(TCGraphBlock(_Blocks.Items[0]).Components[0]);
+  AInputPort := TCGraphInputPort(TCGraphBlock(_Blocks.Items[1]).Components[0]);
+  Connector := TCGraphConnector.Create(ScrollBox1);
+  with Connector do begin
+    Parent := ScrollBox1;
+    Connect(AOutputPort, AInputPort);
   end;
 end;
 
