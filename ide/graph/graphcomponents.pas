@@ -23,6 +23,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   protected
+    procedure HandleMouseEnterLeaveEvents(Sender: TObject); virtual;
+    procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Paint; override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
@@ -42,8 +45,8 @@ type
     _MousePos: TPoint;
     FInputComponentCount: Integer;
     FOutputComponentCount: Integer;
-    procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
-    procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+    procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure MouseLeaved(Sender: TObject);
   public
@@ -97,7 +100,7 @@ type
   end;
 
 implementation
-uses math;
+uses math, DesignGraph;
 
 type
   TConnection = array of TPoint;
@@ -119,6 +122,41 @@ constructor TCGraphPort.Create(AOwner: TComponent);
 begin
   Inherited Create(AOwner);
   UpdateBounds(-1, -1);
+  OnMouseEnter := @HandleMouseEnterLeaveEvents;
+  OnMouseLeave := @HandleMouseEnterLeaveEvents;
+  OnMouseDown := @HandleMouseDownEvents;
+  OnMouseUp := @HandleMouseUpEvents;
+end;
+
+procedure TCGraphPort.HandleMouseEnterLeaveEvents(Sender: TObject);
+begin
+  //WriteLn('MouseEntered = ', MouseEntered);
+  Repaint;         
+end;                         
+                                          
+procedure TCGraphPort.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //WriteLn('TCGraphPort.HandleMouseDownEvents');
+   with Parent as TCGraphDesign do begin
+     if Self is TCGraphOutputPort then
+       SelectedOutputPort := Self as TCGraphOutputPort
+     else
+       SelectedOutputPort := nil;
+   end;
+end;
+
+procedure TCGraphPort.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //WriteLn('TCGraphPort.HandleMouseUpEvents');
+  with Parent as TCGraphDesign do begin
+    if (Self is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
+      SelectedInputPort := Self as TCGraphInputPort;
+      //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
+      //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
+      ConnectPorts(Self);
+    end else
+      SelectedInputPort := nil;
+  end;
 end;
 
 procedure TCGraphPort.Paint;
@@ -132,10 +170,13 @@ begin
     //WriteLn('TCGraphPort.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
     If not Enabled then
       Brush.Color := clBtnShadow
+    else if MouseEntered then
+      Brush.Color := clGray
     else
       Brush.Color:= clBlack;
+    Color := clBlack;
     Rectangle(PaintRect);
-    if Caption <> '' then begin
+    if Caption <> '' then begin       
       TXTStyle := Canvas.TextStyle;
       with TXTStyle do begin
         Opaque := False;
@@ -321,7 +362,6 @@ end;
 procedure TCGraphBlock.Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   dx, dy: Integer;
-  i: Integer;
 begin
   if(Sender = Self)and _MouseDown then begin
     X += Left;           
