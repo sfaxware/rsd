@@ -137,25 +137,29 @@ end;
 procedure TCGraphPort.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TCGraphPort.HandleMouseDownEvents');
-   with Parent as TCGraphDesign do begin
-     if Self is TCGraphOutputPort then
+  case Button of
+    mbLeft:with Parent as TCGraphDesign do begin
+      if Self is TCGraphOutputPort then
        SelectedOutputPort := Self as TCGraphOutputPort
-     else
+      else
        SelectedOutputPort := nil;
-   end;
+    end;
+  end;
 end;
 
 procedure TCGraphPort.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TCGraphPort.HandleMouseUpEvents');
-  with Parent as TCGraphDesign do begin
-    if (Self is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
-      SelectedInputPort := Self as TCGraphInputPort;
-      //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
-      //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
-      ConnectPorts(Self);
-    end else
-      SelectedInputPort := nil;
+  case Button of
+    mbLeft:with Parent as TCGraphDesign do begin
+      if (Self is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
+        SelectedInputPort := Self as TCGraphInputPort;
+        //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
+        //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
+        ConnectPorts(Self);
+      end else
+        SelectedInputPort := nil;
+    end;
   end;
 end;
 
@@ -337,7 +341,7 @@ end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if Sender = Self then case Button of
+  case Button of
     mbLeft:begin
       _MouseDown := True;
       _MousePos.x := X + Left;
@@ -351,7 +355,11 @@ end;
 
 procedure TCGraphBlock.EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
 begin
-  _MouseDown := False;
+  case Button of
+    mbLeft:begin
+      _MouseDown := False;
+    end;
+  end;
 end;
 
 procedure TCGraphBlock.MouseLeaved(Sender: TObject);
