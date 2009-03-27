@@ -72,7 +72,7 @@ begin
     until false;
     Caption := 'Block ' + IntToStr(BlockQuantity);
     OnClick := @SelectBlock;
-    //OnDblClick := @ViewFile;
+    OnDblClick := Self.OnDblClick;
     PopupMenu := Self.PopupMenu;
     Selected := True;
   end;

@@ -204,6 +204,9 @@ end;
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   New(PProjectSettings(_ProjectSettings));
+  with ScrollBox1 do begin
+    OnDblClick := @ViewFile;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
@@ -247,11 +250,11 @@ var
   FileName: string;
   ProjectSettings: PProjectSettings absolute _ProjectSettings;
 begin
-  WriteLn('SrcFilename = ', SrcFilename);
-  WriteLn('TheUnitName = ', TheUnitName);
-  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  //WriteLn('SrcFilename = ', SrcFilename);
+  //WriteLn('TheUnitName = ', TheUnitName);
+  //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
-  WriteLn('FileName = ', FileName);
+  //WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;
 
@@ -266,11 +269,11 @@ begin
       SrcFile := CodeBuffer[ctSource].FileName;
     end;
     LFMTree := GetBlockDescription(Sender as TCGraphBlock);
-    if Assigned(LFMTree) then begin
-      SynEdit1.Lines.LoadFromFile(srcFile);
-      SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
-      SynEdit1.EnsureCursorPosVisible;
+    if Assigned(LFMTree) then with SynEdit1 do begin
+      Lines.LoadFromFile(srcFile);
       TabControl.TabIndex := 1;
+      CaretXY := LFMTree.PositionToCaret(25);
+      EnsureCursorPosVisible;
     end else
       ShowMessage('False');
   end;
@@ -279,11 +282,11 @@ end;
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
   if ScrollBox1.SelectedBlock = nil then
-    WriteLn('No selected block')
+    //WriteLn('No selected block')
   else begin
     WriteLn('Removing block');
     ScrollBox1.RemoveBlock(ScrollBox1.SelectedBlock);
-    WriteLn('Destroying block');
+    //WriteLn('Destroying block');
     ScrollBox1.SelectedBlock.Destroy;
     ScrollBox1.SelectedBlock := nil;
   end;
