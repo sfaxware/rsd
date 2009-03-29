@@ -20,8 +20,6 @@ type
   TCGraphPort = class(TGraphicControl)
   private
     FConnector: TCGraphConnector;
-  public
-    constructor Create(AOwner: TComponent); override;
   protected
     procedure HandleMouseEnterLeaveEvents(Sender: TObject); virtual;
     procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -29,6 +27,9 @@ type
     procedure Paint; override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    function Save(var f: Text): Boolean; virtual;
   end;
   TCGraphInputPort = class(TCGraphPort)
   protected
@@ -126,6 +127,7 @@ begin
   OnMouseLeave := @HandleMouseEnterLeaveEvents;
   OnMouseDown := @HandleMouseDownEvents;
   OnMouseUp := @HandleMouseUpEvents;
+  Name := 'Port' + IntToStr(Owner.ComponentCount);
 end;
 
 procedure TCGraphPort.HandleMouseEnterLeaveEvents(Sender: TObject);
@@ -195,6 +197,19 @@ begin
     end;
   end;
   inherited Paint;
+end;
+          
+function TCGraphPort.Save(var f: Text): Boolean;
+var
+  PortType: string;
+begin
+  if Self is TCGraphInputPort then
+    PortType := 'Input'
+  else
+    PortType := 'Output';
+  WriteLn(f, '    object ', Name, ': T', PortType,'Port');
+  WriteLn(f, '    end');
+  Result := True;
 end;
 
 procedure TCGraphPort.ValidateContainer(AComponent: TComponent);
@@ -314,6 +329,7 @@ function TCGraphBlock.Save: boolean;
   function WriteDescriptionTemplate: string;
   var
     f: System.Text;
+    i: Integer;
   begin
     Result := '/tmp/' + Name + '.lfm';
     System.Assign(f, Result);
@@ -325,6 +341,9 @@ function TCGraphBlock.Save: boolean;
     WriteLn(f, '  Top = ', Top);
     WriteLn(f, '  Width = ', Width);
     WriteLn(f, '  Height = ', Height);
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      Save(f);
+    end;
     WriteLn(f, 'end');
     System.Close(f);
   end;
