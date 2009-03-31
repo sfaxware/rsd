@@ -61,7 +61,6 @@ type
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
-    function GetBlockDescription(Block: TCGraphBlock): TLFMTree;
   private
     _ProjectSettings: pointer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
@@ -95,48 +94,11 @@ begin
   Application.Terminate;
 end;
 
-function TdtslIdeMainWindow.GetBlockDescription(Block: TCGraphBlock): TLFMTree;
-begin
-  with Block do
-    if Load then with CodeToolBoss do begin
-      OnSearchUsedUnit := @SearchUsedUnit;
-      GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-      if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
-        Result := nil;
-    end;
-end;
-
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
-  function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
-  var
-    PropertyNode: TLFMPropertyNode;
-    ValueNode: TLFMTreeNode;
-    c: char;
-    p: integer;
-  begin
-    Result := '';
-    PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
-    ValueNode := PropertyNode.Next;
-    if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
-      case ValueType of
-        lfmvString: Result := ReadString;
-        lfmvInteger: begin
-          p := StartPos;
-          c := Tree.LFMBuffer.Source[p];
-          while c in ['0'..'9'] do begin
-            Result += c;
-            p += 1;
-            c := Tree.LFMBuffer.Source[p]
-          end;
-        end;
-      end;
-    WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
-  end;
 var
-  Path, BlockPath: string;
-  BlocksCount: integer;
-  BlockDescription: TLFMTree;
+  Path: string;
 begin
+  CodeToolBoss.OnSearchUsedUnit := @SearchUsedUnit;
   with Project, TProjectSettings(_ProjectSettings^) do begin
     if OpenDialog1.Execute then
       FileName := OpenDialog1.FileName
@@ -147,39 +109,7 @@ begin
     Core.Blocks.Path := GetValue(Path + 'path', '');
     WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
     Path :=  'design/blocks/';
-    for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
-      BlockPath := 'Block' + IntToStr(BlocksCount);
-      WriteLn('Loading "', BlockPath, '"');
-      if Assigned(ScrollBox1.SelectedBlock) then
-        ScrollBox1.SelectedBlock.Selected := False;
-      ScrollBox1.SelectedBlock := TCGraphBlock.Create(ScrollBox1);
-      with ScrollBox1.SelectedBlock do begin
-        Parent := ScrollBox1;
-        try
-          Name := 'Block' + IntToStr(BlocksCount);
-        except
-          ShowMessage('Invalid block name "' + BlockPath + '"');
-          ScrollBox1.SelectedBlock.Destroy;
-          ScrollBox1.SelectedBlock := nil;
-          continue;
-        end;
-        BlockDescription := GetBlockDescription(ScrollBox1.SelectedBlock);
-        if not Assigned(BlockDescription) then begin
-          WriteLn('BlockDescription = nil');
-          ScrollBox1.SelectedBlock.Free;
-          continue;
-        end;
-        Left := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Left'));
-        Top := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Top'));
-        Color := clRed;
-        Caption := GetPropertyValue(BlockDescription, BlockPath + '.Name');
-        OnClick := @ScrollBox1.SelectBlock;
-        OnDblClick := @ViewFile;
-        Selected := True;
-        PopupMenu := PopupMenu1;
-      end;
-      ScrollBox1.InsertBlock(ScrollBox1.SelectedBlock);
-    end;
+    ScrollBox1.Load(Path, Project);
   end;
 end;
 
@@ -196,7 +126,7 @@ begin
     Clear;
     Path := 'settings/core/blocks/';
     SetValue(Path + 'path', Core.Blocks.Path);
-    ScrollBox1.Stream(Name, Project);
+    ScrollBox1.Save(Name, Project);
     Flush;
   end;
 end;
@@ -267,8 +197,8 @@ begin
     with Sender as TCGraphBlock do begin
       Save;
       SrcFile := CodeBuffer[ctSource].FileName;
+      LFMTree := GetDescription;
     end;
-    LFMTree := GetBlockDescription(Sender as TCGraphBlock);
     if Assigned(LFMTree) then with SynEdit1 do begin
       Lines.LoadFromFile(srcFile);
       TabControl.TabIndex := 1;
@@ -286,9 +216,6 @@ begin
   else begin
     WriteLn('Removing block');
     ScrollBox1.RemoveBlock(ScrollBox1.SelectedBlock);
-    //WriteLn('Destroying block');
-    ScrollBox1.SelectedBlock.Destroy;
-    ScrollBox1.SelectedBlock := nil;
   end;
 end;
 

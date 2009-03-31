@@ -26,6 +26,11 @@ type
     property Output[index: string]: TIInputPort;
   end;
 
+  TIConnector = interface
+    property OutputPort: TIOutputPort;
+    property InputPort: TIInputPort;
+  end;
+
   TCInputPort = class(TIInputPort)
   end;
   

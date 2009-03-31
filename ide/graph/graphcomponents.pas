@@ -5,7 +5,7 @@ unit GraphComponents;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, Types, CodeCache;
+  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees;
 
 const
   DefaultBlockWidth = 100;
@@ -53,6 +53,7 @@ type
   public
     constructor Create(AOwner: TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
+    function GetDescription: TLFMTree;
     function Load: boolean;
     function Save: boolean;
   protected
@@ -90,6 +91,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
+    function Save(var f: Text): Boolean;
   protected
     procedure Paint; override;
     procedure SetInputPort(Value: TCGraphInputPort);
@@ -101,7 +103,7 @@ type
   end;
 
 implementation
-uses math, DesignGraph;
+uses math, DesignGraph, CodeToolManager;
 
 type
   TConnection = array of TPoint;
@@ -205,8 +207,10 @@ var
 begin
   if Self is TCGraphInputPort then
     PortType := 'Input'
+  else if Self is TCGraphOutputPort then
+    PortType := 'Output'
   else
-    PortType := 'Output';
+    PortType := '';
   WriteLn(f, '    object ', Name, ': T', PortType,'Port');
   WriteLn(f, '    end');
   Result := True;
@@ -274,6 +278,15 @@ begin
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
   FType := 'TCGraphBlock';
+end;
+
+function TCGraphBlock.GetDescription: TLFMTree;
+begin
+  if Load then with CodeToolBoss do begin
+    GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
+      Result := nil;
+  end;
 end;
 
 function TCGraphBlock.Load: boolean;
@@ -488,12 +501,22 @@ end;
 constructor TCGraphConnector.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  Name := 'Connector' + IntToStr(AOwner.ComponentCount);
 end;
 
 procedure TCGraphConnector.Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
 begin
   OutputPort := AOutputPort;
   InputPort := AInputPort;
+end;
+
+function TCGraphConnector.Save(var f: Text): Boolean;
+begin
+  WriteLn(f, 'object ', Name, ': TConector');
+  WriteLn(f, '  InputPort = ', InputPort.Owner.Name, '.', InputPort.Name);
+  WriteLn(f, '  OutputPort = ', OutputPort.Owner.Name, '.', OutputPort.Name);
+  WriteLn(f, 'end');
+  Result := True;
 end;
 
 Procedure TCGraphConnector.Paint;

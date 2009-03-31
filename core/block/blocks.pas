@@ -10,6 +10,7 @@ uses
 type
   TInputPort = class(TCInputPort);
   TOutputPort = class(TCOutputPort);
+  TConnector = class(TIConnector);
   TBlock = class(TCBlock)
   private
   public

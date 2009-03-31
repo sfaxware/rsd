@@ -57,7 +57,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.RightOffset = 0
       Gutter.LeftOffset = 0
       Gutter.ShowCodeFolding = True
@@ -412,7 +411,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       )
       SelectedColor.StartX = 0
       SelectedColor.EndX = 0
-      SelectedColor.OnChange = nil
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
     end
