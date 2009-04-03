@@ -32,34 +32,8 @@ type
 
 implementation
 uses
-  Graphics, LFMTrees;
-
-function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
-var
-  PropertyNode: TLFMPropertyNode;
-  ValueNode: TLFMTreeNode;
-  c: char;
-  p: integer;
-begin
-  Result := '';
-  PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
-  ValueNode := PropertyNode.Next;
-  if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
-    case ValueType of
-      lfmvString: Result := ReadString;
-      lfmvInteger: begin
-        p := StartPos;
-        c := Tree.LFMBuffer.Source[p];
-        while c in ['0'..'9'] do begin
-          Result += c;
-          p += 1;
-          c := Tree.LFMBuffer.Source[p]
-        end;
-      end;
-    end;
-  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
-end;
-
+  Graphics, LFMTrees, CodeToolManager, BasicCodeTools;
+                        
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -147,9 +121,10 @@ var
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
 begin
-  codeFile[ctSource] := '/tmp/' + Name + '.pas';
-  codeFile[ctDescription] := '/tmp/' + Name + '.lfm';
+  codeFile[ctSource] := DesignDir + '/' + Name + '.pas';
+  codeFile[ctDescription] := DesignDir + '/' + Name + '.lfm';
   for CodeType := Low(CodeType) To High(CodeType) do begin
+    WriteLn(CodeFile[CodeType]);
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
@@ -161,13 +136,23 @@ end;
 
 function TCGraphDesign.Load(Path: string; const Project: TXMLConfig): Boolean;
 var
-  BlockPath: string;
+  BlockPath: string;    
   BlocksCount: integer;
-  BlockDescription: TLFMTree;
+  DesignDescription: TLFMTree;
+  BlockDescription: TLFMObjectNode;
 begin
+  if Load() then with CodeToolBoss do begin
+    WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
+    WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
+    GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then
+      Exit(False);
+  end;
+  WriteLn('TCGraphDesign.Load : LFM created');
   with Project do begin
     for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
-      BlockPath := 'Block' + IntToStr(BlocksCount);
+      WriteLn('**************');
+      BlockPath := 'Design.Block' + IntToStr(BlocksCount);
       WriteLn('Loading "', BlockPath, '"');
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
@@ -182,20 +167,17 @@ begin
           SelectedBlock := nil;
           continue;
         end;
-        BlockDescription := GetDescription;
+        BlockDescription := FindObjectProperty(Name, nil, DesignDescription);
         if not Assigned(BlockDescription) then begin
           WriteLn('BlockDescription = nil');
           SelectedBlock.Free;
           continue;
         end;
-        Left := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Left'));
-        Top := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Top'));
-        Color := clRed;
-        Caption := GetPropertyValue(BlockDescription, BlockPath + '.Name');
+        Load(DesignDescription, BlockDescription);
         OnClick := @SelectBlock;
         OnDblClick := Self.OnDblClick;
-        Selected := True;
         PopupMenu := Self.PopupMenu;
+        WriteLn('++++++++++++++');
       end;
       InsertBlock(SelectedBlock);
     end;
@@ -203,7 +185,7 @@ begin
 end;
 
 function TCGraphDesign.Save(DesignName: string; var Project: TXMLConfig): Boolean;
-var
+var              
   Component: TComponent;
   i: Integer;
   f: System.Text;
@@ -212,7 +194,7 @@ begin
     SetValue('design/name', DesignName);
     SetValue('design/blocks/count', _Blocks.Count);
   end;
-  System.Assign(f, '/tmp/Design.lfm');
+  System.Assign(f, DesignDir + '/' + Name + '.lfm');
   ReWrite(f);
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
