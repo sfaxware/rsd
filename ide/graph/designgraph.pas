@@ -124,7 +124,7 @@ begin
   codeFile[ctSource] := DesignDir + '/' + Name + '.pas';
   codeFile[ctDescription] := DesignDir + '/' + Name + '.lfm';
   for CodeType := Low(CodeType) To High(CodeType) do begin
-    WriteLn(CodeFile[CodeType]);
+    //WriteLn(CodeFile[CodeType]);
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
@@ -139,20 +139,35 @@ var
   BlocksCount: integer;
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
+  PortName: string;
+  BlockName: string;
+  p: Integer;
 begin
   if Load() then with CodeToolBoss do begin
-    WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
-    WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
+    //WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
+    //WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
     if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then
       Exit(False);
   end;
-  WriteLn('TCGraphDesign.Load : LFM created');
+  //WriteLn('TCGraphDesign.Load : LFM created');
   BlockDescription := FindObjectProperty(nil, DesignDescription);
   while Assigned(BlockDescription) do begin
-    WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
+    //WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
     if BlockDescription.TypeName = 'TConnector' then begin
-      //Connector := TCGraphConnector.Create(Self)
+      PortName := GetPropertyValue(BlockDescription, 'OutputPort', DesignDescription);
+      p := Pos('.', PortName);
+      BlockName := Copy(PortName, 1, p - 1);
+      PortName := Copy(PortName, p + 1, length(PortName));
+      //WriteLn('OutputPortName = ', PortName);
+      SelectedOutputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphOutputPort;
+      PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
+      p := Pos('.', PortName);
+      BlockName := Copy(PortName, 1, p - 1);
+      PortName := Copy(PortName, p + 1, length(PortName));
+      //WriteLn('InputPortName = ', PortName);
+      SelectedInputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphInputPort;
+      ConnectPorts(Self);
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
@@ -166,7 +181,7 @@ begin
         PopupMenu := Self.PopupMenu;
         InsertBlock(SelectedBlock);
       end;
-      WriteLn('++++++++++++++');
+      //WriteLn('++++++++++++++');
     end;
     BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);
   end;
