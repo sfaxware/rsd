@@ -136,7 +136,6 @@ end;
 
 function TCGraphDesign.Load(Path: string; const Project: TXMLConfig): Boolean;
 var
-  BlockPath: string;    
   BlocksCount: integer;
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
@@ -149,38 +148,27 @@ begin
       Exit(False);
   end;
   WriteLn('TCGraphDesign.Load : LFM created');
-  with Project do begin
-    for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
-      WriteLn('**************');
-      BlockPath := 'Design.Block' + IntToStr(BlocksCount);
-      WriteLn('Loading "', BlockPath, '"');
+  BlockDescription := FindObjectProperty(nil, DesignDescription);
+  while Assigned(BlockDescription) do begin
+    WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
+    if BlockDescription.TypeName = 'TConnector' then begin
+      //Connector := TCGraphConnector.Create(Self)
+    end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
       SelectedBlock := TCGraphBlock.Create(Self);
       with SelectedBlock do begin
         Parent := Self;
-        try
-          Name := 'Block' + IntToStr(BlocksCount);
-        except
-          WriteLn('Invalid block name "', BlockPath, '"');
-          Destroy;
-          SelectedBlock := nil;
-          continue;
-        end;
-        BlockDescription := FindObjectProperty(Name, nil, DesignDescription);
-        if not Assigned(BlockDescription) then begin
-          WriteLn('BlockDescription = nil');
-          SelectedBlock.Free;
-          continue;
-        end;
+        Name := BlockDescription.Name;
         Load(DesignDescription, BlockDescription);
         OnClick := @SelectBlock;
         OnDblClick := Self.OnDblClick;
         PopupMenu := Self.PopupMenu;
-        WriteLn('++++++++++++++');
+        InsertBlock(SelectedBlock);
       end;
-      InsertBlock(SelectedBlock);
+      WriteLn('++++++++++++++');
     end;
+    BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);
   end;
 end;
 
