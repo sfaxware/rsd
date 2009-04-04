@@ -504,17 +504,17 @@ function TCGraphBlock.Save(var f:Text): boolean;
 var
   i: Integer;
 begin
-  WriteLn(f, 'object ', Name, ': T' + Name);
-  WriteLn(f, '  Name = ''', Name, '''');
-  WriteLn(f, '  Typ = ''', Typ, '''');
-  WriteLn(f, '  Left = ', Left);
-  WriteLn(f, '  Top = ', Top);
-  WriteLn(f, '  Width = ', Width);
-  WriteLn(f, '  Height = ', Height);
+  WriteLn(f, '  object ', Name, ': T' + Name);
+  WriteLn(f, '    Name = ''', Name, '''');
+  WriteLn(f, '    Typ = ''', Typ, '''');
+  WriteLn(f, '    Left = ', Left);
+  WriteLn(f, '    Top = ', Top);
+  WriteLn(f, '    Width = ', Width);
+  WriteLn(f, '    Height = ', Height);
   for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
     Save(f);
   end;
-  WriteLn(f, 'end');
+  WriteLn(f, '  end');
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -655,10 +655,10 @@ end;
 
 function TCGraphConnector.Save(var f: Text): Boolean;
 begin
-  WriteLn(f, 'object ', Name, ': TConector');
-  WriteLn(f, '  InputPort = ', InputPort.Owner.Name, '.', InputPort.Name);
-  WriteLn(f, '  OutputPort = ', OutputPort.Owner.Name, '.', OutputPort.Name);
-  WriteLn(f, 'end');
+  WriteLn(f, '  object ', Name, ': TConnector');
+  WriteLn(f, '    OutputPort = ', OutputPort.Owner.Name, '.', OutputPort.Name);
+  WriteLn(f, '    InputPort = ', InputPort.Owner.Name, '.', InputPort.Name);
+  WriteLn(f, '  end');
   Result := True;
 end;
 

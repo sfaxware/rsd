@@ -11,7 +11,6 @@ type
   TCGraphDesign = class(TScrollBox)
   private
     _Blocks:TFPList;
-    procedure StreamBlock(Block: TCGraphBlock;var Project: TXMLConfig);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SelectedBlock:TCGraphBlock;
@@ -105,17 +104,6 @@ begin
   end;
 end;
 
-procedure TCGraphDesign.StreamBlock(Block: TCGraphBlock;var Project: TXMLConfig);
-var
-  Path: string;
-begin
-  with Project, Block do begin
-    Save;
-    Path := 'design/blocks/' + Name + '/';
-    SetValue(Path + 'name', Caption);
-  end;
-end;
-
 function TCGraphDesign.Load: boolean;
 var
   CodeFile: array[TCodeType] of string;
@@ -195,19 +183,46 @@ var
 begin
   with Project do begin
     SetValue('design/name', DesignName);
-    SetValue('design/blocks/count', _Blocks.Count);
   end;
+  WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
   System.Assign(f, DesignDir + '/' + Name + '.lfm');
   ReWrite(f);
+  WriteLn(f, 'object ', Name, ': TDesign');
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
       Save(f);
     end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
       Save(f);
-      StreamBlock(Component as TCGraphBlock, Project);
+      Save;
     end; 
   end;
+  WriteLn(f, 'end');
+  Close(f);
+  System.Assign(f, DesignDir + '/' + Name + '.pas');
+  ReWrite(f);
+  WriteLn(f, 'unit ', Name, ';');
+  WriteLn(f);
+  WriteLn(f, 'interface');
+  WriteLn(f);
+  WriteLn(f, 'uses');
+  Write(f, '  ');
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+      Write(f, Name, ', ');
+    end;
+  end;
+  WriteLn(f, 'Blocks;');
+  WriteLn(f);
+  WriteLn(f, 'type');
+  WriteLn(f, '  TDesign = class(TBlock)');
+  WriteLn(f, '  end;');
+  WriteLn(f);
+  WriteLn(f, 'implementation');
+  WriteLn(f);
+  WriteLn(f, 'begin');
+  WriteLn(f, 'end.');
   Close(f);
   Result := True;
 end;

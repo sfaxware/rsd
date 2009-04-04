@@ -124,6 +124,7 @@ begin
         FileName := SaveDialog1.FileName
       else
         Exit;
+    DesignDir := ExtractFileDir(FileName);
     Clear;
     Path := 'settings/core/blocks/';
     SetValue(Path + 'path', Core.Blocks.Path);
