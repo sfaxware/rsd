@@ -271,15 +271,18 @@ begin
   PaintRect:=ClientRect;
   with Canvas do begin
     //WriteLn('TCGraphPort.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
-    If not Enabled then
-      Brush.Color := clBtnShadow
-    else if MouseEntered then
-      Brush.Color := clGray
-    else
-      Brush.Color:= clBlack;
+    with Brush do begin
+      Style := bsSolid;
+      If not Enabled then
+        Color := clBtnShadow
+      else if MouseEntered then
+        Color := clYellow
+      else
+        Color:= clBlack;
+    end;
     Color := clBlack;
     Rectangle(PaintRect);
-    if Caption <> '' then begin       
+    {if Caption <> '' then begin
       TXTStyle := Canvas.TextStyle;
       with TXTStyle do begin
         Opaque := False;
@@ -291,7 +294,7 @@ begin
     // set color here, otherwise SystemFont is wrong if the button was disabled before
       Font.Color := Self.Font.Color;
       TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
-    end;
+    end;}
   end;
   inherited Paint;
 end;
@@ -305,7 +308,7 @@ begin
     Path := Name + '.' + Path;
     ContextNode := Parent as TLFMObjectNode;
   end;
-  WriteLn('TCGraphPort : Path = ', Path);
+  //WriteLn('TCGraphPort : Path = ', Path);
 //  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
 //  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
   Color := clBlack;
@@ -410,12 +413,12 @@ begin
   ChildNode := ContextNode.FirstChild;
   Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
   Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
-  Color := clRed;
+  Canvas.Brush.Color := clRed;
   Caption := GetPropertyValue(ContextNode, 'Name', DesignDescription);
   Selected := True;
   PortDescription := FindObjectProperty(ChildNode, DesignDescription);
   while Assigned(PortDescription) do begin
-    WriteLn('PortDescription.TypeName = ', PortDescription.TypeName);
+    //WriteLn('PortDescription.TypeName = ', PortDescription.TypeName);
     if PortDescription.TypeName = 'TOutputPort' then
       Port := TCGraphOutputPort.Create(Self)
     else if PortDescription.TypeName = 'TInputPort' then
@@ -580,15 +583,12 @@ begin
   //with PaintRect do WriteLn('TCGraphBlock.Paint PaintRect=', Left,', ', Top,', ', Right,', ', Bottom);
   with Canvas do begin
     if FSelected then begin
-      Color := clBlack;
-      Brush.Color := clGray;
+      Pen.Color := clBlack;
       Rectangle(PaintRect);
       InflateRect(PaintRect, -2, -2);
     end;
     If not Enabled then
-      Brush.Color := clBtnShadow
-    else
-      Brush.Color:= clRed;
+      Brush.Color := clBtnShadow;
     Rectangle(PaintRect);
     if Caption <> '' then begin
       TXTStyle := Canvas.TextStyle;
