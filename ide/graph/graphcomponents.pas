@@ -64,7 +64,6 @@ type
     function Save(var f: Text): boolean;
   protected
     FSelected: Boolean;
-    FType: string;
     procedure SetSeleted(AValue: Boolean);
     procedure Paint; override;
     procedure UpdatePortsBounds(PortType: TPortType);
@@ -85,7 +84,6 @@ type
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
-    property Typ: string read FType;
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
@@ -124,25 +122,38 @@ var
   ValueNode: TLFMTreeNode;
   c: char;
   p: integer;
+  Digits: set of Char;
 begin
   while Assigned(ContextNode) do with ContextNode do begin
     PropertyName := Name + '.' + PropertyName;
     ContextNode := Parent as TLFMObjectNode;
   end;
   Result := '';
-  //WriteLn('GetPropertyValue : PropertyName = ', PropertyName);
   PropertyNode := Self.FindProperty(PropertyName, nil);
   ValueNode := PropertyNode.Next;
+  //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
   if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
     case ValueType of
       lfmvString: Result := ReadString;
       lfmvInteger: begin
         p := StartPos;
         c := Tree.LFMBuffer.Source[p];
-        while c in ['0'..'9'] do begin
+        Digits := [];
+        case c of
+          '0'..'9': Digits := ['0'..'9'];
+          '$': begin
+            Digits := ['0'..'9', 'A'..'F', 'a'..'f'];
+            Result += c;
+            p += 1;
+            c:= Tree.LFMBuffer.Source[p];
+          end;
+        else
+          WriteLn('Invalid integer start digit "', c, '"');
+        end;
+        while c in Digits do begin
           Result += c;
           p += 1;
-          c := Tree.LFMBuffer.Source[p]
+          c := Tree.LFMBuffer.Source[p];
         end;
       end;
       lfmvSymbol: begin
@@ -157,7 +168,7 @@ begin
     else
       WriteLn('GetPropertyValue : Unsupported node type "', Integer(ValueType), '"');
     end;
-  //WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
 end;
 
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
@@ -392,7 +403,7 @@ begin
   OnMouseUp := @EndMove;
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
-  FType := 'TCGraphBlock';
+  Canvas.Brush.Color := clRed;
 end;
 
 function TCGraphBlock.GetDescription: TLFMTree;
@@ -413,7 +424,7 @@ begin
   ChildNode := ContextNode.FirstChild;
   Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
   Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
-  Canvas.Brush.Color := clRed;
+  Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
   Caption := GetPropertyValue(ContextNode, 'Name', DesignDescription);
   Selected := True;
   PortDescription := FindObjectProperty(ChildNode, DesignDescription);
@@ -509,7 +520,7 @@ var
 begin
   WriteLn(f, '  object ', Name, ': T' + Name);
   WriteLn(f, '    Name = ''', Name, '''');
-  WriteLn(f, '    Typ = ''', Typ, '''');
+  WriteLn(f, '    Color = $', HexStr(Canvas.Brush.Color, 8));
   WriteLn(f, '    Left = ', Left);
   WriteLn(f, '    Top = ', Top);
   WriteLn(f, '    Width = ', Width);

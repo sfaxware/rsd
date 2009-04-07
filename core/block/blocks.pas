@@ -17,7 +17,7 @@ type
     procedure Execute; virtual; abstract;
   published
     name: string;
-    Typ: string;
+    Color: LongWord;
     left: integer;
     top: integer;
     width: integer;
