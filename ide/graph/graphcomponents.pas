@@ -168,7 +168,7 @@ begin
     else
       WriteLn('GetPropertyValue : Unsupported node type "', Integer(ValueType), '"');
     end;
-  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+  //WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
 end;
 
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
@@ -519,7 +519,7 @@ var
   i: Integer;
 begin
   WriteLn(f, '  object ', Name, ': T' + Name);
-  WriteLn(f, '    Name = ''', Name, '''');
+  WriteLn(f, '    Name = ''', Caption, '''');
   WriteLn(f, '    Color = $', HexStr(Canvas.Brush.Color, 8));
   WriteLn(f, '    Left = ', Left);
   WriteLn(f, '    Top = ', Top);
