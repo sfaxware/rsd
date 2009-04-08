@@ -39,11 +39,15 @@ type
 
   TCBlock = class(TIBlock)
   private
+    Blocks: array of TIBlock;
+    InputPorts: array of TIInputPort;
+    OutputPorts: array of TIOutputPort;
   public
     function GetInputQty: Integer;
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const InputName: string): Integer;
+    procedure Run;
   end;
 
 implementation
@@ -62,6 +66,11 @@ end;
 
 function TCBlock.GetOutputIdx(const InputName: string): Integer;
 begin
+end;
+
+procedure TCBlock.Run;
+begin
+  WriteLn('TCBlock.Run');
 end;
 
 end.
