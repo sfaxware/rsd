@@ -211,7 +211,10 @@ begin
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
+  if TheUnitName = 'Blocks' then
+    FileName := ProjectSettings^.Core.Blocks.Path + '../../ide/graph/' + LowerCase(TheUnitName) + '.pas'
+  else
+    FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
   //WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;

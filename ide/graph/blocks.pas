@@ -15,6 +15,13 @@ type
   private
   public
     procedure Execute; virtual; abstract;
+  published
+    name: string;
+    Color: LongWord;
+    left: integer;
+    top: integer;
+    width: integer;
+    height: integer;
   end;
 
 implementation
