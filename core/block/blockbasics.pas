@@ -8,7 +8,12 @@ uses
   Classes, SysUtils; 
 
 type
+  TIConnector = interface;
+
   TIPort = interface
+  	function GetConnector: TIConnector;
+	procedure SetConnector(Value: TIConnector);
+    property Connector: TIConnector read GetConnector write SetConnector;
   end;
   
   TIInputPort = interface(TIPort)
@@ -27,14 +32,22 @@ type
   end;
 
   TIConnector = interface
+    procedure Connect(Output: TIOutputPort; Input:TIInputPort);
     property OutputPort: TIOutputPort;
     property InputPort: TIInputPort;
   end;
 
-  TCInputPort = class(TIInputPort)
+  TCPort = class(TIPort)
+  private
+    FConnector: TIConnector;
+  	function GetConnector: TIConnector;
+	procedure SetConnector(Value: TIConnector);
+  end;
+
+  TCInputPort = class(TCPort, TIInputPort)
   end;
   
-  TCOutputPort = class(TIOutputPort)
+  TCOutputPort = class(TCPort, TIOutputPort)
   end;
 
   TCBlock = class(TIBlock)
@@ -50,7 +63,33 @@ type
     procedure Run;
   end;
 
+  TCConnector = class(TIConnector)
+    procedure Connect(Output: TIOutputPort; Input:TIInputPort);
+  end;
+
+procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
+
 implementation
+
+procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
+var
+  Connector: TCConnector;
+begin
+  Connector := TCConnector.Create;
+  with Connector do begin
+    Connect(Output, Input);
+  end;
+end;
+
+function TCPort.GetConnector: TIConnector;
+begin
+  Result := FConnector;
+end;
+
+procedure TCPort.SetConnector(Value: TIConnector);
+begin
+  FConnector := Value;
+end;
 
 function TCBlock.GetInputQty: Integer;
 begin
@@ -71,6 +110,12 @@ end;
 procedure TCBlock.Run;
 begin
   WriteLn('TCBlock.Run');
+end;
+
+procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
+begin
+  Output.Connector := Self;
+  Input.Connector := Self;
 end;
 
 end.
