@@ -49,7 +49,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="dtsl_ide.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -72,6 +72,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="DesignGraph"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="graph/codewriter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CodeWriter"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
