@@ -5,14 +5,14 @@ unit DesignGraph;
 interface
 
 uses
-  Classes, SysUtils, Forms, XMLCfg, CodeCache, CodeWriter, GraphComponents;
+  Classes, SysUtils, Forms, XMLCfg, CodeCache, GraphComponents;
 
 type
   TCGraphDesign = class(TScrollBox)
   private
     _Blocks:TFPList;
   public
-    CodeBuffer: array[TCodeType] of TCodeWriter;
+    CodeBuffer: array[TCodeType] of TCodeBuffer;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
@@ -31,7 +31,7 @@ type
 
 implementation
 uses
-  Graphics, LFMTrees, CodeToolManager, BasicCodeTools;
+  Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter;
                         
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
@@ -201,15 +201,8 @@ begin
   WriteLn(f, 'end');
   Close(f);
   CodeFileName := DesignDir + '/' + Name + '.pas';
-  if not Assigned(CodeBuffer[ctSource]) then with CodeBuffer[ctSource] do begin
-    CodeBuffer[ctSource] := TCodeCache.Create.LoadFile(CodeFileName);
-  end;
-  if not Assigned(CodeBuffer[ctSource]) then with CodeBuffer[ctSource] do begin
-    CodeBuffer[ctSource] := TCodeCache.Create.CreateFile(CodeFileName);
-    with CodeBuffer[ctSource] do begin
-    end;
-  end;
-  CodeBuffer[ctSource].UpdateUsedBlocks(Self);
+  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
+  UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := CodeBuffer[ctSource].Save;
   System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
   ReWrite(f);
