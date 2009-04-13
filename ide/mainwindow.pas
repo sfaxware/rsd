@@ -242,11 +242,9 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  if Design.SelectedBlock = nil then
-    //WriteLn('No selected block')
-  else begin
+  if Assigned(Design.SelectedBlock) then begin
     //WriteLn('Removing block');
-    Design.RemoveBlock(Design.SelectedBlock);
+    Design.DestroyBlock(Design.SelectedBlock);
   end;
 end;
 
@@ -255,7 +253,6 @@ begin
   if Assigned(Design.SelectedBlock) then
     Design.SelectedBlock.Selected := False;
   Design.SelectedBlock := Design.CreateNewBlock;
-  Design.InsertBlock(Design.SelectedBlock);
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
