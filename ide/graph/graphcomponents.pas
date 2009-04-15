@@ -32,8 +32,8 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
+    function GetUpdatedDescription: string;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
-    function Save(var f: Text): Boolean; virtual;
   end;
   TCGraphInputPort = class(TCGraphPort)
   protected
@@ -60,10 +60,10 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     function GetDescription: TLFMTree;
+    function GetUpdatedDescription: string;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
-    function Save(var f: Text): boolean;
   protected
     FSelected: Boolean;
     procedure SetSeleted(AValue: Boolean);
@@ -96,8 +96,8 @@ type
     FPoints: array of TPoint;
   public
     constructor Create(AOwner: TComponent); override;
+    function GetUpdatedDescription: string;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
-    function Save(var f: Text): Boolean;
   protected
     procedure Paint; override;
     procedure SetInputPort(Value: TCGraphInputPort);
@@ -316,7 +316,7 @@ begin
   Result := True;
 end;
 
-function TCGraphPort.Save(var f: Text): Boolean;
+function TCGraphPort.GetUpdatedDescription: string;
 var
   PortType: string;
 begin
@@ -326,9 +326,8 @@ begin
     PortType := 'Output'
   else
     PortType := '';
-  WriteLn(f, '    object ', Name, ': T', PortType,'Port');
-  WriteLn(f, '    end');
-  Result := True;
+  Result := '    object ' + Name + ': T' + PortType + 'Port' + LineEnding +
+    '    end' + LineEnding;
 end;
 
 procedure TCGraphPort.ValidateContainer(AComponent: TComponent);
@@ -489,40 +488,37 @@ end;
 function TCGraphBlock.Save: boolean;
 var
   CodeType: TCodeType;
-  f: System.Text;
   CodeFileName: string;
 begin
   Result := true;
+  CodeFileName := DesignDir + '/' + Name + '.lfm';
+  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctDescription]);
+  CodeBuffer[ctDescription].Source := GetUpdatedDescription;
+  Result := CodeBuffer[ctDescription].Save;
   CodeFileName := DesignDir + '/' + Name + '.pas';
   GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
-  for CodeType := Low(CodeType) To High(CodeType) do
-    if Assigned(CodeBuffer[CodeType]) then
-      CodeBuffer[CodeType].Save;
-  System.Assign(f, DesignDir + '/' + Name + '.lfm');
-  ReWrite(f);
-  Save(f);
-  System.Close(f);
+  Result := Result and CodeBuffer[ctSource].Save;
   for CodeType := Low(CodeType) To High(CodeType) do
     if not Assigned(CodeBuffer[CodeType]) then
       Result := Load;
 end;
 
-function TCGraphBlock.Save(var f:Text): boolean;
+function TCGraphBlock.GetUpdatedDescription: string;
 var
   i: Integer;
 begin
-  WriteLn(f, '  object ', Name, ': T' + Name);
-  WriteLn(f, '    Name = ''', Caption, '''');
-  WriteLn(f, '    Color = $', HexStr(Canvas.Brush.Color, 8));
-  WriteLn(f, '    Left = ', Left);
-  WriteLn(f, '    Top = ', Top);
-  WriteLn(f, '    Width = ', Width);
-  WriteLn(f, '    Height = ', Height);
+  Result := '  object ' + Name + ': T' + Name + LineEnding +
+    '    Name = ''' + Caption + '''' + LineEnding +
+    '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+    '    Left = ' + IntToStr(Left) + LineEnding +
+    '    Top = ' + IntToStr(Top) + LineEnding +
+    '    Width = ' + IntToStr(Width) + LineEnding +
+    '    Height = ' + IntToStr(Height) + LineEnding;
   for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-    Save(f);
+    Result += GetUpdatedDescription;
   end;
-  WriteLn(f, '  end');
+  Result += '  end' + LineEnding;
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -652,19 +648,18 @@ begin
   Name := 'Connector' + IntToStr(AOwner.ComponentCount);
 end;
 
+function TCGraphConnector.GetUpdatedDescription: string;
+begin
+  Result := '  object ' + Name + ': TConnector' + LineEnding +
+    '    OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
+    '    InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
+    '  end' + LineEnding;
+end;
+
 procedure TCGraphConnector.Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
 begin
   OutputPort := AOutputPort;
   InputPort := AInputPort;
-end;
-
-function TCGraphConnector.Save(var f: Text): Boolean;
-begin
-  WriteLn(f, '  object ', Name, ': TConnector');
-  WriteLn(f, '    OutputPort = ', OutputPort.Owner.Name, '.', OutputPort.Name);
-  WriteLn(f, '    InputPort = ', InputPort.Owner.Name, '.', InputPort.Name);
-  WriteLn(f, '  end');
-  Result := True;
 end;
 
 Procedure TCGraphConnector.Paint;
