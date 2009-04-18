@@ -473,8 +473,8 @@ var
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
 begin
-  codeFile[ctSource] := DesignDir + '/' + Name + '.pas';
-  codeFile[ctDescription] := DesignDir + '/' + Name + '.lfm';
+  codeFile[ctSource] := DesignDir + PathDelim + Name + '.pas';
+  codeFile[ctDescription] := DesignDir + PathDelim + Name + '.lfm';
   for CodeType := Low(CodeType) To High(CodeType) do begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
@@ -491,11 +491,11 @@ var
   CodeFileName: string;
 begin
   Result := true;
-  CodeFileName := DesignDir + '/' + Name + '.lfm';
+  {CodeFileName := DesignDir + PathDelim + Name + '.lfm';
   GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctDescription]);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
-  Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := DesignDir + '/' + Name + '.pas';
+  Result := CodeBuffer[ctDescription].Save;}
+  CodeFileName := DesignDir + PathDelim + Name + '.pas';
   GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;

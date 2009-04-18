@@ -160,12 +160,13 @@ begin
     path := ExtractRelativepath(DesignDir, Core.Blocks.Path);
 //    WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
-    if Assigned(EditorCodeBuffer) then begin
-       EditorCodeBuffer.Source := Text;
-    end;                        
-    Design.Save(Name);
     Flush;
   end;
+  if Assigned(EditorCodeBuffer) then with SynEdit1 do begin
+     EditorCodeBuffer.Source := Text;
+     MarkTextAsSaved;
+  end;
+  Design.Save(Name);
 end;
 
 procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
