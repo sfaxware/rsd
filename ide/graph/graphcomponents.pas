@@ -5,7 +5,7 @@ unit GraphComponents;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees;
+  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees, Routing;
 
 const
   DefaultBlockWidth = 100;
@@ -93,7 +93,7 @@ type
   private
     FInputPort: TCGraphInputPort;
     FOutputPort: TCGraphOutputPort;
-    FPoints: array of TPoint;
+    FPoints: TRoute;
   public
     constructor Create(AOwner: TComponent); override;
     function GetUpdatedDescription: string;
@@ -114,7 +114,7 @@ function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Sel
 
 implementation
 uses
-  Math, DesignGraph, CodeToolManager, CodeWriter, Routing;
+  DesignGraph, CodeToolManager, CodeWriter;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 var
@@ -260,7 +260,6 @@ end;
 procedure TCGraphPort.Paint;
 var
   PaintRect: TRect;
-  TXTStyle : TTextStyle;
 begin
   inherited Paint;
   PaintRect := ClientRect;
@@ -680,14 +679,15 @@ begin
 end;
 
 procedure TCGraphConnector.UpdatePoints;
+var
+  P1, P2: TPoint;
 begin
-  SetLength(FPoints, 4);
-  FPoints[0] := Point(FOutputPort.Left, FOutputPort.Top + FOutputPort.Height div 2);
-  FPoints[3] := Point(FInputPort.Left + FInputPort.Width, FInputPort.Top + FInputPort.Height div 2);
-  FPoints[1] := Point((FPoints[0].x + FPoints[3].x) div 2, FPoints[0].y);
-  FPoints[2] := Point((FPoints[0].x + FPoints[3].x) div 2, FPoints[3].y);
+  P1 := RectCenter(FOutputPort.BoundsRect);
+  P2 := RectCenter(FInputPort.BoundsRect);
+  FPoints := Route(P1, P2, nil);
   //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
-  SetBounds(min(FOutputPort.Left, FInputPort.Left + FInputPort.Width), min(FOutputPort.Top + FOutputPort.Height div 2, FInputPort.Top + FInputPort.Height div 2), 1 + abs(FPoints[0].x - FPoints[3].x), 1 + abs(FPoints[0].y - FPoints[3].y));
+  BoundsRect := Bounds(FPoints);
+  //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
 end;
 
 end.

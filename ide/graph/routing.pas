@@ -10,13 +10,41 @@ uses
 type
   TSegment = array[1..2]of TPoint;
   TRoute = array of TPoint;
+  TRoutes = array of TRoute;
 
+function Bounds(Route: TRoute): TRect;
 function Intersect(const S1, S2: TSegment): Boolean;
 function Intersect(const S1: TSegment; S: array of TSegment): Boolean;
 function Intersect(const S1: TSegment; S: TRoute): Boolean;
 function Segment(const P1, P2: TPoint): TSegment;
+function RectCenter(Rect: TRect): TPoint;
+function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
 
 implementation
+
+function Bounds(Route: TRoute): TRect;
+var
+  i: Integer;
+begin
+  with Result do begin
+    Top := MaxInt;
+    Left := MaxInt;
+    Bottom := 0;
+    Right := 0;
+    for i := Low(Route) to High(Route) do with Route[i] do begin
+      if Left > x then
+        Left := x;
+      if Right < x then
+        Right := x;
+      if Top > y then
+        Top := y;
+      if Bottom < y then
+        Bottom := y;
+    end;
+    Right += 1;
+    Bottom += 1;
+  end;
+end;
 
 function Intersect(const S1, S2: TSegment): Boolean;
 var
@@ -63,6 +91,23 @@ function Segment(const P1, P2: TPoint): TSegment;
 begin
   Result[1] := P1;
   Result[2] := P2;
+end;
+
+function RectCenter(Rect: TRect): TPoint;
+begin
+  with Rect do begin
+    Result.x := (Left + Right) div 2;
+    Result.y := (Top + Bottom) div 2;
+  end;
+end;
+
+function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
+begin
+  SetLength(Result, 4);
+  Result[0] := P1;
+  Result[3] := P2;
+  Result[1] := Point((Result[0].x + Result[3].x) div 2, Result[0].y);
+  Result[2] := Point((Result[0].x + Result[3].x) div 2, Result[3].y);
 end;
 
 end.
