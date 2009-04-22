@@ -409,12 +409,19 @@ begin
 end;
 
 constructor TCGraphBlock.Create(AOwner:TComponent);
+var
+  R: TRect;
 begin
   inherited Create(AOwner);
   FInputComponentCount := 0;
   FOutputComponentCount := 0;
-  Width := DefaultBlockWidth;
-  Height := DefaultBlockHeight;
+  with R do begin
+    Left := 0;
+    Top := 0;
+    Right := DefaultBlockWidth;
+    Bottom := DefaultBlockHeight;
+  end;
+  OriginalBounds := R;
   FSelected := False;
   OnMouseDown := @StartMove;
   OnMouseUp := @EndMove;

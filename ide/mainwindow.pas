@@ -217,7 +217,7 @@ begin
   Port := TCGraphOutputPort.Create(Design.SelectedBlock);
   with Port do begin
     Parent := Design;
-    end;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
