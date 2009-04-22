@@ -9,6 +9,8 @@ uses
 
 type
   TCGraphDesign = class(TScrollBox)
+  private
+    procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SelectedBlock:TCGraphBlock;
@@ -28,12 +30,13 @@ type
 
 implementation
 uses
-  Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter;
+  Controls, Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter, Magnifier;
                         
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   //WriteLn('Created new TCGraphDesign class instance');
+  OnMouseWheel := @MouseWheele;
 end;
 
 procedure TCGraphDesign.ConnectPorts(Sender: TObject);
@@ -94,6 +97,39 @@ procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
 begin
   Block.Destroy;
   Block := nil;
+end;
+
+procedure TCGraphDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+var
+  i: Integer;
+  Control: TControl;
+  m: Real;
+  dx, dy: Integer;
+begin
+  //WriteLn('WheelDelta = ', WheelDelta, 'MousePos = (', MousePos.x, ', ', MousePos.y, ')');
+  Handled := True;
+  with MousePos do begin
+    if WheelDelta > 0 then begin
+      dx := x div 10;
+      dy := y div 10;
+    end else begin
+      dx := -x div 10;
+      dy := -y div 10;
+    end;
+  end;
+  HorzScrollBar.Position := HorzScrollBar.Position + dx;
+  VertScrollBar.Position := VertScrollBar.Position + dy;
+  for i := 0 to ControlCount - 1 do begin
+    Control := Controls[i];
+    if Control is TCGraphBlock then with Control as TMagnifier do begin
+      m := Magnification;
+      if WheelDelta > 0 then
+        m += 0.1
+      else
+        m -= 0.1;
+      Magnify(m);
+    end;
+  end;
 end;
 
 procedure TCGraphDesign.SelectBlock(Sender: TObject);
