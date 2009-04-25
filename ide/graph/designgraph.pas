@@ -30,7 +30,8 @@ type
 
 implementation
 uses
-  Controls, Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter, Magnifier;
+  Controls, Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter,
+  Magnifier;
                         
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
@@ -116,7 +117,6 @@ var
   m: Real;
   dx, dy: Integer;
 begin
-  //WriteLn('WheelDelta = ', WheelDelta, 'MousePos = (', MousePos.x, ', ', MousePos.y, ')');
   Handled := True;
   with MousePos do begin
     if WheelDelta > 0 then begin
