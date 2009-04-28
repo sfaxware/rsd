@@ -91,9 +91,13 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
+    <Target>
+      <Filename Value="../build/bin/dtsl_ide"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)/"/>
       <OtherUnitFiles Value="graph/"/>
+      <UnitOutputDirectory Value="../build"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
     <Parsing>
