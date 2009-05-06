@@ -9,12 +9,13 @@ uses
 
 type
   TSegment = array[1..2]of TPoint;
+  TSegments = array of TSegment;
   TRoute = array of TPoint;
   TRoutes = array of TRoute;
 
 function Bounds(R: TRoute): TRect;
 function Intersect(const S1, S2: TSegment): Boolean;
-function Intersect(const S1: TSegment; S: array of TSegment): Boolean;
+function Intersect(const S1: TSegment; S: TSegments): Boolean;
 function Intersect(const S1: TSegment; S: TRoute): Boolean;
 function Segment(const P1, P2: TPoint): TSegment;
 function RectCenter(Rect: TRect): TPoint;
@@ -67,7 +68,7 @@ begin
   result := (0 <= a1) and (a1 <= 1) and (0 <= a2) and (a2 <= 1);
 end;
 
-function Intersect(const S1: TSEgment; S: array of TSegment): Boolean;
+function Intersect(const S1: TSegment; S: TSegments): Boolean;
 var
   i: Integer;
 begin
@@ -78,7 +79,7 @@ begin
   end;
 end;
 
-function Intersect(const S1: TSEgment; S: TRoute): Boolean;
+function Intersect(const S1: TSegment; S: TRoute): Boolean;
 var
   i: Integer;
 begin
@@ -118,8 +119,9 @@ begin
   Routes[Length(Routes) - 1] := R;
 end;
 
-procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
+procedure RemoveRoute(const R: TRoute; var Routes: TRoutes);
 begin
+
 end;
 
 end.
