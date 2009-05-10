@@ -102,12 +102,13 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="True"/>
+        <UseHeaptrc Value="True"/>
       </Debugging>
       <Options>
         <Win32>
