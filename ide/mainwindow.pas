@@ -71,6 +71,7 @@ type
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
+    destructor Destroy; override;
     procedure ViewFile(Sender: TObject);
   end;
 
@@ -250,6 +251,15 @@ begin
     FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
   //WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
+end;
+
+destructor TdtslIdeMainWindow.Destroy;
+begin
+  with TProjectSettings(_ProjectSettings^) do begin
+    Core.Blocks.Path := '';
+  end;
+  Dispose(PProjectSettings(_ProjectSettings));
+  inherited Destroy;
 end;
 
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
