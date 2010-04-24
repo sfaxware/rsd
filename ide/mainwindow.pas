@@ -242,8 +242,9 @@ end;
 function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
 var
   FileName: string;
-  ProjectSettings: PProjectSettings absolute _ProjectSettings;
+  ProjectSettings: PProjectSettings;
 begin
+  ProjectSettings := _ProjectSettings;
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
@@ -300,8 +301,9 @@ end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
 var
-  ProjectSettings: PProjectSettings absolute _ProjectSettings;
+  ProjectSettings: PProjectSettings;
 begin
+  ProjectSettings := _ProjectSettings;
   with SelectDirectoryDialog1 do
     if Execute then
       ProjectSettings^.Core.Blocks.Path := FileName;
