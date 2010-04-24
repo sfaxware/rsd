@@ -10,6 +10,7 @@ uses
 type
   TCGraphDesign = class(TScrollBox)
   private
+    FMagnification: Real;
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
@@ -39,6 +40,7 @@ begin
   inherited Create(AOwner);
   //WriteLn('Created new TCGraphDesign class instance');
   OnMouseWheel := @MouseWheele;
+  FMagnification := 1;
 end;
 
 destructor TCGraphDesign.Destroy;
@@ -131,17 +133,26 @@ var
   i: Integer;
   Control: TControl;
   m: Real;
-  dx, dy: Integer;
+  dx, dy, dm: Integer;
 begin
   Handled := True;
   with MousePos do begin
     if WheelDelta > 0 then begin
-      dx := x div 10;
-      dy := y div 10;
+      dm := 10;
     end else begin
-      dx := -x div 10;
-      dy := -y div 10;
+      dm := -10;
     end;
+    dx := x div dm;
+    dy := y div dm;
+  end;
+  m := FMagnification + 1 / dm;
+  with HorzScrollBar do begin
+    Range := Round(Width * m);
+    Position := Position + dx;
+  end;
+  with VertScrollBar do begin
+    Range := Round(Height * m);
+    Position := Position + dy;
   end;
   HorzScrollBar.Position := HorzScrollBar.Position + dx;
   VertScrollBar.Position := VertScrollBar.Position + dy;
@@ -149,14 +160,10 @@ begin
   for i := 0 to ControlCount - 1 do begin
     Control := Controls[i];
     if Control is TCGraphBlock then with Control as TMagnifier do begin
-      m := Magnification;
-      if WheelDelta > 0 then
-        m += 0.1
-      else
-        m -= 0.1;
       Magnify(m);
     end;
   end;
+  FMagnification := m;
 end;
 
 procedure TCGraphDesign.SelectBlock(Sender: TObject);
