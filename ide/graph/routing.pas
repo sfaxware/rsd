@@ -12,6 +12,8 @@ type
   TSegments = array of TSegment;
   TRoute = array of TPoint;
   TRoutes = array of TRoute;
+  TArea = array of TRect;
+  TIndexes = array of Integer;
 
 function Bounds(R: TRoute): TRect;
 function Intersect(const S1, S2: TSegment): Boolean;
@@ -22,8 +24,14 @@ function RectCenter(Rect: TRect): TPoint;
 function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
 procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
 procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
+procedure AddRect(const R: TRect; var A: TArea);
+procedure RemoveRect(const R: TRect; var A: TArea);
+function Intersection(const R: TRect; const A: TArea; out Intersections: TArea): TIndexes;
 
 implementation
+
+uses
+  Types;
 
 function Bounds(R: TRoute): TRect;
 var
@@ -120,6 +128,36 @@ begin
 end;
 
 procedure RemoveRoute(const R: TRoute; var Routes: TRoutes);
+begin
+
+end;
+
+function Intersection(const R: TRect; const A: TArea; out Intersections: TArea): TIndexes;
+var
+  i: Integer;
+  l: Integer;
+  X: TRect;
+begin
+  l := 0;
+  SetLength(Result, l);
+  SetLength(Intersections, l);
+  for i := Low(A) to High(A) do begin
+    if IntersectRect(X, A[i], R) then begin
+      Inc(l);
+      SetLength(Result, l);
+      SetLength(Intersections, l);
+      Result[l - 1] := i;
+      Intersections[l - 1] := X;
+    end;
+  end;
+end;
+
+procedure AddRect(const R: TRect; var A: TArea);
+begin
+
+end;
+
+procedure RemoveRect(const R: TRect; var A: TArea);
 begin
 
 end;
