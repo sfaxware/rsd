@@ -269,8 +269,6 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
-var
-  LFMTree: TLFMTree;
 begin
   if Sender is TCGraphBlock then begin
     with Sender as TCGraphBlock do begin
