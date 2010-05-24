@@ -526,29 +526,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
           Option = 0
           Priority = 0
         end>
-      Lines.Strings = (
-        'program Simulation;'
-        ''
-        'uses dtslSimCore;'
-        ''
-        'type'
-        '  TCustomSimulator = class(TSimulator)'
-        '    procedure Execute; virtual;'
-        '  end;'
-        ''
-        'procedure TCustomSimulator.Execute;'
-        'begin'
-        'end;'
-        ''
-        'var'
-        '  Simulator: TCustomSimulator;'
-        ''
-        'begin'
-        '  Simulator := TCustomSimulator.Init;'
-        '  Simulator.Run;'
-        '  Simulator.Done;'
-        'end.'
-      )
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
       object TSynGutterPartList
@@ -676,6 +653,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       ParentFont = False
       PopupMenu = PopupMenu1
       TabOrder = 2
+      OnDblClick = ViewFile
     end
   end
   object StatusBar1: TStatusBar
