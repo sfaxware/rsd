@@ -16,7 +16,7 @@ procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TC
 implementation
 
 uses
-  DesignGraph, GraphComponents;
+  GraphComponents, CodeToolManager;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 var
@@ -30,7 +30,7 @@ begin
   if p = 0 then
     Exit(False);
   //WriteLn(Self.source);
-  e := System.Pos('Designs;' + LineEnding, Self.Source);
+  e := System.Pos('Blocks, Designs;' + LineEnding, Self.Source);
   //WriteLn('p = ', p, ', e = ', e);
   if e < p then
     Exit(False);
@@ -59,7 +59,7 @@ begin
   end;
   //WriteLn('p = ', p, ', e = ', e);
   //WriteLn(usedBlocks);
-  Self.Replace(p, e - p, usedBlocks + '  ');
+  //Self.Replace(p, e - p, usedBlocks + '  ');
   Result := True;
 end;
 
@@ -103,7 +103,7 @@ begin
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
-      '  Designs;' + LineEnding +
+      '  Blocks, Designs;' + LineEnding +
       LineEnding +
       'type' + LineEnding +
       '  TCustom' + Owner.Name + ' = class(TDesign)' + LineEnding +
@@ -143,10 +143,10 @@ end;
 procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent; var Self: TCodeBuffer);
 begin
   if not Assigned(Self) then begin
-    Self := TCodeCache.Create.LoadFile(FileName);
+    Self := CodeToolBoss.LoadFile(FileName, True, False);
   end;
   if not Assigned(Self) then begin
-    Self := TCodeCache.Create.CreateFile(FileName);
+    Self := CodeToolBoss.CreateFile(FileName);
     case template of
       cttSimulator: WriteSimulatorSourceTemplate(Owner, Self);
       cttDesign: WriteDesignSourceTemplate(Owner, Self);
