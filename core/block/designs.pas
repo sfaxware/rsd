@@ -5,7 +5,7 @@ unit Designs;
 interface
 
 uses
-  Classes, SysUtils, Blocks;
+  Blocks;
 
 type
   TDesign = class(TBlock)

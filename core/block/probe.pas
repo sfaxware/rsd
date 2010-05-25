@@ -5,7 +5,7 @@ unit Probe;
 interface
 
 uses
-  Classes, SysUtils, BlocKs;
+  BlocKs;
 
 type
   TProbe = class(TBlock)

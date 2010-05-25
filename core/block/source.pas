@@ -5,7 +5,7 @@ unit Source;
 interface
 
 uses
-  Classes, SysUtils, Blocks;
+  Blocks;
 
 { Period parameter }
 Const
