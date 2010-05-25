@@ -264,6 +264,7 @@ begin
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
   GetCodeBuffer(CodeFileName, cttSimulator, Self, SimCodeBuffer);
+  Result := Result and SimCodeBuffer.Save;
   CodeFileName := DesignDir + '/' + Name + '.pas';
   GetCodeBuffer(CodeFileName, cttDesign, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
@@ -278,4 +279,3 @@ end;
 initialization
   RegisterClass(TCGraphDesign);}
 end.
-
