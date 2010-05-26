@@ -28,6 +28,9 @@ constructor TMagnifier.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FMagnification := 256; // 1.0
+  if AOwner is TControl then with AOwner as TControl do begin
+    Self.OnMouseWheel := OnMouseWheel;
+  end;
 end;
 
 procedure TMagnifier.DoMagnify;
