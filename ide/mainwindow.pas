@@ -23,6 +23,8 @@ type
     AddOutputPortMenuItem: TMenuItem;
     ConnectPortsMenuItem: TMenuItem;
     BlockColorMenuItem: TMenuItem;
+    BlocksSubMenu: TMenuItem;
+    AddBlockMenuItem: TMenuItem;
     PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
@@ -195,13 +197,18 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
+var
+  ProjectSettings: PProjectSettings;
 begin
-  New(PProjectSettings(_ProjectSettings));
+  New(ProjectSettings);
+  with ProjectSettings^ do begin
+    Name := Design.Name;
+    Core.Blocks.Path := ExtractFileDir(ExtractFileDir(ExtractFileDir(ParamStr(0)))) + '/core/block';
+    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+  end;
+  _ProjectSettings := ProjectSettings;
   with Design do begin
     OnDblClick := @ViewFile;
-  end;
-  with TProjectSettings(_ProjectSettings^) do begin
-    Name := Design.Name;
   end;
 end;
 
