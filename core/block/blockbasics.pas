@@ -4,6 +4,9 @@ unit BlockBasics;
 
 interface
 
+uses
+  Classes;
+
 type
   TIConnector = interface;
 
@@ -40,7 +43,7 @@ type
     property InputPort: TIInputPort;
   end;
 
-  TCPort = class(TIPort)
+  TCPort = class(TComponent, TIPort)
   private
     FConnector: TIConnector;
     FName: string;
@@ -56,7 +59,7 @@ type
   TCOutputPort = class(TCPort, TIOutputPort)
   end;
 
-  TCBlock = class(TIBlock)
+  TCBlock = class(TComponent, TIBlock)
   private
     Blocks: array of TIBlock;
     InputPorts: array of TIInputPort;
@@ -64,7 +67,7 @@ type
     FName: string;
     function GetName: string;
   public
-    constructor Create(Name: string);
+    constructor Create(AOwner: TComponent); override;
     function GetInputQty: Integer;
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
@@ -72,7 +75,7 @@ type
     procedure Execute; virtual;
   end;
 
-  TCConnector = class(TIConnector)
+  TCConnector = class(TComponent,TIConnector)
   private
     FName: string;
     function GetName: string;
@@ -89,7 +92,7 @@ procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
 var
   Connector: TCConnector;
 begin
-  Connector := TCConnector.Create;
+  Connector := TCConnector.Create(nil);
   with Connector do begin
     Connect(Output, Input);
   end;
@@ -110,9 +113,9 @@ begin
   FConnector := Value;
 end;
 
-constructor TCBlock.Create(Name: string);
+constructor TCBlock.Create(AOwner: TComponent);
 begin
-  FName := Name
+  inherited Create(AOwner);
 end;
 
 function TCBlock.GetInputQty: Integer;
@@ -158,7 +161,7 @@ procedure TCBlock.Execute;
 var
   i: Integer;
 begin
-  WriteLn('TCBlock.Execute : Name = ', FName);
+  //WriteLn('TCBlock.Execute : Name = ', FName);
   for i := Low(InputPorts) to High(InputPorts) do with InputPorts[i] do begin
     Execute;
   end;

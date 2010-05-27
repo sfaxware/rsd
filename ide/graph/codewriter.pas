@@ -110,7 +110,7 @@ begin
       '  end;' + LineEnding +
       LineEnding +
       'var' + LineEnding +
-      '  ' + Owner.Name + ': TCustom' + Owner.Name + ';' + LineEnding +
+      '  ' + Owner.Name + 'Simulator: TCustom' + Owner.Name + ';' + LineEnding +
       LineEnding +
       'implementation' + LineEnding +
       LineEnding +
