@@ -83,7 +83,7 @@ var
 implementation
 
 uses
-  StdCodeTools, CodeToolManager, LinkScanner;
+  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter;
 
 type
   PProjectSettings = ^ TProjectSettings;
@@ -109,6 +109,7 @@ end;
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
 var
   Path: string;
+  p: Integer;
 begin
   CodeToolBoss.OnSearchUsedUnit := @SearchUsedUnit;
   with Project, TProjectSettings(_ProjectSettings^) do begin
@@ -116,16 +117,19 @@ begin
       FileName := OpenDialog1.FileName
     else
       Exit;
-    DesignDir := ExtractFileDir(FileName);
+    DesignDir := ExtractFilePath(FileName);
     Units.Count := GetValue('ProjectOptions/Units/Count', 0);
     if Units.Count > 1 then begin
       Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
     end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
     Path := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
-    Core.Blocks.Path := DesignDir + PathDelim + Path;
+    p := Pos(PathSep, Path);
+    if p > 0 then begin
+      Delete(Path, p, Length(Path) - p);
+    end;
+    Core.Blocks.Path := DesignDir + Path;
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
-    Path :=  'design/blocks/';
     Design.Load(Path);
   end;
   ViewFile(Design);
@@ -142,7 +146,7 @@ begin
         FileName := SaveDialog1.FileName
       else
         Exit;
-    DesignDir := ExtractFileDir(FileName) + PathDelim;
+    DesignDir := ExtractFilePath(FileName);
     if Name = '' then
       Name := ChangeFileExt(ExtractFileName(FileName), '');
     SetValue('ProjectOptions/PathDelim/Value', PathDelim);
@@ -162,7 +166,7 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
 //    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
 //    WriteLn('DesignDir = ', DesignDir);
-    path := ExtractRelativepath(DesignDir, Core.Blocks.Path);
+    path := ExtractRelativepath(DesignDir, Core.Blocks.Path) + ';$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
 //    WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
     Flush;
@@ -203,7 +207,7 @@ begin
   New(ProjectSettings);
   with ProjectSettings^ do begin
     Name := Design.Name;
-    Core.Blocks.Path := ExtractFileDir(ExtractFileDir(ExtractFileDir(ParamStr(0)))) + '/core/block';
+    Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';
     WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
   end;
   _ProjectSettings := ProjectSettings;
@@ -252,17 +256,16 @@ function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheU
 var
   FileName: string;
   ProjectSettings: PProjectSettings;
+  DirList: string;
 begin
   ProjectSettings := _ProjectSettings;
   WriteLn('SrcFilename = ', SrcFilename);
   WriteLn('TheUnitName = ', TheUnitName);
   WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  if TheUnitName = 'Blocks' then
-    FileName := ProjectSettings^.Core.Blocks.Path + '/../../ide/graph/' + LowerCase(TheUnitName) + '.pas'
-  else
-    FileName := ProjectSettings^.Core.Blocks.Path + '/' + LowerCase(TheUnitName) + '.pas';
+  DirList := ProjectSettings^.Core.Blocks.Path;
+  FileName := FileSearch(LowerCase(TheUnitName) + '.pas', DirList);
   WriteLn('FileName = ', FileName);
-  Result := CodeToolBoss.LoadFile(FileName, True, False);
+  GetCodeBuffer(FileName, cttNone, Self, Result);
 end;
 
 destructor TdtslIdeMainWindow.Destroy;

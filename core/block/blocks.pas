@@ -19,8 +19,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   published
+    property Caption;
     property Color: Cardinal read FColor write FColor;
-    property Width: Cardinal read FColor write FColor;
+    property Width: Cardinal read FWidth write FWidth;
     property Height: Cardinal read FHeight write FHeight;
   end;
 
@@ -31,7 +32,13 @@ uses
 constructor TBlock.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  InitResourceComponent(Self, TBlock);
+  WriteLn('>>TBlock.Create: ClassName = ', ClassName, ', Caption = ', Caption, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  if Assigned(AOwner) then begin
+    WriteLn('AOwner.Name = ', AOwner.Name);
+  end;
+  if not InitResourceComponent(Self, TBlock) then
+    WriteLn('Failure');
+  WriteLn('<<TBlock.Create: ClassName = ', ClassName, ', Caption = ', Caption, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
 end;
 
 initialization

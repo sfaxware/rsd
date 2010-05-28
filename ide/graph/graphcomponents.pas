@@ -294,7 +294,7 @@ begin
 //  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
 //  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
   Color := clBlack;
-//  Caption := GetPropertyValue(DesignDescription, Path + 'Name');
+//  Caption := GetPropertyValue(DesignDescription, Path + 'Caption');
   Result := True;
 end;
 
@@ -462,7 +462,7 @@ begin
   end;
   OriginalBounds := R;
   Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
-  Caption := GetPropertyValue(ContextNode, 'Name', DesignDescription);
+  Caption := GetPropertyValue(ContextNode, 'Caption', DesignDescription);
   Selected := True;
   PortDescription := FindObjectProperty(ChildNode, DesignDescription);
   while Assigned(PortDescription) do begin
@@ -532,7 +532,7 @@ var
 begin
   with OriginalBounds do begin
     Result := '  object ' + Name + ': T' + Name + LineEnding +
-      '    Name = ''' + Caption + '''' + LineEnding +
+      '    Caption = ''' + Caption + '''' + LineEnding +
       '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
       '    Left = ' + IntToStr(Left) + LineEnding +
       '    Top = ' + IntToStr(Top) + LineEnding +
