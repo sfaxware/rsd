@@ -21,7 +21,7 @@ procedure TDesign.Run;
 begin
   repeat
     Execute;
-  until False;
+  until True;//False;
 end;
 
 initialization

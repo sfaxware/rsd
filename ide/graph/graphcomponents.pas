@@ -462,7 +462,7 @@ begin
   end;
   OriginalBounds := R;
   Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
-  Caption := GetPropertyValue(ContextNode, 'Caption', DesignDescription);
+  Caption := GetPropertyValue(ContextNode, 'DeviceName', DesignDescription);
   Selected := True;
   PortDescription := FindObjectProperty(ChildNode, DesignDescription);
   while Assigned(PortDescription) do begin
@@ -532,7 +532,7 @@ var
 begin
   with OriginalBounds do begin
     Result := '  object ' + Name + ': T' + Name + LineEnding +
-      '    Caption = ''' + Caption + '''' + LineEnding +
+      '    DeviceName = ''' + Caption + '''' + LineEnding +
       '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
       '    Left = ' + IntToStr(Left) + LineEnding +
       '    Top = ' + IntToStr(Top) + LineEnding +

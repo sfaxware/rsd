@@ -101,7 +101,7 @@ var
   Component: TComponent;
   i: Integer;
 begin
-  Result := 'object ' + Name + ': TCustomDesign' + LineEnding;
+  Result := 'object ' + Name + 'Simulator: TCustomDesign' + LineEnding;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin

@@ -43,19 +43,26 @@ type
     property InputPort: TIInputPort;
   end;
 
-  TCPort = class(TComponent, TIPort)
+  TCDevice = class(TComponent, TIDevice)
   private
-    FConnector: TIConnector;
-    FCaption: string;
-    function GetConnector: TIConnector;
+    FDeviceName: string;
     function GetName: string;
-    procedure SetConnector(Value: TIConnector);
   protected
     procedure ValidateContainer(AComponent: TComponent); override;
+    procedure ValidateInsert(AComponent: TComponent); override; abstract;
   public
     procedure Execute; virtual; abstract;
   published
-    property Caption: string read FCaption write FCaption;
+    property DeviceName: string read FDeviceName write FDeviceName;
+  end;
+
+  TCPort = class(TCDevice, TIPort)
+  private
+    FConnector: TIConnector;
+    function GetConnector: TIConnector;
+    procedure SetConnector(Value: TIConnector);
+  public
+    procedure Execute; virtual; abstract;
   end;
 
   TCInputPort = class(TCPort, TIInputPort)
@@ -64,15 +71,11 @@ type
   TCOutputPort = class(TCPort, TIOutputPort)
   end;
 
-  TCBlock = class(TComponent, TIBlock)
+  TCBlock = class(TCDevice, TIBlock)
   private
     FBlocks: array of TIBlock;
     FInputPorts: array of TIInputPort;
     FOutputPorts: array of TIOutputPort;
-    FInputComponentCount: Integer;
-    FOutputComponentCount: Integer;
-    FCaption: string;
-    function GetName: string;
   protected
     procedure ValidateInsert(AComponent: TComponent); override;
   public
@@ -81,18 +84,12 @@ type
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const OutputName: string): Integer;
-    procedure Execute; virtual;
-  published
-    property Caption: string read FCaption write FCaption;
+    procedure Execute; override;
   end;
 
-  TCConnector = class(TComponent,TIConnector)
-  private
-    FCaption: string;
-    function GetName: string;
+  TCConnector = class(TCDevice,TIConnector)
   public
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
-    procedure Execute; virtual; abstract;
   end;
 
 procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
@@ -109,26 +106,26 @@ begin
   end;
 end;
 
+function TCDevice.GetName: string;
+begin
+  Result := FDeviceName;
+end;
+
+procedure TCDevice.ValidateContainer(AComponent: TComponent);
+begin
+  if AComponent is TCBlock then with AComponent as TCBlock do begin
+    ValidateInsert(Self);
+  end;
+end;
+
 function TCPort.GetConnector: TIConnector;
 begin
   Result := FConnector;
 end;
 
-function TCPort.GetName: string;
-begin
-  Result := FCaption;
-end;
-
 procedure TCPort.SetConnector(Value: TIConnector);
 begin
   FConnector := Value;
-end;
-
-procedure TCPort.ValidateContainer(AComponent: TComponent);
-begin
-  if AComponent is TCBlock then with AComponent as TCBlock do begin
-    ValidateInsert(Self);
-  end;
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -170,27 +167,33 @@ begin
   end;
 end;
 
-function TCBlock.GetName: string;
-begin
-  Result := FCaption;
-end;
-
 procedure TCBlock.ValidateInsert(AComponent: TComponent);
+var
+  l: Integer;
 begin
+  WriteLn('>>TCBlock.ValidateInsert: InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
+  WriteLn('TCBlock.ValidateInsert: AComponent.ClassName = ', AComponent.ClassName);
   if AComponent is TCInputPort then begin
-    FInputPorts[FInputComponentCount] := AComponent as TCInputPort;
-    FInputComponentCount += 1;
+    l := Length(FInputPorts);
+    SetLength(FInputPorts, l + 1);
+    FInputPorts[l] := AComponent as TCInputPort;
   end else if AComponent is TCOutputPort then begin
-    FOutputPorts[FOutputComponentCount] := AComponent as TCOutputPort;
-    FOutputComponentCount += 1;
+    l := Length(FOutputPorts);
+    SetLength(FOutputPorts, l + 1);
+    FOutputPorts[l] := AComponent as TCOutputPort;
+  end else if AComponent is TCBlock then begin
+    l := Length(FBlocks);
+    SetLength(FBlocks, l + 1);
+    FBlocks[l] := AComponent as TCBlock;
   end;
+  WriteLn('<<TCBlock.ValidateInsert: InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
 end;
 
 procedure TCBlock.Execute;
 var
   i: Integer;
 begin
-  //WriteLn('TCBlock.Execute : Name = ', FCaption);
+  WriteLn('TCBlock.Execute : Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
   for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i] do begin
     Execute;
   end;
@@ -200,11 +203,6 @@ begin
   for i := Low(FOutputPorts) to High(FOutputPorts) do with FOutputPorts[i] do begin
     Execute;
   end;
-end;
-
-function TCConnector.GetName:string;
-begin
-  Result := FCaption;
 end;
 
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
