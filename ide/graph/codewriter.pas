@@ -11,7 +11,7 @@ type
   TCodeTemplateType = (cttNone, cttSimulator, cttDesign, cttBlock);
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent; var Self: TCodeBuffer);
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
 
 implementation
 
@@ -149,17 +149,15 @@ begin
   end;
 end;
 
-procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent; var Self: TCodeBuffer);
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
 begin
-  if not Assigned(Self) then begin
-    Self := CodeToolBoss.LoadFile(FileName, True, False);
-  end;
-  if not Assigned(Self) then begin
-    Self := CodeToolBoss.CreateFile(FileName);
+  Result := CodeToolBoss.LoadFile(FileName, True, False);
+  if not Assigned(Result) then begin
+    Result := CodeToolBoss.CreateFile(FileName);
     case template of
-      cttSimulator: WriteSimulatorSourceTemplate(Owner, Self);
-      cttDesign: WriteDesignSourceTemplate(Owner, Self);
-      cttBlock: WriteBlockSourceTemplate(Owner, Self);
+      cttSimulator: WriteSimulatorSourceTemplate(Owner, Result);
+      cttDesign: WriteDesignSourceTemplate(Owner, Result);
+      cttBlock: WriteBlockSourceTemplate(Owner, Result);
     end;
   end;
 end;
