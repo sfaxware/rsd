@@ -151,7 +151,7 @@ end;
 
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
 begin
-  Result := CodeToolBoss.LoadFile(FileName, True, False);
+  Result := CodeToolBoss.LoadFile(FileName, False, False);
   if not Assigned(Result) then begin
     Result := CodeToolBoss.CreateFile(FileName);
     case template of
