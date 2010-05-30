@@ -319,7 +319,9 @@ begin
     end;
     Text := EditorCodeBuffer.Source;
     TabControl.TabIndex := 1;
-    CaretXY := Point(3, 17);
+    with Sender as TComponent do begin
+      CaretXY := GetUserCodePosition(Name, EditorCodeBuffer);
+    end;
     EnsureCursorPosVisible;
     SetFocus;
   end;
