@@ -88,9 +88,15 @@ type
   end;
 
   TCConnector = class(TCDevice,TIConnector)
+  private
+    FOutputPort: TIOutputPort;
+    FInputPort: TIInputPort;
   public
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
-  end;
+  published
+    property OutputPort: TIOutputPort read FOutputPort write FOutputPort;
+    property InputPort: TIInputPort read FInputPort write FInputPort;
+ end;
 
 procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
 
@@ -207,6 +213,8 @@ end;
 
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
 begin
+  FOutputPort := Output;
+  FInputPort := Input;
   Output.Connector := Self;
   Input.Connector := Self;
 end;
