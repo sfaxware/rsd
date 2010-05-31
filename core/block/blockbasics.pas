@@ -12,7 +12,6 @@ type
 
   TIDevice = interface
     function GetName:string;
-    procedure Execute;
     property DeviceName: string read GetName;
   end;
 
@@ -23,9 +22,13 @@ type
   end;
   
   TIInputPort = interface(TIPort)
+    function GetIsEmpty: Boolean;
+    property IsEmpty: Boolean read GetIsEmpty;
   end;
 
   TIOutputPort = interface(TIPort)
+    function GetIsFull: Boolean;
+    property IsFull: Boolean read GetIsFull;
   end;
   
   TIBlock = interface(TIDevice)
@@ -33,14 +36,19 @@ type
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const InputName: string): Integer;
+    procedure Execute;
     property Input[index: string]: TIInputPort;
     property Output[index: string]: TIInputPort;
   end;
 
   TIConnector = interface(TIDevice)
+    function GetIsEmpty: Boolean;
+    function GetIsFull: Boolean;
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
     property OutputPort: TIOutputPort;
     property InputPort: TIInputPort;
+    property IsEmpty: Boolean read GetIsEmpty;
+    property IsFull: Boolean read GetIsFull;
   end;
 
   TCDevice = class(TComponent, TIDevice)
@@ -51,7 +59,8 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
     procedure ValidateInsert(AComponent: TComponent); override; abstract;
   public
-    procedure Execute; virtual; abstract;
+    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TCDevice); virtual;
   published
     property DeviceName: string read FDeviceName write FDeviceName;
   end;
@@ -62,13 +71,20 @@ type
     function GetConnector: TIConnector;
     procedure SetConnector(Value: TIConnector);
   public
-    procedure Execute; virtual; abstract;
   end;
 
   TCInputPort = class(TCPort, TIInputPort)
+  protected
+    function GetIsEmpty: Boolean;
+  public
+    property IsEmpty: Boolean read GetIsEmpty;
   end;
   
   TCOutputPort = class(TCPort, TIOutputPort)
+  protected
+    function GetIsFull: Boolean;
+  public
+    property IsFull: Boolean read GetIsFull;
   end;
 
   TCBlock = class(TCDevice, TIBlock)
@@ -79,38 +95,36 @@ type
   protected
     procedure ValidateInsert(AComponent: TComponent); override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TCDevice); override;
+    constructor Create(AOwner: TCBlock); virtual;
     function GetInputQty: Integer;
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const OutputName: string): Integer;
-    procedure Execute; override;
+    procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
+    procedure Execute; virtual;
   end;
 
   TCConnector = class(TCDevice,TIConnector)
   private
     FOutputPort: TIOutputPort;
     FInputPort: TIInputPort;
+  protected
+    function GetIsEmpty: Boolean;
+    function GetIsFull: Boolean;
   public
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
+    property IsEmpty: Boolean read GetIsEmpty;
+    property IsFull: Boolean read GetIsFull;
   published
     property OutputPort: TIOutputPort read FOutputPort write FOutputPort;
     property InputPort: TIInputPort read FInputPort write FInputPort;
  end;
 
-procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
-
 implementation
 
-procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
-var
-  Connector: TCConnector;
-begin
-  Connector := TCConnector.Create(nil);
-  with Connector do begin
-    Connect(Output, Input);
-  end;
-end;
+uses
+  LResources;
 
 function TCDevice.GetName: string;
 begin
@@ -124,6 +138,25 @@ begin
   end;
 end;
 
+constructor TCDevice.Create(AOwner: TComponent);
+begin
+  if AOwner is TCDevice then begin
+    Create(AOwner as TCDevice);
+  end;
+end;
+
+constructor TCDevice.Create(AOwner: TCDevice);
+begin
+  inherited Create(AOwner);
+  WriteLn('>>TCDevice.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  if Assigned(AOwner) then begin
+    WriteLn('AOwner.Name = ', AOwner.Name);
+  end;
+  if not InitResourceComponent(Self, TCDevice) then
+    WriteLn('Failure');
+  WriteLn('<<TCDevice.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+end;
+
 function TCPort.GetConnector: TIConnector;
 begin
   Result := FConnector;
@@ -134,7 +167,24 @@ begin
   FConnector := Value;
 end;
 
-constructor TCBlock.Create(AOwner: TComponent);
+function TCInputPort.GetIsEmpty: Boolean;
+begin
+  Result := Assigned(FConnector) and FConnector.IsEmpty;
+end;
+
+function TCOutputPort.GetIsFull: Boolean;
+begin
+  Result := Assigned(FConnector) and FConnector.IsEmpty;
+end;
+
+constructor TCBlock.Create(AOwner: TCDevice);
+begin
+  if AOwner is TCBlock then begin
+    Create(AOwner as TCBlock);
+  end;
+end;
+
+constructor TCBlock.Create(AOwner: TCBlock);
 begin
   inherited Create(AOwner);
 end;
@@ -195,20 +245,42 @@ begin
   WriteLn('<<TCBlock.ValidateInsert: InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
 end;
 
+procedure TCBlock.ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
+var
+  Connector: TCConnector;
+begin
+  Connector := TCConnector.Create(Self);
+  with Connector do begin
+    Connect(Output, Input);
+  end;
+end;
+
 procedure TCBlock.Execute;
 var
   i: Integer;
 begin
   WriteLn('TCBlock.Execute : Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
   for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i] do begin
-    Execute;
+    if IsEmpty then
+      Exit;
+  end;
+  for i := Low(FOutputPorts) to High(FOutputPorts) do with FOutputPorts[i] do begin
+    if IsFull then
+      Exit;
   end;
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     Execute;
   end;
-  for i := Low(FOutputPorts) to High(FOutputPorts) do with FOutputPorts[i] do begin
-    Execute;
-  end;
+end;
+
+function TCConnector.GetIsEmpty: Boolean;
+begin
+  Result := False;
+end;
+
+function TCConnector.GetIsFull: Boolean;
+begin
+  Result := False;
 end;
 
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
