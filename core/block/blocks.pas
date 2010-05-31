@@ -5,7 +5,7 @@ unit Blocks;
 interface
 
 uses
-  Classes, BlockBasics;
+  BlockBasics;
 
 type
   TInputPort = class(TCInputPort);
@@ -17,6 +17,8 @@ type
     FWidth: Cardinal;
     FHeight: Cardinal;
   public
+    constructor Create(AOwner: TCBlock); override;
+    constructor Create(AOwner: TBlock); virtual;
   published
     property Color: Cardinal read FColor write FColor;
     property Width: Cardinal read FWidth write FWidth;
@@ -24,6 +26,30 @@ type
   end;
 
 implementation
+
+uses
+  Classes;
+
+constructor TBlock.Create(AOwner: TCBlock);
+begin
+  if AOwner is TBlock then begin
+    Create(AOwner as TBlock);
+  end;
+end;
+
+constructor TBlock.Create(AOwner: TBlock);
+var
+  cn: string;
+begin
+  if Assigned(AOwner) then begin
+    cn := AOwner.ClassName;
+  end else begin
+    cn := 'nil';
+  end;
+  WriteLn('>>TBlock.Create(AOwner: TBlock): Name = ', Name, ', AOwner.ClassName = ', cn);
+  inherited Create(AOwner);
+  WriteLn('<<TBlock.Create(AOwner: TBlock): Name = ', Name, ', AOwner.ClassName = ', cn);
+end;
 
 initialization
   RegisterClass(TInputPort);
