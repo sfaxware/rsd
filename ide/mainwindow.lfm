@@ -717,7 +717,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
           7DD58E62FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF93665AC3834ECA8F54C2884DC2
           884DC2894DC3894DC38952C08D456F4322FFFFFFFFFFFFFFFFFF
         }
-        OnClick = LoadProject
+        OnClick = NewProject
       end
       object dtslIdeFileOpenMenuItem: TMenuItem
         Caption = '&Open...'
@@ -931,8 +931,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         }
       end
     end
-    object MenuItem5: TMenuItem
-      Caption = 'View'
+    object ViewMenuItem: TMenuItem
+      Caption = '&View'
       object MenuItem11: TMenuItem
         Caption = 'New Item12'
         object MenuItem12: TMenuItem
@@ -947,6 +947,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       end
       object MenuItem15: TMenuItem
         Caption = 'New Item16'
+      end
+    end
+    object CompileMenuItem: TMenuItem
+      Caption = 'Com&pile'
+      object CompileProjectMenuItem: TMenuItem
+        Caption = 'Co&mpile project'
+        OnClick = CompileProject
       end
     end
     object dtslIdeConfigurationMenuItem: TMenuItem

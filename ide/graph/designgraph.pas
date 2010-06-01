@@ -20,6 +20,7 @@ type
     SelectedOutputPort: TCGraphOutputPort;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Cleanup;
     function CreateNewBlock: TCGraphBlock; virtual;
     function GetUpdatedDescription: string;
     function Load: Boolean;
@@ -47,6 +48,27 @@ end;
 destructor TCGraphDesign.Destroy;
 begin
   inherited Destroy;
+end;
+
+procedure TCGraphDesign.Cleanup;
+var
+  i: Integer;
+  CodeType: TCodeType;
+begin
+  while Assigned(Components[0]) do begin
+    Components[0].Free;
+  end;
+  for CodeType := Low(CodeType) to High(CodeType) do begin
+    if Assigned(CodeBuffer[CodeType]) then begin
+      FreeAndNil(CodeBuffer[CodeType]);
+    end;
+  end;
+    if Assigned(SimCodeBuffer)  then begin
+      FreeAndNil(SimCodeBuffer);
+    end;
+    SelectedBlock := nil;
+    SelectedInputPort := nil;
+    SelectedOutputPort := nil;
 end;
 
 procedure TCGraphDesign.ConnectPorts(Sender: TObject);
