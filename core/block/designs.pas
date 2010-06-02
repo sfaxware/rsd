@@ -18,7 +18,7 @@ type
 implementation
 
 uses
-  Classes, LResources;
+  Classes, BlockBasics;
 
 constructor TDesign.Create(AOwner: TBlock);
 begin
@@ -36,11 +36,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn('>>TDesign.Create(AOwner: TDesign): Name = ', Name, ', AOwner.ClassName = ', cn);
+  WriteLn(FuncB('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  if not InitResourceComponent(Self, TDesign) then
-    WriteLn('Failure');
-  WriteLn('<<TDesign.Create(AOwner: TDesign): Name = ', Name, ', AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
 end;
 
 procedure TDesign.Run;
