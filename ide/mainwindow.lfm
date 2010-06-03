@@ -57,7 +57,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
