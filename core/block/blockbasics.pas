@@ -5,7 +5,7 @@ unit BlockBasics;
 interface
 
 uses
-  Classes;
+  Classes, FifoBasics;
 
 type
   TIConnector = interface;
@@ -45,11 +45,15 @@ type
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
+    procedure Push(Sample: Integer);
+    procedure Pop(out Sample: Integer);
     property OutputPort: TIOutputPort;
     property InputPort: TIInputPort;
     property IsEmpty: Boolean read GetIsEmpty;
     property IsFull: Boolean read GetIsFull;
   end;
+
+  TCBlock = class;
 
   TCDevice = class(TComponent, TIDevice)
   private
@@ -60,7 +64,6 @@ type
     procedure ValidateInsert(AComponent: TComponent); override; abstract;
   public
     constructor Create(AOwner: TComponent); override;
-    constructor Create(AOwner: TCDevice); virtual;
   published
     property DeviceName: string read FDeviceName write FDeviceName;
   end;
@@ -78,6 +81,7 @@ type
     function GetIsEmpty: Boolean;
   public
     property IsEmpty: Boolean read GetIsEmpty;
+    procedure Pop(out Sample: Integer);
   end;
   
   TCOutputPort = class(TCPort, TIOutputPort)
@@ -85,6 +89,7 @@ type
     function GetIsFull: Boolean;
   public
     property IsFull: Boolean read GetIsFull;
+    procedure Push(Sample: Integer);
   end;
 
   TCBlock = class(TCDevice, TIBlock)
@@ -95,8 +100,7 @@ type
   protected
     procedure ValidateInsert(AComponent: TComponent); override;
   public
-    constructor Create(AOwner: TCDevice); override;
-    constructor Create(AOwner: TCBlock); virtual;
+    constructor Create(AOwner: TComponent); override;
     function GetInputQty: Integer;
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
@@ -109,12 +113,16 @@ type
   private
     FOutputPort: TCOutputPort;
     FInputPort: TCInputPort;
+    FSamples: TCFifo;
   protected
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
   public
+    constructor Create(AOwner: TComponent); override;
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
     procedure Connect(Output: TCOutputPort; Input:TCInputPort);
+    procedure Push(Sample: Integer);
+    procedure Pop(out Sample: Integer);
     property IsEmpty: Boolean read GetIsEmpty;
     property IsFull: Boolean read GetIsFull;
   published
@@ -170,20 +178,18 @@ end;
 
 constructor TCDevice.Create(AOwner: TComponent);
 begin
-  if AOwner is TCDevice then begin
-    Create(AOwner as TCDevice);
-  end;
-end;
-
-constructor TCDevice.Create(AOwner: TCDevice);
-begin
-  inherited Create(AOwner);
+  //if AOwner is TCBlock then begin
+//    Create(AOwner as TCBlock);
+  //end else begin
+  //  Fail;
+  //end;
   WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  inherited Create(AOwner);
   if Assigned(AOwner) then begin
-    WriteLn('AOwner.Name = ', AOwner.Name);
+    WriteLn(FuncC('TDevice.Create'), 'AOwner.Name = ', AOwner.Name);
   end;
   if not InitResourceComponent(Self, TCDevice) then
-    WriteLn(FuncC('TDevice.Create(AOwner: TDesign)'), 'Failure');
+    WriteLn(FuncC('TDevice.Create'), 'Failure');
   WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
 end;
 
@@ -202,28 +208,36 @@ begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
 end;
 
+procedure TCInputPort.Pop(out Sample: Integer);
+begin
+  WriteLn(FuncB('TCInputPort.Pop'));
+  if Assigned(FConnector) then begin
+    WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
+    FConnector.Pop(Sample);
+  end else begin
+    WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
+  end;
+  WriteLn(FuncE('TCInputPort.Pop'));
+end;
+
 function TCOutputPort.GetIsFull: Boolean;
 begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
 end;
 
-constructor TCBlock.Create(AOwner: TCDevice);
-var
-  cn: string;
+procedure TCOutputPort.Push(Sample: Integer);
 begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
+  WriteLn(FuncB('TCInputPort.Push'));
+  if Assigned(FConnector) then begin
+    WriteLn(FuncC('TCInputPort.Push'), 'Connector assigned');
+    FConnector.Push(Sample);
   end else begin
-    cn := 'nil';
+    WriteLn(FuncC('TCInputPort.Push'), 'Connector not assigned');
   end;
-  WriteLn(FuncB('TCBlock.Create(AOwner: TCDevice)'), 'AOwner.ClassName = ', cn);
-  if AOwner is TCBlock then begin
-    Create(AOwner as TCBlock);
-  end;
-  WriteLn(FuncE('TCBlock.Create(AOwner: TCDevice)'), 'AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TCInputPort.Push'));
 end;
 
-constructor TCBlock.Create(AOwner: TCBlock);
+constructor TCBlock.Create(AOwner: TComponent);
 var
   cn: string;
 begin
@@ -232,9 +246,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn(FuncB('TCBlock.Create(AOwner: TCBlock)'), 'AOwner.ClassName = ', cn);
+  WriteLn(FuncB('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn(FuncE('TCBlock.Create(AOwner: TCBlock)'), 'AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
 end;
 
 function TCBlock.GetInputQty: Integer;
@@ -319,6 +333,7 @@ begin
       Exit;
   end;
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
+    WriteLn(FuncE('TCBlock.Execute'), 'Block[', i, '] = ', PtrInt(FBlocks[i]), ', DeviceName = ', DeviceName);
     Execute;
   end;
   WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
@@ -334,9 +349,24 @@ begin
   Result := False;
 end;
 
+constructor TCConnector.Create(AOwner: TComponent);
+var
+  cn: string;
+begin
+  if Assigned(AOwner) then begin
+    cn := AOwner.ClassName;
+  end else begin
+    cn := 'nil';
+  end;
+  WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  inherited Create(AOwner);
+  WriteLn(FuncE('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  FSamples := TCFifo.Create(128);
+end;
+
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
 begin
-  Connect(Output, Input);
+  //Connect(Output, Input);
 end;
 
 procedure TCConnector.Connect(Output:TCOutputPort; Input: TCInputPort);
@@ -345,6 +375,18 @@ begin
   FInputPort := Input;
   Output.FConnector := Self;
   Input.FConnector := Self;
+end;
+
+procedure TCConnector.Push(Sample: Integer);
+begin
+  WriteLn(FuncB('TCConnector.Push'), 'Sample = ', Sample);
+  WriteLn(FuncE('TCConnector.Push'), 'Sample = ', Sample);
+end;
+
+procedure TCConnector.Pop(out Sample: Integer);
+begin
+  WriteLn(FuncB('TCConnector.Pop'), 'Sample = ', Sample);
+  WriteLn(FuncE('TCConnector.Pop'), 'Sample = ', Sample);
 end;
 
 end.
