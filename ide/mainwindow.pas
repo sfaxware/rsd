@@ -327,7 +327,7 @@ begin
       try
         CodeFileName := DesignDir + PathDelim + Name + '.pas';
         CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
-        UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
+        UpdateUsedBlocks(Sender as TCGraphBlock, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
       except
         ShowMessage('Unable to save file')
@@ -336,7 +336,7 @@ begin
       try
         CodeFileName := DesignDir + '/' + Name + '.pas';
         CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
-        UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
+        UpdateUsedBlocks(Sender as TCGraphDesign, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
       except
         ShowMessage('Unable to save file')

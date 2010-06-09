@@ -52,6 +52,7 @@ begin
   //WriteLn('p = ', p, ', e = ', e);
   if e < p then
     Exit(False);
+  //WriteLn('Block.Name = ', Block.Name, ', Block.ComponentCount = ', Block.ComponentCount);
   for i := 0 to Block.ComponentCount - 1 do begin
     Component := Block.Components[i];
     if Component is TCGraphBlock then with Component as TCGraphBlock do begin
@@ -60,7 +61,7 @@ begin
   end;
   //WriteLn('p = ', p, ', e = ', e);
   //WriteLn(usedBlocks);
-  //Self.Replace(p, e - p, usedBlocks + '  ');
+  Self.Replace(p, e - p, usedBlocks + '  ');
   Result := True;
 end;
 
@@ -92,7 +93,7 @@ begin
       'end;' + LineEnding +
       LineEnding +
       'initialization' + LineEnding +
-      LineEnding +
+      '  {$R *.lfm}' + LineEnding +
       '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
@@ -144,7 +145,7 @@ begin
       '  ' + Owner.Name + 'Simulator: TCustom' + Owner.Name + ';' + LineEnding +
       LineEnding +
       'begin' + LineEnding +
-      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(TCustomDesign(nil));' + LineEnding +
+      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
       '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
       '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
       'end.');

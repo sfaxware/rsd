@@ -170,6 +170,9 @@ end;
 procedure TCDevice.ValidateContainer(AComponent: TComponent);
 begin
   WriteLn(FuncB('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  with AComponent do begin
+    WriteLn(FuncC('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  end;
   if AComponent is TCBlock then with AComponent as TCBlock do begin
     ValidateInsert(Self);
   end;
@@ -177,20 +180,24 @@ begin
 end;
 
 constructor TCDevice.Create(AOwner: TComponent);
+var
+  cn: string;
 begin
+  if Assigned(AOwner) then begin
+    cn := AOwner.ClassName;
+  end else begin
+    cn := 'nil';
+  end;
   //if AOwner is TCBlock then begin
 //    Create(AOwner as TCBlock);
   //end else begin
   //  Fail;
   //end;
-  WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
   inherited Create(AOwner);
-  if Assigned(AOwner) then begin
-    WriteLn(FuncC('TDevice.Create'), 'AOwner.Name = ', AOwner.Name);
-  end;
   if not InitResourceComponent(Self, TCDevice) then
-    WriteLn(FuncC('TDevice.Create'), 'Failure');
-  WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+    WriteLn(FuncC('TCDevice.Create'), 'Failure');
+  WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
 
 function TCPort.GetConnector: TIConnector;
