@@ -340,7 +340,7 @@ begin
       Exit;
   end;
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
-    WriteLn(FuncE('TCBlock.Execute'), 'Block[', i, '] = ', PtrInt(FBlocks[i]), ', DeviceName = ', DeviceName);
+    WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '] = ', PtrInt(FBlocks[i]), ', DeviceName = ', DeviceName);
     Execute;
   end;
   WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
