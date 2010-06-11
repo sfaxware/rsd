@@ -19,8 +19,11 @@ var
 
 type
   TCodeType = (ctSource, ctDescription);
+  TCGraphDevice = class(TMagnifier)
+  end;
+  TCGraphDeviceClass = class of TCGraphDevice;
   TCGraphConnector = class;
-  TCGraphPort = class(TMagnifier)
+  TCGraphPort = class(TCGraphDevice)
   private
     FConnector: TCGraphConnector;
   protected
@@ -46,7 +49,7 @@ type
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TPortType = class of TCGraphPort;
-  TCGraphBlock = class(TMagnifier)
+  TCGraphBlock = class(TCGraphDevice)
   private
     _MouseDown: Boolean;
     _MousePos: TPoint;
@@ -60,6 +63,7 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
+    function AddNewPort(PortType: TPortType): TCGraphPort; virtual;
     function GetUpdatedDescription(Indent: string): string;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
@@ -76,7 +80,8 @@ type
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
-  TCGraphConnector = class(TMagnifier)
+  TCGraphBlockClass = class of TCGraphBlock;
+  TCGraphConnector = class(TCGraphDevice)
   private
     FInputPort: TCGraphInputPort;
     FOutputPort: TCGraphOutputPort;
@@ -93,6 +98,16 @@ type
   published
     property InputPort: TCGraphInputPort read FInputPort write SetInputPort;
     property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
+  end;
+  TCGraphSource = class(TCGraphBlock)
+  public
+    constructor Create(AOwner: TComponent);override;
+    function AddNewPort(PortType: TPortType): TCGraphPort; override;
+  end;
+  TCGraphProbe = class(TCGraphBlock)
+  public
+    constructor Create(AOwner: TComponent);override;
+    function AddNewPort(PortType: TPortType): TCGraphPort; override;
   end;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
@@ -207,6 +222,7 @@ begin
   OnMouseDown := @HandleMouseDownEvents;
   OnMouseUp := @HandleMouseUpEvents;
   Name := 'Port' + IntToStr(Owner.ComponentCount);
+  Parent := TCGraphDevice(AOwner).Parent;
 end;
 
 procedure TCGraphPort.HandleMouseEnterLeaveEvents(Sender: TObject);
@@ -554,6 +570,11 @@ begin
   UpdatePortsBounds(TCGraphOutputPort);
 end;
 
+function TCGraphBlock.AddNewPort(PortType: TPortType): TCGraphPort;
+begin
+  Result := PortType.Create(Self);
+end;
+
 function TCGraphBlock.GetUpdatedDescription(Indent: string): string;
 var
   i: Integer;
@@ -771,6 +792,26 @@ begin
   //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
   BoundsRect := Bounds(FPoints);
   //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
+end;
+
+constructor TCGraphSource.Create(AOwner:TComponent);
+begin
+  inherited Create(AOwner);
+  inherited AddNewPort(TCGraphInputPort);
+end;
+
+function TCGraphSource.AddNewPort(PortType: TPortType): TCGraphPort;
+begin
+end;
+
+constructor TCGraphProbe.Create(AOwner:TComponent);
+begin
+  inherited Create(AOwner);
+  inherited AddNewPort(TCGraphOutputPort);
+end;
+
+function TCGraphProbe.AddNewPort(PortType: TPortType): TCGraphPort;
+begin
 end;
 
 end.

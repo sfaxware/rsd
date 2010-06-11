@@ -21,7 +21,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function CreateNewBlock: TCGraphBlock; virtual;
+    function AddNewBlock(BlockType: TCGraphBlockClass): TCGraphBlock; virtual;
     function GetUpdatedDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
@@ -80,13 +80,13 @@ begin
   end;
 end;
 
-function TCGraphDesign.CreateNewBlock:TCGraphBlock;
+function TCGraphDesign.AddNewBlock(BlockType: TCGraphBlockClass):TCGraphBlock;
 var
   BlockQuantity: integer = 0;
   R: TRect;
   w, h: Integer;
 begin
-  Result := TCGraphBlock.Create(Self);
+  Result := BlockType.Create(Self);
   R := Result.OriginalBounds;
   with R do begin
     w := Right - Left;
