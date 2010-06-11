@@ -16,6 +16,12 @@ Type
 
   TRandomSeed = LongWord;
   TSource = class(TBlock)
+  private
+    function GetSample: Integer; virtual;abstract;
+  public
+    procedure Execute; override;
+  published
+    Output: TOutputPort;
   end;
 
   TRandomSource = class(TSource)
@@ -28,14 +34,24 @@ Type
     function genrand_MT19937: longint;
     function random(l:longint): longint;
     function random(l:int64): int64;
+    function GetSample: Integer; override;
+    procedure SetInitialSeed(Seed: TRandomSeed);
   public
-    constructor Create(Seed:TRandomSeed);
     procedure Execute; override;
-    property InitialSeed: TRandomSeed read FInitialSeed;
     property CurrentSeed: TRandomSeed read FCurrentSeed;
+  published
+    property InitialSeed: TRandomSeed read FInitialSeed write SetInitialSeed;
   end;
 
 implementation
+
+uses
+  BlockBasics;
+
+procedure TSource.Execute;
+begin
+  Output.Push(GetSample);
+end;
 
 {----------------------------------------------------------------------
    Mersenne Twister: A 623-Dimensionally Equidistributed Uniform
@@ -133,7 +149,6 @@ begin
   mti := MT19937N;
 end;
 
-
 function TRandomSource.genrand_MT19937: longint;
 const
   mag01 : array [0..1] of longint =(0, longint(MT19937MATRIX_A));
@@ -191,16 +206,28 @@ begin
     random := 0;
 end;
 
-procedure TRandomSource.Execute;
+function TRandomSource.GetSample: Integer;
 begin
-  FCurrentSeed := random(MaxUIntValue);
+  Result := random(MaxInt);
 end;
 
-constructor TRandomSource.Create(Seed: TRandomSeed);
+procedure TRandomSource.SetInitialSeed(Seed: TRandomSeed);
 begin
+  //WriteLn(FuncB('TRandomSource.SetInitialSeed'));
   FInitialSeed := Seed;
   FCurrentSeed := Seed;
   mti := MT19937N+1;
+  //WriteLn(FuncC('TRandomSource.SetInitialSeed'), 'Seed = ', Seed);
+  //WriteLn(FuncB('TRandomSource.SetInitialSeed'));
+end;
+
+procedure TRandomSource.Execute;
+begin
+  //WriteLn(FuncB('TRandomSource.Execute'));
+  FCurrentSeed := random(MaxUIntValue);
+  Output.Push(FCurrentSeed);
+  //WriteLn(FuncC('TRandomSource.Execute'), 'CurrentSeed = ', CurrentSeed);
+  //WriteLn(FuncE('TRandomSource.Execute'));
 end;
 
 end.
