@@ -19,7 +19,15 @@ var
 
 type
   TCodeType = (ctSource, ctDescription);
-  TCGraphDevice = class(TMagnifier)
+  TCodeTemplateType = (cttNone, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
+  TIGraphDevice = interface
+    function DeviceIdentifier: string;
+    function DeviceType: string;
+  end;
+  TCGraphDevice = class(TMagnifier, TIGraphDevice)
+  public
+    function DeviceIdentifier: string;
+    function DeviceType: string;
   end;
   TCGraphDeviceClass = class of TCGraphDevice;
   TCGraphConnector = class;
@@ -210,6 +218,21 @@ begin
     l -= 1;
     Result[l].x := Points[l].x + dx;
     Result[l].y := Points[l].y + dy;
+  end;
+end;
+
+function TCGraphDevice.DeviceIdentifier: string;
+begin
+  Result := Name;
+end;
+
+function TCGraphDevice.DeviceType: string;
+const
+  Prefix = 'TCGraph';
+begin
+  Result := ClassName;
+  if Pos(Prefix, Result) = 1 then begin
+    Delete(Result, 1, Length(Prefix));
   end;
 end;
 
@@ -797,21 +820,41 @@ end;
 constructor TCGraphSource.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  inherited AddNewPort(TCGraphInputPort);
+  AddNewPort(TCGraphInputPort);
 end;
 
 function TCGraphSource.AddNewPort(PortType: TPortType): TCGraphPort;
+var
+  c: TComponent;
 begin
+  Result := nil;
+  c := FindComponent('Output');
+  if Assigned(c) and (c is TCGraphOutputPort) then begin
+    Result := c as TCGraphOutputPort;
+  end;
+  if not Assigned(Result) then begin
+    Result := TCGraphOutputPort.Create(Self);
+  end;
 end;
 
 constructor TCGraphProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  inherited AddNewPort(TCGraphOutputPort);
+  AddNewPort(TCGraphOutputPort);
 end;
 
 function TCGraphProbe.AddNewPort(PortType: TPortType): TCGraphPort;
+var
+  c: TComponent;
 begin
+  Result := nil;
+  c := FindComponent('Input');
+  if Assigned(c) and (c is TCGraphInputPort) then begin
+    Result := c as TCGraphInputPort;
+  end;
+  if not Assigned(Result) then begin
+    Result := TCGraphInputPort.Create(Self);
+  end;
 end;
 
 end.

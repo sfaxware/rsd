@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
-  TCGraphDesign = class(TScrollBox)
+  TCGraphDesign = class(TScrollBox, TIGraphDevice)
   private
     FMagnification: Real;
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
@@ -22,6 +22,8 @@ type
     destructor Destroy; override;
     procedure Cleanup;
     function AddNewBlock(BlockType: TCGraphBlockClass): TCGraphBlock; virtual;
+    function DeviceIdentifier: string;
+    function DeviceType: string;
     function GetUpdatedDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
@@ -116,6 +118,21 @@ begin
   end;
 end;
 
+function TCGraphDesign.DeviceIdentifier: string;
+begin
+  Result := Name;
+end;
+
+function TCGraphDesign.DeviceType: string;
+const
+  Prefix = 'TCGraph';
+begin
+  Result := ClassName;
+  if Pos(Prefix, Result) = 1 then begin
+    Delete(Result, 1, Length(Prefix));
+  end;
+end;
+
 function TCGraphDesign.GetUpdatedDescription(Indent: string): string;
 var
   Component: TComponent;
@@ -200,7 +217,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       Result := Result and CodeBuffer[CodeType].Reload
     else begin
-      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone, Self);
+        CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone, Self);
       Result := Result and Assigned(CodeBuffer[CodeType]);
     end;
   end;
