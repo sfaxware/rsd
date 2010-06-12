@@ -244,6 +244,7 @@ begin
       PortName := GetPropertyValue(BlockDescription, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
+      WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
       WriteLn('OutputPortName = ', PortName);
       Component := FindComponent(BlockName);
