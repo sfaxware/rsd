@@ -307,7 +307,7 @@ begin
   if FileName = '' then
     Result := nil
   else
-    Result := GetCodeBuffer(FileName, cttNone, Self);
+    Result := GetCodeBuffer(FileName, cttNone, nil);
 end;
 
 procedure TdtslIdeMainWindow.AddNewBlock(BlockType: TCGraphBlockClass);
@@ -338,7 +338,7 @@ begin
     if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
       try
         CodeFileName := DesignDir + PathDelim + Name + '.pas';
-        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
+        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Sender as TCGraphBlock);
         UpdateUsedBlocks(Sender as TCGraphBlock, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
       except
@@ -347,7 +347,7 @@ begin
     end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
       try
         CodeFileName := DesignDir + '/' + Name + '.pas';
-        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
+        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Sender as TCGraphDesign);
         UpdateUsedBlocks(Sender as TCGraphDesign, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
       except
