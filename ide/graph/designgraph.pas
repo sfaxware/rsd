@@ -200,6 +200,27 @@ begin
 end;
 
 function TCGraphDesign.Load: Boolean;
+  function CreateDevice(DeviceName, DeviceType: string; out Device): Boolean;
+  var
+    CodeFile: string;
+    ACodeBuffer: TCodeBuffer;
+    AncestorClassName: string;
+  begin
+    Result := True;
+    CodeFile := DesignDir + DeviceName + '.pas';
+    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+    CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, AncestorClassName, True);
+    WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', AncestorClassName = ', AncestorClassName);
+    if AncestorClassName = 'TBlock' then begin
+      TCGraphBlock(Device) := TCGraphBlock.Create(Self);
+    end else if AncestorClassName = 'TRandomSource' then begin
+      TCGraphSource(Device) := TCGraphSource.Create(Self);
+    end else if AncestorClassName = 'TFileDumpProbe' then begin
+      TCGraphProbe(Device) := TCGraphProbe.Create(Self);
+    end;
+  end;
+
 var
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
@@ -266,7 +287,7 @@ begin
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
-      SelectedBlock := TCGraphBlock.Create(Self);
+      CreateDevice(BlockDescription.Name, BlockDescription.TypeName, SelectedBlock);
       with SelectedBlock do begin
         Parent := Self;
         Name := BlockDescription.Name;
