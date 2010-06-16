@@ -5,7 +5,7 @@ unit Blocks;
 interface
 
 uses
-  Classes,BlockBasics;
+  Classes, BlockBasics;
 
 type
   TInputPort = class(TCInputPort);

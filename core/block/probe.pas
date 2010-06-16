@@ -30,7 +30,7 @@ implementation
 uses
   BlockBasics;
 
-procedure TFileDumpProbe.SetFileName(AFileNAme: string);
+procedure TFileDumpProbe.SetFileName(AFileName: string);
 begin
   //WriteLn(FuncB('TFileDumpProbe.SetFileName'), 'AFileNAme = ', AFileNAme);
   if FFileName = AFileNAme then
