@@ -151,7 +151,7 @@ begin
       '  Blocks;' + LineEnding +
       LineEnding +
       'type' + LineEnding +
-      '  T' + Owner.DeviceIdentifier + ' = class(TBlock)' + LineEnding +
+      '  T' + Owner.DeviceIdentifier + ' = class(' + Owner.DeviceType + ')' + LineEnding +
       '    procedure Execute; override;' + LineEnding +
       '  end;' + LineEnding +
       LineEnding +

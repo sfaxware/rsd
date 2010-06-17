@@ -1,11 +1,11 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
   Left = 232
-  Height = 844
+  Height = 841
   Top = 27
   Width = 1036
   ActiveControl = TabControl
   Caption = 'D.T.S.L. IDE'
-  ClientHeight = 817
+  ClientHeight = 814
   ClientWidth = 1036
   Font.Color = clDefault
   Menu = dtslIdeMainMenu
@@ -19,7 +19,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 792
+    Height = 789
     Top = 2
     Width = 842
     Align = alCustom
@@ -43,7 +43,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 760
+      Height = 757
       Top = 30
       Width = 838
       Align = alClient
@@ -54,7 +54,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Font.Quality = fqNonAntialiased
       ParentColor = False
       ParentFont = False
-      PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
       BookMarkOptions.OnChange = nil
@@ -639,7 +638,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object Design: TScrollBox
       Left = 2
-      Height = 760
+      Height = 757
       Top = 30
       Width = 838
       HorzScrollBar.Page = 833
@@ -652,7 +651,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Font.Name = 'Arial 12'
       ParentColor = False
       ParentFont = False
-      PopupMenu = PopupMenu1
+      PopupMenu = DesignPopupMenu
       TabOrder = 2
       OnDblClick = ViewFile
     end
@@ -660,7 +659,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
-    Top = 796
+    Top = 793
     Width = 1036
     AutoSize = False
     Color = clBlue
@@ -970,49 +969,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     NestedComments = False
     left = 32
   end
-  object PopupMenu1: TPopupMenu
-    left = 64
-    object BlocksSubMenu: TMenuItem
-      Caption = 'Blocks'
-      object AddBlockMenuItem: TMenuItem
-        Caption = 'Add block'
-        OnClick = dtslEditGraphInsertBlockMenuItemClick
-      end
-      object AddSourceMenuItem: TMenuItem
-        Caption = 'Add source'
-        OnClick = dtslEditGraphInsertSourceMenuItemClick
-      end
-      object AddProbeMenuItem: TMenuItem
-        Caption = 'Add probe'
-        OnClick = dtslEditGraphInsertProbeMenuItemClick
-      end
-    end
-    object PortsSubMenu: TMenuItem
-      Caption = 'Ports'
-      object AddInputPortMenuItem: TMenuItem
-        Caption = 'Add input port...'
-        OnClick = AddInputPortMenuItemClick
-      end
-      object AddOutputPortMenuItem: TMenuItem
-        Caption = 'Add output port...'
-        OnClick = AddOutputPortMenuItemClick
-      end
-      object ConnectPortsMenuItem: TMenuItem
-        Caption = 'Connect ports...'
-      end
-    end
-    object BlockPropertiesMenuItem: TMenuItem
-      Caption = '&Properties'
-      object BlockNameMenuItem: TMenuItem
-        Caption = 'Name...'
-        OnClick = SelectBlockName
-      end
-      object BlockColorMenuItem: TMenuItem
-        Caption = 'Color...'
-        OnClick = SelectBlockColor
-      end
-    end
-  end
   object Project: TXMLConfig
     StartEmpty = False
     RootName = 'CONFIG'
@@ -1056,5 +1012,69 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       'ColorT=A4A0A0'
     )
     top = 64
+  end
+  object DesignPopupMenu: TPopupMenu
+    left = 64
+    object BlocksSubMenu: TMenuItem
+      Caption = 'Blocks'
+      object AddBlockMenuItem: TMenuItem
+        Caption = 'Add block'
+        OnClick = dtslEditGraphInsertBlockMenuItemClick
+      end
+      object AddSourceMenuItem: TMenuItem
+        Caption = 'Add source'
+        OnClick = dtslEditGraphInsertSourceMenuItemClick
+      end
+      object AddProbeMenuItem: TMenuItem
+        Caption = 'Add probe'
+        OnClick = dtslEditGraphInsertProbeMenuItemClick
+      end
+    end
+    object DesignPropertiesMenuItem: TMenuItem
+      Caption = '&Properties'
+      object DesignNameMenuItem: TMenuItem
+        Caption = 'Name...'
+        OnClick = SelectBlockName
+      end
+      object DesignColorMenuItem: TMenuItem
+        Caption = 'Color...'
+        OnClick = SelectBlockColor
+      end
+    end
+  end
+  object BlockPopupMenu: TPopupMenu
+    left = 64
+    object PortsSubMenu: TMenuItem
+      Caption = 'Ports'
+      object AddInputPortMenuItem: TMenuItem
+        Caption = 'Add input port...'
+        OnClick = AddInputPortMenuItemClick
+      end
+      object AddOutputPortMenuItem: TMenuItem
+        Caption = 'Add output port...'
+        OnClick = AddOutputPortMenuItemClick
+      end
+      object ConnectPortsMenuItem: TMenuItem
+        Caption = 'Connect ports...'
+      end
+    end
+    object BlockPropertiesMenuItem: TMenuItem
+      Caption = '&Properties'
+      object BlockNameMenuItem: TMenuItem
+        Caption = 'Name...'
+        OnClick = SelectBlockName
+      end
+      object BlockColorMenuItem: TMenuItem
+        Caption = 'Color...'
+        OnClick = SelectBlockColor
+      end
+    end
+  end
+  object ConnectorPopupMenu: TPopupMenu
+    left = 32
+    top = 72
+    object DeleteConnectorMenuItem: TMenuItem
+      Caption = 'Delete'
+    end
   end
 end

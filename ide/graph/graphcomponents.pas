@@ -25,12 +25,15 @@ type
     function DeviceType: string;
   end;
   TCGraphDevice = class(TMagnifier, TIGraphDevice)
+  private
+    FOnCreate: TNotifyEvent;
   protected
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
     function DeviceIdentifier: string;
     function DeviceType: string;
+    property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
   end;
   TCGraphDeviceClass = class of TCGraphDevice;
   TCGraphConnector = class;
@@ -232,6 +235,13 @@ end;
 constructor TCGraphDevice.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  if Assigned(AOwner) then begin
+    if AOwner is TCGraphDevice then with AOwner as TCGraphDevice do begin
+      Self.FOnCreate := FOnCreate;
+    end else if AOwner is TCGraphDesign then with AOwner as TCGraphDesign do begin
+      Self.FOnCreate := FOnCreate;
+    end;
+  end;
   OnPaint := @DoPaint;
 end;
 
@@ -540,23 +550,20 @@ begin
   while Assigned(DeviceDescription) do begin
     WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
     if DeviceDescription.TypeName = 'TOutputPort' then
-      Port := TCGraphOutputPort.Create(Self)
+      Port := AddNewPort(TCGraphOutputPort)
     else if DeviceDescription.TypeName = 'TInputPort' then
-      Port := TCGraphInputPort.Create(Self)
+      Port := AddNewPort(TCGraphInputPort)
     else if DeviceDescription.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescription, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       WriteLn('OutputPortName = ', PortName);
-      //SelectedOutputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphOutputPort;
       PortName := GetPropertyValue(DeviceDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       WriteLn('InputPortName = ', PortName);
-      //SelectedInputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphInputPort;
-      //ConnectPorts(Self);
     end else begin
       {if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
@@ -626,7 +633,7 @@ begin
       Result += GetUpdatedDescription(Indent + '  ');
     end;
   end else with OriginalBounds do begin
-    Result +=  '  DeviceName = ''' + Caption + '''' + LineEnding +
+    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
       Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
       Indent + '  Left = ' + IntToStr(Left) + LineEnding +
       Indent + '  Top = ' + IntToStr(Top) + LineEnding +
