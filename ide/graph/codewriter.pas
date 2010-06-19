@@ -151,7 +151,7 @@ begin
       '  Blocks;' + LineEnding +
       LineEnding +
       'type' + LineEnding +
-      '  T' + Owner.DeviceIdentifier + ' = class(' + Owner.DeviceType + ')' + LineEnding +
+      '  ' + Owner.DeviceType + ' = class(' + Owner.DeviceAncestorType + ')' + LineEnding +
       '    procedure Execute; override;' + LineEnding +
       '  end;' + LineEnding +
       LineEnding +
@@ -160,7 +160,7 @@ begin
       'uses' + LineEnding +
       '  Classes;' + LineEnding +
       LineEnding +
-      'procedure T' + Owner.DeviceIdentifier + '.Execute;' + LineEnding +
+      'procedure ' + Owner.DeviceType + '.Execute;' + LineEnding +
       'begin;' + LineEnding +
       '  {Write here your code}' + LineEnding +
       'end;' + LineEnding +

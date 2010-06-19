@@ -87,7 +87,7 @@ type
     _ProjectSettings: pointer;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
-    procedure AddNewBlock(BlockType: TCGraphBlockClass);
+    procedure AddNewBlock(BlockType: string);
     procedure SetupChildrenEvents(Sender: TObject);
   public
     destructor Destroy; override;
@@ -274,12 +274,12 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
 begin
-  AddNewBlock(TCGraphProbe);
+  AddNewBlock('TFileDumpProbe');
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
 begin
-  AddNewBlock(TCGraphSource);
+  AddNewBlock('TRandomSource');
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -323,11 +323,11 @@ begin
     Result := GetCodeBuffer(FileName, cttNone, nil);
 end;
 
-procedure TdtslIdeMainWindow.AddNewBlock(BlockType: TCGraphBlockClass);
+procedure TdtslIdeMainWindow.AddNewBlock(BlockType: string);
 begin
   if Assigned(Design.SelectedBlock) then
     Design.SelectedBlock.Selected := False;
-  Design.SelectedBlock := Design.AddNewBlock(BlockType, '');
+  Design.SelectedBlock := Design.AddNewBlock('', BlockType);
 end;
 
 procedure TdtslIdeMainWindow.SetupChildrenEvents(Sender: TObject);
@@ -398,7 +398,7 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  AddNewBlock(TCGraphBlock);
+  AddNewBlock('TBlock');
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);

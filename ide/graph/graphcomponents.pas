@@ -23,16 +23,20 @@ type
   TIGraphDevice = interface
     function DeviceIdentifier: string;
     function DeviceType: string;
+    function DeviceAncestorType: string;
   end;
   TCGraphDevice = class(TMagnifier, TIGraphDevice)
   private
     FOnCreate: TNotifyEvent;
+    FDeviceType: string;
+    FDeviceAncestorType: string;
   protected
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
     function DeviceIdentifier: string;
     function DeviceType: string;
+    function DeviceAncestorType: string;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
   end;
   TCGraphDeviceClass = class of TCGraphDevice;
@@ -128,6 +132,7 @@ type
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
   end;
 
+function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphBlock;
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
@@ -135,6 +140,67 @@ function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Sel
 implementation
 uses
   DesignGraph, CodeToolManager, CodeWriter;
+
+function GetBlockClass(DeviceType: string): TCGraphBlockClass;
+begin
+  if DeviceType = 'TBlock' then begin
+    Result := TCGraphBlock;
+  end else if DeviceType = 'TRandomSource' then begin
+    Result := TCGraphSource;
+  end else if DeviceType = 'TFileDumpProbe' then begin
+    Result := TCGraphProbe;
+  end else begin
+    Result := nil;
+  end;
+end;
+
+function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphBlock;
+var
+  BlockClass: TCGraphBlockClass;
+  CodeFile: string;
+  ACodeBuffer: TCodeBuffer;
+  DeviceAncestorType: string;
+begin
+  if DeviceName = '' then begin
+    if DeviceType <> '' then begin
+      if Pos('T', DeviceType) = 1 then begin
+        DeviceName := Copy(DeviceType, 2, Length(DeviceType));
+      end else begin
+        DeviceName := 'A' + DeviceType;
+      end;
+      DeviceName += IntToStr(AOwner.ComponentCount + 1);
+      DeviceAncestorType := DeviceType;
+      DeviceType := 'T' + DeviceName;
+    end;
+  end else begin
+    if DeviceType = '' then begin
+      DeviceType := 'T' + DeviceName;
+    end else begin
+      CodeFile := DesignDir + DeviceName + '.pas';
+      //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+      ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+      WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+    end;
+  end;
+  BlockClass := GetBlockClass(DeviceType);
+  if not Assigned(BlockClass) then begin
+    BlockClass := GetBlockClass(DeviceAncestorType);
+  end;
+  if not Assigned(BlockClass) then begin
+    BlockClass := TCGraphBlock;
+  end;
+  Result := BlockClass.Create(AOwner);
+  if DeviceName <> '' then begin
+    Result.Name := DeviceName;
+  end;
+  if DeviceType <> '' then begin
+    Result.FDeviceType := DeviceType;
+  end;
+  if DeviceAncestorType <>'' then begin
+    Result.FDeviceAncestorType := DeviceAncestorType;
+  end;
+end;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 var
@@ -251,13 +317,13 @@ begin
 end;
 
 function TCGraphDevice.DeviceType: string;
-const
-  Prefix = 'TCGraph';
 begin
-  Result := ClassName;
-  if Pos(Prefix, Result) = 1 then begin
-    Delete(Result, 1, Length(Prefix));
-  end;
+  Result := FDeviceType;
+end;
+
+function TCGraphDevice.DeviceAncestorType: string;
+begin
+  Result := FDeviceAncestorType;
 end;
 
 constructor TCGraphPort.Create(AOwner: TComponent);
@@ -461,6 +527,10 @@ var
   R: TRect;
 begin
   inherited Create(AOwner);
+  Name := 'Block' + IntToStr(Owner.ComponentCount);
+  FDeviceType := 'T' + Name;
+  FDeviceAncestorType := 'TBlock';
+  Caption := 'Block ' + IntToStr(Owner.ComponentCount);
   FInputComponentCount := 0;
   FOutputComponentCount := 0;
   with R do begin
