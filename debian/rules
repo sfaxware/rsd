@@ -102,8 +102,7 @@ build-arch: debian-files configure build-arch-stamp
 build-arch-stamp:
 	@echo "--- Building"
 	dh_testdir
-	$(LAZBUILD) --widgetset=gtk2 ide/dtsl_ide.lpi
-	${MAKE} mo_files
+	${MAKE} all
 	touch build-arch-stamp
 
 install-arch: build-arch install-arch-stamp
@@ -115,7 +114,11 @@ install-arch-stamp:
 	dh_installdirs
 	# copy dtsl to /usr
 	${MKDIR} $(INSTALL_DIR)/usr/bin
-	${CP} -t $(INSTALL_DIR)/usr/bin build/bin/dtsl_ide
+	${CP} -t $(INSTALL_DIR)/usr/bin \
+	  build/bin/dtsl_ide
+	${MKDIR} $(INSTALL_DIR)/usr/lib
+	${CP} -t $(INSTALL_DIR)/usr/lib \
+	  build/lib/dtsl
 	# copy images, sounds, icons and menu entries for the GNOME menu
 	${MKDIR} $(INSTALL_DIR)/usr/share
 	${CP} -t $(INSTALL_DIR)/usr/share \

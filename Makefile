@@ -272,7 +272,7 @@ ifeq ($(FULL_TARGET),i386-linux)
 override TARGET_PROGRAMS+=dtsl_ide
 endif
 ifeq ($(FULL_TARGET),i386-linux)
-override CLEAN_FILES+=$(wildcard build/*$(OEXT)) $(wildcard build/*$(PPUEXT)) $(wildcard build/*$(RSTEXT)) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard build/lib/dtsl/*$(OEXT) build/lib/dtsl/*$(PPUEXT) build/lib/dtsl/*$(RSTEXT) build/lib/dtsl/*.compiled build/lib/dtsl/*.lrs) ${MO_FILES}
 endif
 override INSTALL_BASEDIR=usr
 override INSTALL_FPCPACKAGE=n
@@ -1672,8 +1672,10 @@ ifneq ($(wildcard fpcmake.loc),)
 include fpcmake.loc
 endif
 .PHONY: all clean install
-all:mo_files ${LPI_FILES}
-	lazbuild ${LPI_FILES}
+all:mo_files
+	lazbuild ide/dtsl_ide.lpi
+	lazbuild core/fifo/fifotest.lpi
+	lazbuild core/block/blocktest.lpi
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/dtsl.mo:locale/dtsl_%.po
 	${MKDIR} $(dir $@)
@@ -1714,7 +1716,6 @@ endif
 ifdef NODOCS
 	DEB_BUILDPKG_OPT+= -B
 endif
-ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
 ifeq (${DEBBUILD},0)
 DEBUSESVN=1
 endif
@@ -1727,6 +1728,7 @@ endif
 ifdef SNAPSHOT
 DEBUSESVN=1
 endif
+ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
 ifndef DEBUSESVN
 $(error Need "${DEBSRC_ORIG}.tar.gz" to build for DEBBUILD = "${DEBBUILD}" > 1)
 endif

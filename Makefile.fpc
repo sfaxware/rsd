@@ -17,7 +17,7 @@ exampledirs=
 [compiler]
 
 [clean]
-files=$(wildcard build/*$(OEXT)) $(wildcard build/*$(PPUEXT)) $(wildcard build/*$(RSTEXT)) ${MO_FILES}
+files=$(wildcard build/lib/dtsl/*$(OEXT) build/lib/dtsl/*$(PPUEXT) build/lib/dtsl/*$(RSTEXT) build/lib/dtsl/*.compiled build/lib/dtsl/*.lrs) ${MO_FILES}
 
 [install]
 fpcpackage=n
@@ -32,8 +32,10 @@ LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
 .PHONY: all clean install
 
 #-----------------------------------------------------------------------------
-all:mo_files ${LPI_FILES}
-	lazbuild ${LPI_FILES}
+all:mo_files
+	lazbuild ide/dtsl_ide.lpi
+	lazbuild core/fifo/fifotest.lpi
+	lazbuild core/block/blocktest.lpi
 
 mo_files:${MO_FILES}
 
@@ -92,7 +94,6 @@ endif
 ifdef NODOCS
 	DEB_BUILDPKG_OPT+= -B
 endif
-ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
 ifeq (${DEBBUILD},0)
 DEBUSESVN=1
 endif
@@ -105,6 +106,7 @@ endif
 ifdef SNAPSHOT
 DEBUSESVN=1
 endif
+ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
 ifndef DEBUSESVN
 $(error Need "${DEBSRC_ORIG}.tar.gz" to build for DEBBUILD = "${DEBBUILD}" > 1)
 endif

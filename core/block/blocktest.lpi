@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="7"/>
     <General>
+      <Flags>
+        <LRSInOutputDirectory Value="False"/>
+      </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="blockunittest"/>
       <ActiveEditorIndexAtStart Value="1"/>
@@ -27,12 +28,12 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <Units Count="2">
+    <Units Count="6">
       <Unit0>
         <Filename Value="blocktest.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="BlockTest"/>
-        <CursorPos X="8" Y="12"/>
+        <CursorPos X="6" Y="12"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -42,14 +43,38 @@
         <Filename Value="blockbasics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="BlockBasics"/>
-        <CursorPos X="10" Y="30"/>
-        <TopLine Value="23"/>
+        <CursorPos X="3" Y="149"/>
+        <TopLine Value="134"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="blocks.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="blocks"/>
+        <UsageCount Value="20"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="designs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="designs"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="probes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="probes"/>
+        <UsageCount Value="20"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="sources.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="sources"/>
+        <UsageCount Value="20"/>
+      </Unit5>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="blockbasics.pas"/>
         <Caret Line="30" Column="7" TopLine="1"/>
@@ -58,13 +83,26 @@
         <Filename Value="blockbasics.pas"/>
         <Caret Line="39" Column="6" TopLine="24"/>
       </Position2>
+      <Position3>
+        <Filename Value="blockbasics.pas"/>
+        <Caret Line="30" Column="10" TopLine="23"/>
+      </Position3>
+      <Position4>
+        <Filename Value="blockbasics.pas"/>
+        <Caret Line="8" Column="12" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="blockbasics.pas"/>
+        <Caret Line="149" Column="3" TopLine="134"/>
+      </Position5>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
+    <Version Value="8"/>
+    <SearchPaths>
+      <OtherUnitFiles Value="../../build/lib/dtsl/core/fifo/;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)/"/>
+      <UnitOutputDirectory Value="../../build/lib/dtsl/core/block"/>
+    </SearchPaths>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
