@@ -43,7 +43,7 @@ type
 implementation
 uses
   Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
-  Magnifier;
+  Magnifier, Configuration;
                         
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
@@ -236,8 +236,8 @@ var
   Component: TComponent;
 begin
   Result := true;
-  codeFile[ctSource] := DesignDir + Name + '.pas';
-  codeFile[ctDescription] := DesignDir + Name + '.lfm';
+  codeFile[ctSource] := SourceFileName(Name);
+  codeFile[ctDescription] := ResourceFileName(Name);
   for CodeType := Low(CodeType) To High(CodeType) do begin
     if Assigned(CodeBuffer[CodeType]) then
       Result := Result and CodeBuffer[CodeType].Reload
@@ -305,11 +305,11 @@ var
   i: Integer;
   CodeFileName: string;
 begin
-  CodeFileName := DesignDir + Name + '.lfm';
+  CodeFileName := ResourceFileName(Name);
   CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := DesignDir + Name + '.pas';
+  CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
@@ -319,7 +319,7 @@ begin
       Result := Result and Save;
     end; 
   end;
-  CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
+  CodeFileName := SourceFileName('Simulate' + Name);
   SimCodeBuffer := GetCodeBuffer(CodeFileName, cttSimulator, Self);
   Result := Result and SimCodeBuffer.Save;
 end;

@@ -14,9 +14,6 @@ const
   DefaultPortHeight = 10;
   MinPortSpacing = 10;
 
-var
-  DesignDir: string;
-
 type
   TCodeType = (ctSource, ctDescription);
   TCodeTemplateType = (cttNone, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
@@ -178,7 +175,7 @@ begin
     if DeviceType = '' then begin
       DeviceType := 'T' + DeviceName;
     end else begin
-      CodeFile := DesignDir + DeviceName + '.pas';
+      CodeFile := SourceFileName(DeviceName);
       //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
       ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
       CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
@@ -608,8 +605,8 @@ var
   Port: TCGraphPort;
 begin
   Result := true;
-  codeFile[ctSource] := DesignDir + Name + '.pas';
-  codeFile[ctDescription] := DesignDir + Name + '.lfm';
+  codeFile[ctSource] := SourceFileName(Name);
+  codeFile[ctDescription] := ReSourceFileName(Name);
   for CodeType := Low(CodeType) To High(CodeType) do begin
     if Assigned(CodeBuffer[CodeType]) then
       Result := Result and CodeBuffer[CodeType].Reload
@@ -685,11 +682,11 @@ var
   i: Integer;
   CodeFileName: string;
 begin
-  CodeFileName := DesignDir + Name + '.lfm';
+  CodeFileName := ReSourceFileName(Name);
   CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := DesignDir + Name + '.pas';
+  CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
