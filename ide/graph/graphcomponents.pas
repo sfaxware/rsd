@@ -139,7 +139,7 @@ function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Sel
 
 implementation
 uses
-  DesignGraph, CodeToolManager, CodeWriter;
+  DesignGraph, CodeToolManager, CodeWriter, Configuration;
 
 function GetBlockClass(DeviceType: string): TCGraphBlockClass;
 begin
