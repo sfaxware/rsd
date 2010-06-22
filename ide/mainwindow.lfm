@@ -1074,6 +1074,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     top = 72
     object DeleteConnectorMenuItem: TMenuItem
       Caption = 'Delete'
+      OnClick = DeleteConnector
     end
   end
 end
