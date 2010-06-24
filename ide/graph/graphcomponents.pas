@@ -58,11 +58,15 @@ type
   protected
     procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
+  public
+    constructor Create(AOwner: TComponent); override;
   end;
   TCGraphOutputPort = class(TCGraphPort)
   protected
     procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
+  public
+    constructor Create(AOwner: TComponent); override;
   end;
   TPortType = class of TCGraphPort;
   TCGraphBlock = class(TCGraphDevice)
@@ -351,7 +355,6 @@ begin
   OnMouseLeave := @HandleMouseEnterLeaveEvents;
   OnMouseDown := @HandleMouseDownEvents;
   OnMouseUp := @HandleMouseUpEvents;
-  Name := 'Port' + IntToStr(Owner.ComponentCount);
   Parent := TCGraphDevice(AOwner).Parent;
 end;
 
@@ -449,6 +452,15 @@ begin
   end;
 end;
 
+constructor TCGraphInputPort.Create(AOwner: TComponent);
+begin
+  Inherited Create(AOwner);
+  Name := 'Port';
+  FDeviceType := 'TInputPort';
+  FDeviceAncestorType := 'TInputPort';
+  WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
+end;
+
 procedure TCGraphInputPort.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
@@ -492,6 +504,15 @@ begin
   if Assigned(FConnector) then with FConnector do begin
     UpdatePoints;
   end;
+end;
+
+constructor TCGraphOutputPort.Create(AOwner: TComponent);
+begin
+  Inherited Create(AOwner);
+  Name := 'Port';
+  FDeviceType := 'TOutputPort';
+  FDeviceAncestorType := 'TOutputPort';
+  WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
 procedure TCGraphOutputPort.DoPaint(Sender: TObject);
@@ -544,7 +565,7 @@ var
   R: TRect;
 begin
   inherited Create(AOwner);
-  Name := 'Block' + IntToStr(Owner.ComponentCount);
+  Name := 'Block';
   FDeviceType := 'T' + Name;
   FDeviceAncestorType := 'TBlock';
   Caption := 'Block ' + IntToStr(Owner.ComponentCount);
@@ -636,11 +657,13 @@ begin
   Port := nil;
   while Assigned(DeviceDescription) do begin
     WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
-    if DeviceDescription.TypeName = 'TOutputPort' then
-      Port := AddNewPort(TCGraphOutputPort)
-    else if DeviceDescription.TypeName = 'TInputPort' then
-      Port := AddNewPort(TCGraphInputPort)
-    else if DeviceDescription.TypeName = 'TConnector' then begin
+    if DeviceDescription.TypeName = 'TOutputPort' then begin
+      Port := AddNewPort(TCGraphOutputPort);
+      Port.Name := DeviceDescription.Name;
+    end else if DeviceDescription.TypeName = 'TInputPort' then begin
+      Port := AddNewPort(TCGraphInputPort);
+      Port.Name := DeviceDescription.Name;
+    end else if DeviceDescription.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescription, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
@@ -863,7 +886,9 @@ end;
 constructor TCGraphConnector.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Name := 'Connector' + IntToStr(AOwner.ComponentCount);
+  Name := 'Connector';
+  FDeviceType := 'T' + Name;
+  FDeviceAncestorType := 'TConnector';
 end;
 
 destructor TCGraphConnector.Destroy;

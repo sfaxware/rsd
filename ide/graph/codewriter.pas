@@ -17,8 +17,6 @@ uses
   CodeToolManager, DesignGraph;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-  var
-    BlockDeviceType: string;
   function UpdateUsesClause: Boolean;
   var
     i: Integer;
@@ -40,8 +38,8 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     Result := True;
     for i := 0 to Block.ComponentCount - 1 do begin
       Component := Block.Components[i];
-      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-        CodeToolBoss.AddPublishedVariable(Self, BlockDeviceType, DeviceIdentifier, DeviceType);
+      if Component is TCGraphDevice then with Component as TCGraphDevice do begin
+        CodeToolBoss.AddPublishedVariable(Self, DeviceType, DeviceIdentifier, DeviceType);
       end;
     end;
   end;
@@ -63,14 +61,11 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     Result := True;
   end;
 begin
-    if Block is TCGraphDesign then with Block as TCGraphDesign do begin
-      BlockDeviceType := DeviceType;
-    end else if Block is TCGraphBlock then with Block as TCGraphBlock do begin
-      BlockDeviceType := DeviceType;
-    end else begin
-      Exit(False);
-    end;
-  Result := UpdateUsesClause and UpdateBlocksIdentifiers and UpdatePortsIdentifiers and UpdateConnectorsIdentifiers;
+  if (Block is TCGraphDesign) or (Block is TCGraphBlock) then begin
+    Result := UpdateUsesClause and UpdateBlocksIdentifiers and UpdatePortsIdentifiers and UpdateConnectorsIdentifiers;
+  end else begin
+    Result := False;
+  end;
 end;
 
 procedure WriteSimulatorSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
