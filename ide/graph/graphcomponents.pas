@@ -27,8 +27,8 @@ type
     FOnCreate: TNotifyEvent;
     FDeviceType: string;
     FDeviceAncestorType: string;
-    procedure SetName(const Value: TComponentName); override;
   protected
+    procedure SetName(const Value: TComponentName); override;
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
@@ -135,7 +135,11 @@ type
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
   end;
 
+function CreateDevice(DeviceName, DeviceType: string; AncestorType: TCGraphDeviceClass; AOwner: TComponent): TCGraphDevice;
 function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphBlock;
+function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphInputPort;
+function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphOutputPort;
+function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphConnector;
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
@@ -144,9 +148,19 @@ implementation
 uses
   DesignGraph, CodeToolManager, CodeWriter, Configuration;
 
-function GetBlockClass(DeviceType: string): TCGraphBlockClass;
+function GetDeviceClass(DeviceType: string): TCGraphDeviceClass;
 begin
-  if DeviceType = 'TBlock' then begin
+  if Pos('T', DeviceType) <> 1 then begin
+    Result := nil;
+  end else if DeviceType = 'TInputPort' then begin
+    Result := TCGraphInputPort;
+  end else if DeviceType = 'TOutputPort' then begin
+    Result := TCGraphOutputPort;
+  end else if DeviceType = 'TPort' then begin
+    Result := TCGraphPort;
+  end else if DeviceType = 'TConnector' then begin
+    Result := TCGraphConnector;
+  end else if DeviceType = 'TBlock' then begin
     Result := TCGraphBlock;
   end else if DeviceType = 'TRandomSource' then begin
     Result := TCGraphSource;
@@ -157,9 +171,9 @@ begin
   end;
 end;
 
-function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphBlock;
+function CreateDevice(DeviceName, DeviceType: string; AncestorType: TCGraphDeviceClass; AOwner: TComponent): TCGraphDevice;
 var
-  BlockClass: TCGraphBlockClass;
+  DeviceClass: TCGraphDeviceClass;
   CodeFile: string;
   ACodeBuffer: TCodeBuffer;
   DeviceAncestorType: string;
@@ -186,23 +200,52 @@ begin
       WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
     end;
   end;
-  BlockClass := GetBlockClass(DeviceType);
-  if not Assigned(BlockClass) then begin
-    BlockClass := GetBlockClass(DeviceAncestorType);
+  DeviceClass := GetDeviceClass(DeviceType);
+  if not Assigned(DeviceClass) then begin
+    DeviceClass := GetDeviceClass(DeviceAncestorType);
   end;
-  if not Assigned(BlockClass) then begin
-    BlockClass := TCGraphBlock;
+  if Assigned(DeviceClass) then begin
+    Result := DeviceClass.Create(AOwner);
+    if Assigned(Result) then begin
+      if not (Result is AncestorType) then begin
+        FreeAndNil(Result);
+      end;
+    end;
+    if not Assigned(Result) then begin
+      Result := AncestorType.Create(AOwner);
+    end;
+    if DeviceName <> '' then begin
+      Result.Name := DeviceName;
+    end;
+    if DeviceType <> '' then begin
+      Result.FDeviceType := DeviceType;
+    end;
+    if DeviceAncestorType <>'' then begin
+      Result.FDeviceAncestorType := DeviceAncestorType;
+    end;
+  end else begin
+    DeviceClass := nil;
   end;
-  Result := BlockClass.Create(AOwner);
-  if DeviceName <> '' then begin
-    Result.Name := DeviceName;
-  end;
-  if DeviceType <> '' then begin
-    Result.FDeviceType := DeviceType;
-  end;
-  if DeviceAncestorType <>'' then begin
-    Result.FDeviceAncestorType := DeviceAncestorType;
-  end;
+end;
+
+function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphBlock;
+begin
+  Result := CreateDevice(DeviceName, DeviceType, TCGraphBlock, AOwner) as TCGraphBlock;
+end;
+
+function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphInputPort;
+begin
+  Result := CreateDevice(DeviceName, DeviceType, TCGraphInputPort, AOwner) as TCGraphInputPort;
+end;
+
+function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphOutputPort;
+begin
+  Result := CreateDevice(DeviceName, DeviceType, TCGraphOutputPort, AOwner) as TCGraphOutputPort;
+end;
+
+function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TCGraphConnector;
+begin
+  Result := CreateDevice(DeviceName, DeviceType, TCGraphConnector, AOwner) as TCGraphConnector;
 end;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;

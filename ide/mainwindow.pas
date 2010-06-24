@@ -119,6 +119,7 @@ begin
     Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
     Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
     WriteLn('Core.Path = "', Core.Path, '"');
+    Filename := '';
   end;
   Design.Cleanup;
 end;
@@ -166,6 +167,7 @@ begin
       else
         Exit;
     APath := ExtractFilePath(FileName);
+    Path := APath;
     if Name = '' then
       Name := ChangeFileExt(ExtractFileName(FileName), '');
     SetValue('ProjectOptions/PathDelim/Value', PathDelim);
