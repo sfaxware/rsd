@@ -30,7 +30,7 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
       end;
     end;
   end;
-  function UpdateBlocksIdentifiers: Boolean;
+  function UpdateBlocksIdentifiers(OwnerType: string): Boolean;
   var
     i: Integer;
     Component: TComponent;
@@ -39,11 +39,11 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     for i := 0 to Block.ComponentCount - 1 do begin
       Component := Block.Components[i];
       if Component is TCGraphDevice then with Component as TCGraphDevice do begin
-        CodeToolBoss.AddPublishedVariable(Self, DeviceType, DeviceIdentifier, DeviceType);
+        CodeToolBoss.AddPublishedVariable(Self, OwnerType, DeviceIdentifier, DeviceType);
       end;
     end;
   end;
-  function UpdatePortsIdentifiers: Boolean;
+  function UpdatePortsIdentifiers(OwnerType: string): Boolean;
   var
     i: Integer;
     Component: TComponent;
@@ -52,19 +52,29 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     for i := 0 to Block.ComponentCount - 1 do begin
       Component := Block.Components[i];
       if Component is TCGraphPort then with Component as TCGraphPort do begin
-        CodeToolBoss.AddPublishedVariable(Self, TCGraphDevice(Block).DeviceType, DeviceIdentifier, DeviceType);
+        CodeToolBoss.AddPublishedVariable(Self, OwnerType, DeviceIdentifier, DeviceType);
       end;
     end;
   end;
-  function UpdateConnectorsIdentifiers: Boolean;
+  function UpdateConnectorsIdentifiers(ClassType: string): Boolean;
   begin
     Result := True;
   end;
+var
+  OwnerType: string;
 begin
-  if (Block is TCGraphDesign) or (Block is TCGraphBlock) then begin
-    Result := UpdateUsesClause and UpdateBlocksIdentifiers and UpdatePortsIdentifiers and UpdateConnectorsIdentifiers;
-  end else begin
+  if Block is TCGraphBlock then with Block as TCGraphDevice do begin
+    OwnerType := DeviceType;
+  end else if Block is TCGraphDesign then with Block as TCGraphDesign do begin
+    OwnerType := DeviceType;
+  end;
+  if OwnerType = '' then begin
     Result := False;
+  end else begin
+    Result := UpdateUsesClause
+      and UpdateBlocksIdentifiers(OwnerType)
+      and UpdatePortsIdentifiers(OwnerType)
+      and UpdateConnectorsIdentifiers(OwnerType);
   end;
 end;
 
@@ -163,7 +173,9 @@ function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIG
 begin
   Result := CodeToolBoss.LoadFile(FileName, False, False);
   if not Assigned(Result) then begin
-    Result := CodeToolBoss.CreateFile(FileName);
+    if template <> cttNone then begin
+      Result := CodeToolBoss.CreateFile(FileName);
+    end;
     case template of
       cttSimulator: WriteSimulatorSourceTemplate(Owner, Result);
       cttDesign: WriteDesignSourceTemplate(Owner, Result);
