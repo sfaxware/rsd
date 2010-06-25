@@ -118,7 +118,7 @@ begin
     Units.ResourceExt := 'lfm';
     Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
     Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
-    WriteLn('Core.Path = "', Core.Path, '"');
+    //WriteLn('Core.Path = "', Core.Path, '"');
     Filename := '';
   end;
   Design.Cleanup;
@@ -146,7 +146,7 @@ begin
       Delete(APath, p, Length(APath));
     end;
     Core.Path := ExpandFileName(ExtractFilePath(Path + APath));
-    WriteLn('Core.Path = "', Core.Path, '"');
+    //WriteLn('Core.Path = "', Core.Path, '"');
   end;
   with Design do begin
     Cleanup;
@@ -185,10 +185,10 @@ begin
     SetValue('ProjectOptions/Units/Unit1/UnitName/Value', Name);
     SetValue('ProjectOptions/Units/Unit1/EditorIndex/Value', 1);
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
-//    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
-//    WriteLn('DesignDir = ', DesignDir);
+    //WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+    //WriteLn('DesignDir = ', DesignDir);
     Apath := ExtractRelativepath(APath, Core.Path) + 'block;' + ExtractRelativepath(APath, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
-//    WriteLn('realtive path = ', path);
+    //WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', APath);
     Flush;
   end;
@@ -234,7 +234,7 @@ end;
 
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
-  WriteLn('Sender.ClassName = ', Sender.ClassName);
+  //WriteLn('Sender.ClassName = ', Sender.ClassName);
   if Design.PointedDevice is TCGraphBlock then with Design.PointedDevice as TCGraphBlock do begin
     AddNewPort(TCGraphInputPort);
   end;
@@ -296,7 +296,7 @@ begin
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   DirList := ProjectSettings.Core.Path + 'block' + PathSep + ProjectSettings.Core.Path + 'fifo';
-  WriteLn('DirList = ', DirList);
+  //WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
     FileName := LowerCase(TheUnitName) + '.pas';
@@ -389,7 +389,7 @@ begin
     if Execute then begin
       Core.Path := FileName;
     end;
-    WriteLn('Core.Blocks.Path = ', Core.Path);
+    //WriteLn('Core.Blocks.Path = ', Core.Path);
   end;
 end;
 
