@@ -1,0 +1,14 @@
+This patch adds in the source a comment "Compiled for Debian".
+
+Index: dtsl/ide/dtsl_ide.lpr
+===================================================================
+--- dtsl/ide/dtsl_ide.lpr	(révision 158)
++++ dtsl/ide/dtsl_ide.lpr	(copie de travail)
+@@ -1,6 +1,7 @@
+ program dtsl_ide;
+ 
+ {$mode objfpc}{$H+}
++{Compiled for Debian}
+ 
+ uses
+   {$IFDEF UNIX}{$IFDEF UseCThreads}
