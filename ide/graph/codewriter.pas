@@ -67,9 +67,11 @@ begin
   if OwnerType = '' then begin
     Result := False;
   end else begin
+    Self.LockAutoDiskRevert;
     Result := UpdateUsesClause
       and UpdateBlocksIdentifiers(OwnerType)
-      and UpdatePortsIdentifiers(OwnerType)
+      and UpdatePortsIdentifiers(OwnerType);
+    Self.UnlockAutoDiskRevert;
   end;
 end;
 
