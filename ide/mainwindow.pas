@@ -110,15 +110,18 @@ end;
 
 procedure TdtslIdeMainWindow.NewProject(Sender: TObject);
 begin
-  with Project, ProjectSettings do begin
-    Path := GetTempDir;
+  with ProjectSettings do begin
     Name := 'Design';
+    Path := GetTempDir;
+    BuildDir := 'build';
     Units.Count := 0;
     Units.SourceExt := 'pas';
     Units.ResourceExt := 'lfm';
-    Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
     Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
     //WriteLn('Core.Path = "', Core.Path, '"');
+    Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
+  end;
+  with Project do begin
     Filename := '';
   end;
   Design.Cleanup;
@@ -145,8 +148,9 @@ begin
     if p > 0 then begin
       Delete(APath, p, Length(APath));
     end;
-    Core.Path := ExpandFileName(ExtractFilePath(Path + APath));
-    //WriteLn('Core.Path = "', Core.Path, '"');
+    //Core.Path := ExpandFileName(ExtractFilePath(Path + APath));
+    WriteLn('Core.Path = "', Core.Path, '"');
+    BuildDir := GetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', 'build');
   end;
   with Design do begin
     Cleanup;
@@ -190,6 +194,7 @@ begin
     Apath := ExtractRelativepath(APath, Core.Path) + 'block;' + ExtractRelativepath(APath, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
     //WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', APath);
+    SetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', BuildDir);
     Flush;
   end;
   if Assigned(EditorCodeBuffer) then with SynEdit1 do begin

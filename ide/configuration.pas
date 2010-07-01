@@ -12,6 +12,7 @@ type
   TProjectSettings = record
     Name: string;
     Path: string;
+    BuildDir: string;
     Units: record
       Count: Word;
       SourceExt: string;
@@ -34,18 +35,18 @@ function ReSourceFileName(BlockName: string): string;
 begin
   with ProjectSettings do begin
     Result := Path + BlockName + '.' + Units.ResourceExt;
-    WriteLn('Path = ', Path, ', BlockName = ', BlockName, ', Units.SourceExt = ', Units.ResourceExt);
+    //WriteLn('Path = ', Path, ', BlockName = ', BlockName, ', Units.SourceExt = ', Units.ResourceExt);
   end;
-  WriteLn('ReSourceFileName = ', Result);
+  //WriteLn('ReSourceFileName = ', Result);
 end;
 
 function SourceFileName(BlockName: string): string;
 begin
   with ProjectSettings do begin
     Result := Path + BlockName + '.' + Units.SourceExt;
-    WriteLn('Path = ', Path, ', BlockName = ', BlockName, ', Units.SourceExt = ', Units.SourceExt);
+    //WriteLn('Path = ', Path, ', BlockName = ', BlockName, ', Units.SourceExt = ', Units.SourceExt);
   end;
-  WriteLn('SourceFileName = ', Result);
+  //WriteLn('SourceFileName = ', Result);
 end;
 
 end.
