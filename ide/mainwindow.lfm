@@ -56,6 +56,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -1010,10 +1011,11 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    top = 64
+    top = 72
   end
   object DesignPopupMenu: TPopupMenu
-    left = 64
+    left = 96
+    top = 72
     object BlocksSubMenu: TMenuItem
       Caption = 'Blocks'
       object AddBlockMenuItem: TMenuItem
@@ -1043,6 +1045,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object BlockPopupMenu: TPopupMenu
     left = 64
+    top = 72
     object PortsSubMenu: TMenuItem
       Caption = 'Ports'
       object AddInputPortMenuItem: TMenuItem
@@ -1076,5 +1079,19 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Caption = 'Delete'
       OnClick = DeleteConnector
     end
+  end
+  object SynAutoComplete1: TSynAutoComplete
+    AutoCompleteList.Strings = (
+      'b'
+      '=begin'
+      'e'
+      '=end'
+      'w'
+      '=WriteLn'
+    )
+    EndOfTokenChr = '()[].'
+    Editor = SynEdit1
+    ShortCut = 16416
+    left = 64
   end
 end
