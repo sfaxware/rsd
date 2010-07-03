@@ -68,6 +68,7 @@ type
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
     procedure CompileProject(Sender: TObject);
+    procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
@@ -87,7 +88,10 @@ type
   private
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
-    procedure AddNewBlock(BlockType: string);
+    procedure AddNewBlock(ADeviceType: string);
+    procedure AddNewConnector(ADeviceType: string);
+    procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure SetupChildrenEvents(Sender: TObject);
   public
     destructor Destroy; override;
@@ -257,6 +261,11 @@ begin
 
 end;
 
+procedure TdtslIdeMainWindow.ConnectPorts(Sender: TObject);
+begin
+  AddNewConnector('TConnector');
+end;
+
 procedure TdtslIdeMainWindow.DeleteConnector(Sender: TObject);
 begin
   with Design do begin
@@ -315,11 +324,45 @@ begin
     Result := GetCodeBuffer(FileName, cttNone, nil);
 end;
 
-procedure TdtslIdeMainWindow.AddNewBlock(BlockType: string);
+procedure TdtslIdeMainWindow.AddNewBlock(ADeviceType: string);
 begin
   if Assigned(Design.SelectedBlock) then
     Design.SelectedBlock.Selected := False;
-  Design.SelectedBlock := Design.AddNewBlock('', BlockType);
+  Design.SelectedBlock := Design.AddNewBlock('', ADeviceType);
+end;
+
+procedure TdtslIdeMainWindow.AddNewConnector(ADeviceType: string);
+begin
+  Design.AddNewConnector('', ADeviceType);
+end;
+
+procedure TdtslIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //WriteLn('TCGraphPort.HandleMouseDownEvents');
+  case Button of
+    mbLeft:with Design do begin
+      if Sender is TCGraphOutputPort then
+       SelectedOutputPort := Sender as TCGraphOutputPort
+      else
+       SelectedOutputPort := nil;
+    end;
+  end;
+end;
+
+procedure TdtslIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  //WriteLn('TCGraphPort.HandleMouseUpEvents');
+  case Button of
+    mbLeft:with Design do begin
+      if (Sender is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
+        SelectedInputPort := Sender as TCGraphInputPort;
+        //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
+        //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
+        ConnectPorts(Self);
+      end else
+        SelectedInputPort := nil;
+    end;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.SetupChildrenEvents(Sender: TObject);
@@ -327,9 +370,19 @@ begin
   if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
     OnDblClick := @ViewFile;
     PopupMenu := BlockPopupMenu;
+    OnChildrenCreate := @SetupChildrenEvents;
+    if Sender is TCGraphSource then with Sender as TCGraphSource do begin
+       SetupChildrenEvents(FindComponent('Output'));
+    end else if Sender is TCGraphProbe then with Sender as TCGraphProbe do begin
+       SetupChildrenEvents(FindComponent('Input'));
+    end;
   end else if Sender is TCGraphConnector then with Sender as TCGraphConnector do begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;
+  end else if Sender is TCGraphInputPort then with Sender as TCGraphInputPort do begin
+    OnMouseUp := @HandleMouseUpEvents;
+  end else if Sender is TCGraphOutputPort then with Sender as TCGraphOutputPort do begin
+    OnMouseDown := @HandleMouseDownEvents;
   end;
 end;
 

@@ -25,14 +25,14 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function AddNewBlock(DeviceName, DeviceType: string): TCGraphBlock; virtual;
+    function AddNewBlock(ADeviceName, ADeviceType: string): TCGraphBlock; virtual;
+    function AddNewConnector(ADeviceName, ADeviceType: string): TCGraphConnector; virtual;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
     function GetUpdatedDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
-    procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(var Connector: TCGraphConnector);
     procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
@@ -78,29 +78,13 @@ begin
     SelectedOutputPort := nil;
 end;
 
-procedure TCGraphDesign.ConnectPorts(Sender: TObject);
-var
-  Connector: TCGraphConnector;
-begin
-  Connector := CreateConnector('', '', Self);
-  with Connector do begin
-    Parent := Self;
-    Connect(SelectedOutputPort, SelectedInputPort);
-    OnMouseEnter := @HandleMouseEnter;
-    OnMouseLeave := @HandleMouseLeave;
-  end;
-  if Assigned(FOnChildrenCreate) then begin
-    FOnChildrenCreate(Connector);
-  end;
-end;
-
-function TCGraphDesign.AddNewBlock(DeviceName, DeviceType: string):TCGraphBlock;
+function TCGraphDesign.AddNewBlock(ADeviceName, ADeviceType: string):TCGraphBlock;
 var
   R: TRect;
   w, h: Integer;
 begin
-  Result := CreateBlock(DeviceName, DeviceType, Self);
-  if DeviceName = '' then begin
+  Result := CreateBlock(ADeviceName, ADeviceType, Self);
+  if ADeviceName = '' then begin
     R := Result.OriginalBounds;
     with R do begin
       w := Right - Left;
@@ -123,6 +107,23 @@ begin
   end;
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
+  end;
+end;
+
+function TCGraphDesign.AddNewConnector(ADeviceName, ADeviceType: string): TCGraphConnector;
+begin
+  Result := CreateConnector(ADeviceName, ADeviceType, Self);
+  with Result do begin
+    Parent := Self;
+    Connect(SelectedOutputPort, SelectedInputPort);
+    OnMouseEnter := @HandleMouseEnter;
+    OnMouseLeave := @HandleMouseLeave;
+  end;
+  if Assigned(FOnChildrenCreate) then begin
+    FOnChildrenCreate(Result);
+  end;
+  if not Assigned(CodeBuffer[ctSource]) then begin
+    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
   end;
 end;
 
@@ -236,7 +237,6 @@ var
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
   Component: TComponent;
-  Connector: TCGraphConnector;
 begin
   Result := true;
   codeFile[ctSource] := SourceFileName(Name);
@@ -290,16 +290,7 @@ begin
       Component := Component.FindComponent(PortName);
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedInputPort := Component as TCGraphInputPort;
-      Connector := CreateConnector(BlockDescription.Name, BlockDescription.TypeName, Self);
-      with Connector do begin
-        Parent := Self;
-        Connect(SelectedOutputPort, SelectedInputPort);
-        OnMouseEnter := @HandleMouseEnter;
-        OnMouseLeave := @HandleMouseLeave;
-      end;
-      if Assigned(FOnChildrenCreate) then begin
-        FOnChildrenCreate(Connector);
-      end;
+      AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;

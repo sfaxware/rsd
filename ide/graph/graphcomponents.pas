@@ -44,8 +44,6 @@ type
     FConnector: TCGraphConnector;
   protected
     procedure HandleMouseEnterLeaveEvents(Sender: TObject); virtual;
-    procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
@@ -75,10 +73,17 @@ type
     _MousePos: TPoint;
     FInputComponentCount: Integer;
     FOutputComponentCount: Integer;
+    FOnChildrenCreate: TNotifyEvent;
     procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure MouseLeaved(Sender: TObject);
+  protected
+    FSelected: Boolean;
+    procedure SetSeleted(AValue: Boolean);
+    procedure DoPaint(Sender: TObject); override;
+    procedure UpdatePortsBounds(PortType: TPortType);
+    procedure ValidateInsert(AComponent: TComponent); override;
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
@@ -89,12 +94,7 @@ type
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
     procedure Magnify(m: Real); override;
-  protected
-    FSelected: Boolean;
-    procedure SetSeleted(AValue: Boolean);
-    procedure DoPaint(Sender: TObject); override;
-    procedure UpdatePortsBounds(PortType: TPortType);
-    procedure ValidateInsert(AComponent: TComponent); override;
+    property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   published
     property Selected: Boolean read FSelected write SetSeleted;
     property InputComponentCount: Integer read FInputComponentCount;
@@ -106,16 +106,16 @@ type
     FInputPort: TCGraphInputPort;
     FOutputPort: TCGraphOutputPort;
     FPoints: TRoute;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    function GetUpdatedDescription(Indent: string): string;
-    procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   protected
     procedure DoPaint(Sender: TObject); override;
     procedure SetInputPort(Value: TCGraphInputPort);
     procedure SetOutputPort(Value: TCGraphOutputPort);
     procedure UpdatePoints; virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    function GetUpdatedDescription(Indent: string): string;
+    procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   published
     property InputPort: TCGraphInputPort read FInputPort write SetInputPort;
     property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
@@ -179,16 +179,20 @@ var
   DeviceAncestorType: string;
 begin
   if DeviceName = '' then begin
-    if DeviceType <> '' then begin
-      if Pos('T', DeviceType) = 1 then begin
-        DeviceName := Copy(DeviceType, 2, Length(DeviceType));
-      end else begin
-        DeviceName := 'A' + DeviceType;
-      end;
-      DeviceName += IntToStr(AOwner.ComponentCount + 1);
-      DeviceAncestorType := DeviceType;
-      DeviceType := 'T' + DeviceName;
+    if DeviceType = '' then begin
+      DeviceType := AncestorType.ClassName;
+      if Pos('TCGraph', DeviceType) = 1 then begin
+        DeviceType := 'T' + Copy(DeviceType, 8, Length(DeviceType));
+      end
     end;
+    DeviceAncestorType := DeviceType;
+    if Pos('T', DeviceType) = 1 then begin
+      DeviceName := Copy(DeviceType, 2, Length(DeviceType));
+    end else begin
+      DeviceName := 'A' + DeviceType;
+    end;
+    DeviceName += IntToStr(AOwner.ComponentCount + 1);
+    DeviceType := 'T' + DeviceName;
   end else begin
     if DeviceType = '' then begin
       DeviceType := 'T' + DeviceName;
@@ -226,7 +230,7 @@ begin
       Result.FDeviceAncestorType := DeviceAncestorType;
     end;
   end else begin
-    DeviceClass := nil;
+    Result := nil;
   end;
 end;
 
@@ -398,8 +402,6 @@ begin
   UpdateBounds(-1, -1);
   OnMouseEnter := @HandleMouseEnterLeaveEvents;
   OnMouseLeave := @HandleMouseEnterLeaveEvents;
-  OnMouseDown := @HandleMouseDownEvents;
-  OnMouseUp := @HandleMouseUpEvents;
   Parent := TCGraphDevice(AOwner).Parent;
 end;
 
@@ -407,35 +409,6 @@ procedure TCGraphPort.HandleMouseEnterLeaveEvents(Sender: TObject);
 begin
   //WriteLn('MouseEntered = ', MouseEntered);
   Repaint;
-end;
-
-procedure TCGraphPort.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  //WriteLn('TCGraphPort.HandleMouseDownEvents');
-  case Button of
-    mbLeft:with Parent as TCGraphDesign do begin
-      if Self is TCGraphOutputPort then
-       SelectedOutputPort := Self as TCGraphOutputPort
-      else
-       SelectedOutputPort := nil;
-    end;
-  end;
-end;
-
-procedure TCGraphPort.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  //WriteLn('TCGraphPort.HandleMouseUpEvents');
-  case Button of
-    mbLeft:with Parent as TCGraphDesign do begin
-      if (Self is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
-        SelectedInputPort := Self as TCGraphInputPort;
-        //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
-        //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
-        ConnectPorts(Self);
-      end else
-        SelectedInputPort := nil;
-    end;
-  end;
 end;
 
 procedure TCGraphPort.DoPaint(Sender: TObject);
@@ -778,6 +751,9 @@ begin
   Result := PortType.Create(Self);
   if not Assigned(CodeBuffer[ctSource]) then begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+  end;
+  if Assigned(FOnChildrenCreate) then begin
+    FOnChildrenCreate(Result);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
   CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
