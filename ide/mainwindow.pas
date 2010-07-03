@@ -325,10 +325,22 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.AddNewBlock(ADeviceType: string);
+var
+  SameBuffer: Boolean;
 begin
-  if Assigned(Design.SelectedBlock) then
-    Design.SelectedBlock.Selected := False;
-  Design.SelectedBlock := Design.AddNewBlock('', ADeviceType);
+  SameBuffer := (EditorCodeBuffer = Design.CodeBuffer[ctSource]) and Assigned(EditorCodeBuffer);
+  if SameBuffer and SynEdit1.Modified then begin
+    EditorCodeBuffer.Source := SynEdit1.Text;
+  end;
+  with Design do begin
+    if Assigned(SelectedBlock) then
+      SelectedBlock.Selected := False;
+    SelectedBlock := AddNewBlock('', ADeviceType);
+  end;
+
+  if SameBuffer then begin
+    SynEdit1.Text := EditorCodeBuffer.Source;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.AddNewConnector(ADeviceType: string);
@@ -414,7 +426,6 @@ begin
       DeviceName := Name;
       CodeFileName := SourceFileName(DeviceName);
       CodeBuffer := GetCodeBuffer(CodeFileName, CodeTemplate, GraphDevice);
-      UpdateUsedBlocks(Sender as TComponent, CodeBuffer);
     end;
     if EditorCodeBuffer <> CodeBuffer then begin
       EditorCodeBuffer := CodeBuffer;

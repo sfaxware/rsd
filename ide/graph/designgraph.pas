@@ -108,6 +108,13 @@ begin
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
   end;
+  if not Assigned(CodeBuffer[ctSource]) then begin
+    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+  end;
+  CodeBuffer[ctSource].LockAutoDiskRevert;
+  CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
+  CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
+  CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
 function TCGraphDesign.AddNewConnector(ADeviceName, ADeviceType: string): TCGraphConnector;
@@ -314,7 +321,6 @@ begin
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
-  UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];

@@ -7,7 +7,6 @@ interface
 uses
   Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
 
-function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
@@ -15,52 +14,7 @@ function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
 implementation
 
 uses
-  CodeToolManager, DesignGraph, Configuration;
-
-function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-  function UpdateUsesClause: Boolean;
-  var
-    i: Integer;
-    Component: TComponent;
-  begin
-    Result := True;
-    for i := 0 to Block.ComponentCount - 1 do begin
-      Component := Block.Components[i];
-      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-        Result := Result and CodeToolBoss.AddUnitToMainUsesSection(Self, DeviceIdentifier, '');
-      end;
-    end;
-  end;
-  function UpdateBlocksIdentifiers(OwnerType: string): Boolean;
-  var
-    i: Integer;
-    Component: TComponent;
-  begin
-    Result := True;
-    for i := 0 to Block.ComponentCount - 1 do begin
-      Component := Block.Components[i];
-      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-        CodeToolBoss.AddPublishedVariable(Self, OwnerType, DeviceIdentifier, DeviceType);
-      end;
-    end;
-  end;
-var
-  OwnerType: string;
-begin
-  if Block is TCGraphBlock then with Block as TCGraphDevice do begin
-    OwnerType := DeviceType;
-  end else if Block is TCGraphDesign then with Block as TCGraphDesign do begin
-    OwnerType := DeviceType;
-  end;
-  if OwnerType = '' then begin
-    Result := False;
-  end else begin
-    Self.LockAutoDiskRevert;
-    Result := UpdateUsesClause
-      and UpdateBlocksIdentifiers(OwnerType);
-    Self.UnlockAutoDiskRevert;
-  end;
-end;
+  CodeToolManager, Configuration;
 
 procedure WriteSimulatorSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
 begin
@@ -175,7 +129,7 @@ var
   CodeFileName: string;
 begin
   CodeFileName := SourceFileName(Owner.DeviceIdentifier);
-  Result := GetCodeBuffer(CodeFileName, cttBlock, Owner);
+  Result := GetCodeBuffer(CodeFileName, template, Owner);
 end;
 
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
