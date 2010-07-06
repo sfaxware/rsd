@@ -28,9 +28,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn(FuncB('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
+  //WriteLn(FuncB('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn(FuncE('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
+  //WriteLn(FuncE('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
 end;
 
 procedure TDesign.Run;
