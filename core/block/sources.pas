@@ -13,14 +13,17 @@ type
   private
     FInitialSeed: TSourceSeed;
     FCurrentSeed: TSourceSeed;
+    FAmplitude: TSourceSeed;
     procedure SetInitialSeed(Seed: TSourceSeed); virtual;
     procedure UpdateCurrentSeed; virtual; abstract;
   public
+    constructor Create(AOwner: TComponent); override;
     procedure Execute; override;
     property CurrentSeed: TSourceSeed read FCurrentSeed;
   published
     Output: TOutputPort;
     property InitialSeed: TSourceSeed read FInitialSeed write SetInitialSeed;
+    property Amplitude: TSourceSeed read FAmplitude write FAmplitude;
   end;
 
   TRandomSource = class(TSource)
@@ -45,7 +48,20 @@ uses
 procedure TSource.SetInitialSeed(Seed: TSourceSeed);
 begin
   FInitialSeed := Seed;
-  FCurrentSeed := Seed;
+  if Abs(Seed) > FAmplitude then begin
+    FCurrentSeed := FAmplitude;
+  end else begin
+    FCurrentSeed := FInitialSeed;
+  end;
+  WriteLn('DeviceName = ', DeviceName);
+  WriteLn('InitialSeed = ', InitialSeed);
+  WriteLn('Amplitude = ', Amplitude);
+end;
+
+constructor TSource.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FAmplitude := MaxUIntValue;
 end;
 
 procedure TSource.Execute;
@@ -211,7 +227,7 @@ end;
 
 procedure TRandomSource.UpdateCurrentSeed;
 begin
-  FCurrentSeed := random(MaxUIntValue);
+  FCurrentSeed := random(FAmplitude);
 end;
 
 constructor TRandomSource.Create(AOwner: TComponent);
@@ -219,6 +235,12 @@ begin
   inherited Create(AOwner);
   InitialSeed := Trunc(Now * 123456789);
 end;
+
+initialization
+  RegisterClass(TRandomSource);
+  RegisterClass(TSource);
+
+finalization
 
 end.
 

@@ -75,5 +75,10 @@ begin
   Close(FFile);
 end;
 
+initialization
+  RegisterClass(TFileDumpProbe);
+
+finalization
+
 end.
 
