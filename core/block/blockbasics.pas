@@ -267,7 +267,7 @@ end;
 
 function TCOutputPort.GetIsFull: Boolean;
 begin
-  Result := Assigned(FConnector) and FConnector.IsEmpty;
+  Result := Assigned(FConnector) and FConnector.IsFull;
 end;
 
 procedure TCOutputPort.Push(Sample: Integer);

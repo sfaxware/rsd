@@ -61,7 +61,7 @@ procedure TFileDumpProbe.Execute;
 var
   Sample: Integer;
 begin
-  //WriteLn(FuncB('TFileDumpProbe.Execute'));
+  //WriteLn(FuncB('TFileDumpProbe.Execute'), 'IsEmpty = ', Input.IsEmpty);
   with Input do while not IsEmpty do begin
     Pop(Sample);
     //WriteLn(FuncC('TFileDumpProbe.Execute'), 'IsEmpty = ', IsEmpty, ', Sample = ', Sample);
