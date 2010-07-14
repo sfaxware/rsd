@@ -5,7 +5,7 @@ unit Sources;
 interface
 
 uses
-  Classes, Blocks;
+  Classes, Blocks, BlockBasics;
 
 type
   TSourceSeed = LongWord;
@@ -14,6 +14,7 @@ type
     FInitialSeed: TSourceSeed;
     FCurrentSeed: TSourceSeed;
     FAmplitude: TSourceSeed;
+    FSampleQty: Cardinal;
     procedure SetInitialSeed(Seed: TSourceSeed); virtual;
     procedure UpdateCurrentSeed; virtual; abstract;
   public
@@ -24,6 +25,7 @@ type
     Output: TOutputPort;
     property InitialSeed: TSourceSeed read FInitialSeed write SetInitialSeed;
     property Amplitude: TSourceSeed read FAmplitude write FAmplitude;
+    property SampleQty: Cardinal write FSampleQty;
   end;
 
   TRandomSource = class(TSource)
@@ -43,7 +45,7 @@ type
 implementation
 
 uses
-  SysUtils, BlockBasics;
+  SysUtils;
 
 procedure TSource.SetInitialSeed(Seed: TSourceSeed);
 begin
@@ -59,12 +61,22 @@ constructor TSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FAmplitude := MaxUIntValue;
+  FSampleQty := MaxUIntValue;
 end;
 
 procedure TSource.Execute;
 begin
+  WriteLn(FuncB('TSource.Execute'), 'IsFull = ', Output.IsFull, ', SampleQty = ', FSampleQty);
   UpdateCurrentSeed;
-  Output.Push(FCurrentSeed);
+  with Output do begin
+    WriteLn(FuncC('TSource.Execute'), 'IsFull = ', IsFull, ', SampleQty = ', FSampleQty, ', Sample = ', FCurrentSeed);
+    Push(FCurrentSeed)
+  end;
+  FSampleQty -= 1;
+  if FSampleQty <= 0 then begin
+    Include(FRunStatus, drfTerminated);
+  end;
+  WriteLn(FuncE('TSource.Execute'));
 end;
 
 {----------------------------------------------------------------------

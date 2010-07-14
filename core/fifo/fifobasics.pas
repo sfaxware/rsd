@@ -9,8 +9,8 @@ uses
 
 type
   TIFifo = interface
-    function Push(p:Pointer):Boolean;
-    function Pop:Pointer;
+    function Push(p: Pointer): Boolean;
+    function Pop(out p: Pointer): Boolean;
     function GetPendingQty:Integer;
     function GetAvailableQty:Integer;
     property RdIdx: Integer;
@@ -25,9 +25,9 @@ type
     Wr:Integer;
     Buffer:Array Of Pointer;
   public
-    constructor Create(Size:Integer);
-    function Push(p:Pointer):Boolean;
-    function Pop:Pointer;
+    constructor Create(Size: Integer);
+    function Push(p: Pointer): Boolean;
+    function Pop(out p: Pointer): Boolean;
     function GetPendingQty:Integer;
     function GetAvailableQty:Integer;
     destructor Destroy;
@@ -74,16 +74,17 @@ begin
   end;
 end;
 
-function TCFifo.Pop:Pointer;
+function TCFifo.Pop(out p: Pointer): Boolean;
 begin
   if Rd = Wr then
-    Result := Nil
+    Result := False
   else begin
-    Result := Buffer[Rd];
+    p := Buffer[Rd];
     Buffer[Rd] := Nil;
     Rd := Rd + 1;
     if Rd > Sz then
       Rd := 0;
+    Result := True;
   end;
 end;
 
