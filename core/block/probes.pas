@@ -78,17 +78,17 @@ procedure TFileDumpProbe.Execute;
 var
   Sample: Integer;
 begin
-  WriteLn(FuncB('TFileDumpProbe.Execute'), 'IsEmpty = ', Input.IsEmpty, ', SampleQty = ', FSampleQty);
+  //WriteLn(FuncB('TFileDumpProbe.Execute'), 'IsEmpty = ', Input.IsEmpty, ', SampleQty = ', FSampleQty);
   with Input do begin
     Pop(Sample);
-    WriteLn(FuncC('TFileDumpProbe.Execute'), 'IsEmpty = ', IsEmpty, ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
+    //WriteLn(FuncC('TFileDumpProbe.Execute'), 'IsEmpty = ', IsEmpty, ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
   end;
   WriteLn(FFile, Sample);
   FSampleQty -= 1;
   if FSampleQty <= 0 then begin
     Include(FRunStatus, drfTerminated);
   end;
-  WriteLn(FuncE('TFileDumpProbe.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
+  //WriteLn(FuncE('TFileDumpProbe.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
 end;
 
 destructor TFileDumpProbe.Destroy;

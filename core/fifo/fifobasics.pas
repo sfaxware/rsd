@@ -42,7 +42,7 @@ constructor TCFifo.Create(Size:Integer);
 var
   i:Integer;
 begin
-  Sz := Size;
+  Sz := Size + 1;
   {Usally allocate Sz + 1 elements as fifo is full when Wr = Rd + 1 mod Sz}
   SetLength(Buffer, Sz + 1);
   Rd := 0;
