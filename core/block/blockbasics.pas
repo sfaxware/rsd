@@ -330,14 +330,6 @@ var
   RunBlock: Boolean;
 begin
   WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
-{  RunBlock := Length(FInputPorts) = 0;
-  for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i].FConnector.FOutputPort.Owner as TCBlock do begin
-    RunBlock := RunBlock or not (drfTerminated in RunStatus)
-  end;
-  if not RunBlock then begin
-    Include(FRunStatus, drfTerminated);
-    Exit;
-  end;}
   BlockRunStatus := [drfTerminated];
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     RunBlock := False;
@@ -358,15 +350,7 @@ begin
       Execute;
     end;
   end;
-  {FRunStatus := BlockRunStatus;
-  RunBlock := Length(FOutputPorts) = 0;
-  for i := Low(FOutputPorts) to High(FOutputPorts) do with FOutputPorts[i].FConnector.FInputPort.Owner as TCBlock do begin
-    RunBlock := RunBlock or not (drfTerminated in RunStatus);
-    WriteLn(FuncC('TCBlock.Execute'), 'OutputPort[', i, '].DeviceName = ', DeviceName, ', Terminated = ', drfTerminated in RunStatus);
-  end;
-  if not RunBlock then begin
-    Include(FRunStatus, drfTerminated);
-  end;}
+  FRunStatus := BlockRunStatus;
   WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
 end;
 
@@ -414,11 +398,14 @@ begin
   WriteLn(FuncB('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
   repeat
     Result := FSamples.Push(Pointer(Sample));
+    WriteLn(FuncC('TCConnector.Push'), 'Could push = ', Result);
     if Result then with InputPort.Owner as TCBlock do begin
       Exclude(FRunStatus, drfBlockedByInput);
     end else with FInputPort.Owner as TCBlock do begin
+      WriteLn(FuncC('TCConnector.Push'), Owner.Name, '.', Name, ' connected to ', FInputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
       if drfTerminated in FRunStatus then with FOutputPort.Owner as TCBlock do begin
         Include(FRunStatus, drfTerminated);
+        Break;
       end else begin
         Execute;
       end;
@@ -429,20 +416,23 @@ end;
 
 function TCConnector.Pop(out Sample: Integer): Boolean;
 begin
-  WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample);
+  WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.Qty = ', FSamples.GetPendingQty);
   repeat
     Result := FSamples.Pop(Pointer(Sample));
+    WriteLn(FuncC('TCConnector.Pop'), 'Could pop = ', Result);
     if Result then with OutputPort.Owner as TCBlock do begin
       Exclude(FRunStatus, drfBlockedByOutput);
     end else with FOutputPort.Owner as TCBlock do begin
+      WriteLn(FuncC('TCConnector.Pop'), Owner.Name, '.', Name, ' connected to ', FOutputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
       if drfTerminated in FRunStatus then with FInputPort.Owner as TCBlock do begin
         Include(FRunStatus, drfTerminated);
+        Break;
       end else begin
         Execute;
       end;
     end;
   until Result;
-  WriteLn(FuncE('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample);
+  WriteLn(FuncE('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
 end;
 
 end.

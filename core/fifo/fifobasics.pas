@@ -97,7 +97,7 @@ end;
 
 function TCFifo.GetAvailableQty:Integer;
 begin
-  Result := Sz - GetPendingQty;
+  Result := Sz - GetPendingQty - 1;
 end;
 
 end.
