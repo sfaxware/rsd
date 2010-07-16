@@ -12,7 +12,7 @@ procedure TestFifo;
 var
   Fifo:TCFifo;
   Sz:Integer;
-  i:Integer;
+  i, j:Integer;
 begin
   Sz := Random(1024);
   WriteLn('Allocating Fifo with Sz = ', Sz);
@@ -25,7 +25,8 @@ begin
     WriteLn('Number of available entries = ', GetAvailableQty);
     WriteLn('Poping elements');
     For i := 1 to Random(Sz) Do
-      if Integer(Pop) <> i then
+      Pop(Pointer(j));
+      if Integer(j) <> i then
         WriteLn('Error @ i = ', i);
     WriteLn('Number of pending entries = ', GetPendingQty);
     WriteLn('Number of available entries = ', GetAvailableQty);
