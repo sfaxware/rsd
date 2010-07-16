@@ -30,7 +30,7 @@ type
     function Pop(out p: Pointer): Boolean;
     function GetPendingQty:Integer;
     function GetAvailableQty:Integer;
-    destructor Destroy;
+    destructor Destroy; override;
     property RdIdx: Integer read Rd;
     property WrIdx: Integer read Wr;
     property Size: Integer read Sz;
