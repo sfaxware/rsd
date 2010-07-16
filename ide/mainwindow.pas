@@ -244,15 +244,15 @@ end;
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
-  if Design.PointedDevice is TCGraphBlock then with Design.PointedDevice as TCGraphBlock do begin
-    AddNewPort(TCGraphInputPort);
+  if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
+    AddNewPort(TInputPort);
   end;
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
-  if Design.PointedDevice is TCGraphBlock then with Design.PointedDevice as TCGraphBlock do begin
-    AddNewPort(TCGraphOutputPort);
+  if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
+    AddNewPort(TOutputPort);
   end;
 end;
 
@@ -269,8 +269,8 @@ end;
 procedure TdtslIdeMainWindow.DeleteConnector(Sender: TObject);
 begin
   with Design do begin
-    if Assigned(PointedDevice) and (PointedDevice is TCGraphConnector) then  begin
-      DeleteConnector(TCGraphConnector(PointedDevice));
+    if Assigned(PointedDevice) and (PointedDevice is TConnector) then  begin
+      DeleteConnector(TConnector(PointedDevice));
     end;
   end;
 end;
@@ -350,11 +350,11 @@ end;
 
 procedure TdtslIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('TCGraphPort.HandleMouseDownEvents');
+  //WriteLn('TPort.HandleMouseDownEvents');
   case Button of
     mbLeft:with Design do begin
-      if Sender is TCGraphOutputPort then
-       SelectedOutputPort := Sender as TCGraphOutputPort
+      if Sender is TOutputPort then
+       SelectedOutputPort := Sender as TOutputPort
       else
        SelectedOutputPort := nil;
     end;
@@ -363,11 +363,11 @@ end;
 
 procedure TdtslIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('TCGraphPort.HandleMouseUpEvents');
+  //WriteLn('TPort.HandleMouseUpEvents');
   case Button of
     mbLeft:with Design do begin
-      if (Sender is TCGraphInputPort) and (Assigned(SelectedOutputPort)) then begin
-        SelectedInputPort := Sender as TCGraphInputPort;
+      if (Sender is TInputPort) and (Assigned(SelectedOutputPort)) then begin
+        SelectedInputPort := Sender as TInputPort;
         //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
         //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
         ConnectPorts(Self);
@@ -379,21 +379,21 @@ end;
 
 procedure TdtslIdeMainWindow.SetupChildrenEvents(Sender: TObject);
 begin
-  if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
+  if Sender is TBlock then with Sender as TBlock do begin
     OnDblClick := @ViewFile;
     PopupMenu := BlockPopupMenu;
     OnChildrenCreate := @SetupChildrenEvents;
-    if Sender is TCGraphSource then with Sender as TCGraphSource do begin
+    if Sender is TSource then with Sender as TSource do begin
        SetupChildrenEvents(FindComponent('Output'));
-    end else if Sender is TCGraphProbe then with Sender as TCGraphProbe do begin
+    end else if Sender is TProbe then with Sender as TProbe do begin
        SetupChildrenEvents(FindComponent('Input'));
     end;
-  end else if Sender is TCGraphConnector then with Sender as TCGraphConnector do begin
+  end else if Sender is TConnector then with Sender as TConnector do begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;
-  end else if Sender is TCGraphInputPort then with Sender as TCGraphInputPort do begin
+  end else if Sender is TInputPort then with Sender as TInputPort do begin
     OnMouseUp := @HandleMouseUpEvents;
-  end else if Sender is TCGraphOutputPort then with Sender as TCGraphOutputPort do begin
+  end else if Sender is TOutputPort then with Sender as TOutputPort do begin
     OnMouseDown := @HandleMouseDownEvents;
   end;
 end;
@@ -415,11 +415,11 @@ begin
     if Assigned(EditorCodeBuffer) and Modified then begin
        EditorCodeBuffer.Source := Text;
     end;
-    if Sender is TCGraphBlock then begin
-      GraphDevice := Sender as TCGraphBlock;
+    if Sender is TBlock then begin
+      GraphDevice := Sender as TBlock;
       CodeTemplate := cttBlock;
-    end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
-      GraphDevice := Sender as TCGraphDesign;
+    end else if Sender is TDesign then with Sender as TDesign do begin
+      GraphDevice := Sender as TDesign;
       CodeTemplate := cttDesign;
     end;
     if Assigned(GraphDevice) then with Sender as TComponent do begin
