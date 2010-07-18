@@ -11,8 +11,9 @@ UNIT RealVectors;
 INTERFACE
 {$DEFINE INTERFACE}
 TYPE
-  TVectorsBase=Real;{If you want more precision you can chage to extended/...}
-  TVectorsIndex=DWord;{This allows us to use huge vectors}
+  TReal = Real;
+  TVectorBase = TReal;{If you want more precision you can chage to extended/...}
+  TVectorIndex = DWord;{This allows us to use huge vectors}
   {The upper part (just up to this line) is used to define the types that will
   be used to generate executable code. All pascal code that is written before
   this line will compile with more than base type. Independent implementation

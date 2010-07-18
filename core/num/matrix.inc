@@ -11,8 +11,8 @@ TYPE
    PMatrixBase=^TMatrixBase;
    PMatrix=^TMatrix;
    TMatrix=RECORD
-     n,p:Word;
-     Values:PMatrixBase;
+     n,p:Word;{It will be nice if we can use "TMatrix=ARRAY[n,p]OF TComplex;"}
+     Values:PMatrixBase;{Till this will be possible we can usally use this}
    END;
 FUNCTION Matrix(_n,_p:Byte):TMatrix;
 PROCEDURE KillMatrix(VAR M:TMatrix);
@@ -23,8 +23,8 @@ OPERATOR /(M1,M2:TMatrix)RESULT:TMatrix;
 FUNCTION Det(M:TMatrix):TMatrixBase;
 FUNCTION Cofactor(M:TMatrix;k,l:Byte):TMatrix;
 FUNCTION Inv(M:TMatrix):TMatrix;
-PROCEDURE Read(n,p:Byte;VAR M:TMatrix);
-PROCEDURE Write(M:TMatrix);
+PROCEDURE Read(n,p:Byte;VAR M:TMatrix); overload;
+PROCEDURE Write(M:TMatrix); overload;
 {$ELSE}
 PROCEDURE GenerateError(c:Char);
   BEGIN
@@ -226,7 +226,7 @@ PROCEDURE Write(M:TMatrix);
         BEGIN
 	  FOR j:=0 TO p-1 DO
 	    BEGIN
-	      System.Write(Values[i*n+j]);
+	      Write(Values[i*n+j]);
 	      System.Write(' ');
 	    END;
 	  WriteLn;
@@ -263,7 +263,7 @@ PROCEDURE Read(n,p:Byte;VAR M:TMatrix);
         FOR j:=1 TO n DO
 	  BEGIN
 	    System.Write('M[',i,',',j,']=');
-	    System.Read(Values[i*n+j]);
+	    Read(Values[i*n+j]);
 	  END;
   END;
 {$ENDIF}
