@@ -7,7 +7,7 @@
 // Bug report             : mazen.neifer@supaero.org
 //*****************************************************************************
 unit RealVectors;
-{$MODE FPC}
+{$MODE OBJFPC}
 interface
 {$DEFINE INTERFACE}
 

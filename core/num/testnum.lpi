@@ -40,6 +40,7 @@
     <Version Value="8"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)/"/>
+      <UnitOutputDirectory Value="build"/>
     </SearchPaths>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
