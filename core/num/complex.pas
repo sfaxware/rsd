@@ -6,45 +6,43 @@
 // Licence                : GPL
 // Bug report             : mazen.neifer@supaero.org
 //*****************************************************************************
-UNIT Complex;
+unit Complex;
 {$MODE ObjFpc}
-INTERFACE
+interface
 
 uses
   Reals;
 
-TYPE
-  TReal=Real;{This can be changed to any real type to support more huge values}
-  PReal=^TReal;
-  PComplex=^TComplex;
-  TComplex=RECORD
-    x,y:Real;{It's too simple a complex is a couple of reals!}
-  END;
-CONST
-  i:TComplex=(x:0;y:1);{And what about the solution of x^2+1=0!!!!!?}
-  Digit:Byte=3;{I prefer 3 zeros but you can change it}
-OPERATOR :=(r: Real):TComplex;
-OPERATOR -(z: TComplex):TComplex;
-operator not (z: TComplex): TComplex;
-OPERATOR +(z1, z2: TComplex): TComplex;
-OPERATOR -(z1, z2: TComplex): TComplex;
-OPERATOR *(z1, z2: TComplex): TComplex;
-OPERATOR /(z1, z2: TComplex): TComplex;
+type
+  TReal = Real;{This can be changed to any real type to support more huge values}
+  PReal = ^TReal;
+  PComplex = ^TComplex;
+  TComplex = record
+    x, y: Real;{It's too simple a complex is a couple of reals!}
+  end;
+
+const
+  i: TComplex = (x: 0; y: 1);{And what about the solution of x^2+1=0!!!!!?}
+
+operator :=(r: Real):TComplex;
+operator -(z: TComplex):TComplex;
+operator not(z: TComplex): TComplex;
+operator +(z1, z2: TComplex): TComplex;
+operator -(z1, z2: TComplex): TComplex;
+operator *(z1, z2: TComplex): TComplex;
+operator /(z1, z2: TComplex): TComplex;
 operator and(z1, z2: TComplex): TComplex;
-OPERATOR * (z: TComplex; n: Byte): TComplex;
-OPERATOR **(z: TComplex; n: Byte): TComplex;
-OPERATOR /(z: TComplex; n: Byte): TComplex;
-OPERATOR /(z: TComplex; n: DWord): TComplex;
-OPERATOR +(r: Real; z: TComplex): TComplex;
-OPERATOR *(r: Real; z: TComplex): TComplex;
-OPERATOR /(z: TComplex; r: Real): TComplex;
-OPERATOR =(z: TComplex; r: Real): Boolean;
-FUNCTION exp(z:TComplex):TComplex; overload;
+operator **(z: TComplex; n: Byte): TComplex;
+operator +(r: Real; z: TComplex): TComplex;
+operator *(r: Real; z: TComplex): TComplex;
+operator /(z: TComplex; r: Real): TComplex;
+operator =(z: TComplex; r: Real): Boolean;
+function exp(z: TComplex): TComplex; overload;
 function Module(z: TComplex): TReal; overload;
 function Sqr(z: TComplex): TReal; overload;
-PROCEDURE Read(VAR z:TComplex); overload;
-PROCEDURE Write(z:TComplex); overload;
-PROCEDURE FFT(VAR C{:ARRAY[1..n]OF TComplex};n:Byte);
+procedure Read(out z: TComplex); overload;
+procedure Write(z: TComplex); overload;
+procedure FFT(var C{:ARRAY[1..n]OF TComplex}; n: Byte);
 {This function returns the FFT of a signal. The signal is supposed to be stored 
 in an array wich size is 2^n. It stores the result at the same array that
 contains the input signal. So you have to keep the original signal some where
@@ -55,68 +53,70 @@ you applay FFT(Signal,n) (of course size=2^n to get some thing correct), you
 get in Signal no more the signal itself but its FFT values. Of course to
 restore the signal you have to applay IFFT(Signal,n) without modifing any value in the array Signal.}
 
-PROCEDURE IFFT(VAR C{:ARRAY[1..n]OF TComplex};n:Byte);
+procedure IFFT(var C{:ARRAY[1..n]OF TComplex}; n: Byte);
 {This function is too similar to the FFT one. It calculates the FFT-1 of a
 signal. It is used like the FFT function.}
-IMPLEMENTATION
-OPERATOR :=(r:Real):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=r;
-        y:=0;
-      END;
-  END;
-OPERATOR -(z:TComplex):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=-z.x;
-        y:=-z.y;
-      END;
-  END;
 
-operator not(z:TComplex):TComplex;
+implementation
+
+operator :=(r: Real): TComplex;
 begin
-  with Result do
-    y := -z.y;
+  with Result do begin
+    x:=r;
+    y:=0;
+  end;
 end;
 
-OPERATOR +(z1,z2:TComplex):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z1.x+z2.x;
-        y:=z1.y+z2.y;
-      END;
-  END;
-OPERATOR -(z1,z2:TComplex)RESULT:TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z1.x-z2.x;
-        y:=z1.y-z2.y;
-      END;
-  END;
-OPERATOR *(z1,z2:TComplex):TComplex;
-   BEGIN
-     WITH RESULT DO
-       BEGIN
-         x:=z1.x*z2.x-z1.y*z2.y;
-         y:=z1.x*z2.y+z1.y*z2.x;
-       END;
-   END;
-OPERATOR /(z1,z2:TComplex)RESULT:TComplex;
-  VAR
-    M:Real;
-  BEGIN
-    M:=Module(z2);
-    WITH RESULT DO
-      BEGIN
-        x:=(z1.x*z2.x+z1.y*z2.y)/M;
-        y:=(z1.y*z2.x-z1.x*z2.y)/M;
-      END;
-  END;
+operator -(z: TComplex): TComplex;
+begin
+  with Result do begin
+    x:=-z.x;
+    y:=-z.y;
+  end;
+end;
+
+operator not(z: TComplex): TComplex;
+begin
+  with Result do begin
+    x := z.x;
+    y := -z.y;
+  end;
+end;
+
+operator +(z1 ,z2: TComplex): TComplex;
+begin
+  with Result do begin
+    x := z1.x + z2.x;
+    y := z1.y + z2.y;
+  end;
+end;
+
+operator -(z1 ,z2: TComplex): TComplex;
+begin
+  with Result do begin
+    x:=z1.x-z2.x;
+    y:=z1.y-z2.y;
+  end;
+end;
+
+operator *(z1, z2: TComplex): TComplex;
+begin
+  with Result do begin
+    x := z1.x * z2.x - z1.y * z2.y;
+    y := z1.x * z2.y + z1.y * z2.x;
+ end;
+end;
+
+operator /(z1, z2: TComplex): TComplex;
+var
+  M:Real;
+begin
+  M := Module(z2);
+  with Result do begin
+    x:=(z1.x*z2.x+z1.y*z2.y)/M;
+    y:=(z1.y*z2.x-z1.x*z2.y)/M;
+  end;
+end;
 
 operator and(z1, z2: TComplex): TComplex;
 begin
@@ -126,84 +126,76 @@ begin
   end;
 end;
 
-OPERATOR *(z:TComplex;n:Byte):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z.x*n;
-        y:=z.y*n;
-      END;
-  END;
-OPERATOR **(z:TComplex;n:Byte) :TComplex;
-  VAR
-    i:Byte;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=1;
-        y:=0;
-        FOR i:=1 TO n DO
-          BEGIN
-            x:=x*z.x-y*z.y;
-            y:=x*z.y+y*z.x;
-          END;
-      END;
-  END;
-OPERATOR /(z:TComplex;n:Byte):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z.x/n;
-        y:=z.y/n;
-      END;
-  END;
-OPERATOR /(z:TComplex;n:DWord):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z.x/n;
-        y:=z.y/n;
-      END;
-  END;
-OPERATOR +(r:Real;z:TComplex):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z.x+r;
-        y:=z.y;
-      END;
-  END;
-OPERATOR *(r:Real;z:TComplex)RESULT:TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=r*z.x;
-        y:=r*z.y;
-      END;
-  END;
-OPERATOR /(z:TComplex;r:Real):TComplex;
-  BEGIN
-    WITH RESULT DO
-      BEGIN
-        x:=z.x/r;
-        y:=z.y/r;
-      END;
-  END;
-OPERATOR =(z:TComplex;r:Real)RESULT:Boolean;
-  BEGIN
-    WITH z DO
-      RESULT:=(x=r)AND(y=0);
-  END;
-FUNCTION exp(z:TComplex):TComplex;
-  CONST
-    MaxLevel=20;
-  VAR
-    k:Byte;
-  BEGIN
-    RESULT:=1;
-    FOR k:=MaxLevel DOWNTO 1 DO
-        RESULT:=1.0 + RESULT*(z/k);
-  END;
+operator **(z:TComplex;n:Byte) :TComplex;
+var
+    i: Byte;
+begin
+  with Result do begin
+    x := 1;
+    y := 0;
+    for i := 1 to n do begin
+      x := x * z.x - y * z.y;
+      y := x * z.y + y * z.x;
+    end;
+  end;
+end;
+
+operator /(z: TComplex; n: Byte): TComplex;
+begin
+  with Result do begin
+    x := z.x / n;
+    y := z.y / n;
+  end;
+end;
+
+operator /(z: TComplex; n: DWord): TComplex;
+begin
+  with Result do begin
+    x := z.x / n;
+    y := z.y / n;
+  end;
+end;
+
+operator +(r: Real; z: TComplex): TComplex;
+begin
+  with Result do begin
+    x := z.x + r;
+    y := z.y;
+  end;
+end;
+
+operator *(r: Real; z: TComplex): TComplex;
+begin
+  with Result do begin
+    x := r * z.x;
+    y := r * z.y;
+  end;
+end;
+
+operator /(z: TComplex;r: Real): TComplex;
+begin
+  with Result do begin
+    x := z.x / r;
+    y := z.y / r;
+  end;
+end;
+
+operator =(z: TComplex; r: Real): Boolean;
+begin
+  with z do
+    Result := (x = r) AND (y = 0);
+end;
+
+function exp(z: TComplex): TComplex;
+const
+  MaxLevel = 20;
+var
+  k: Byte;
+begin
+  Result := 1;
+  for k := MaxLevel downto 1 do
+    Result := 1.0 + Result * (z / k);
+end;
 
 function Module(z: TComplex): TReal;
 begin
@@ -211,121 +203,106 @@ begin
     Result := Sqrt(Sqr(x) + Sqr(y));
 end;
 
-function Sqr(z: TComplex): TReal; overload;
+function Sqr(z: TComplex): TReal;
 begin
   with z do
     Result := Sqr(x) + Sqr(y);
 end;
 
-PROCEDURE Read(VAR z:TComplex);
-  BEGIN
-    WITH z DO
-      System.Read(x,y);
-  END;
-{  VAR
-    s:STRING;
-  BEGIN
-    Read(s);
-  END;}
-PROCEDURE Write(z:TComplex);
-  BEGIN
-    WITH z DO
-      System.Write(x:1:Digit,' + i * ',y:1:Digit);
-  END;
-PROCEDURE FFT(VAR C{:ARRAY[1..2^n]OF TComplex};n:Byte);
-  VAR
-    p:BYTE;
-    j,k,dp,dj,dk,dr:DWord;
-    X,z:TComplex;
-    Ci,Co,Ct:PComplex;
-    r:Real;
-  BEGIN
-    Ci:=@C;
-    GetMem(Co,(1 SHL n)*SizeOf(TComplex));
-    dp:=(1 SHL(n-1))*SizeOf(TComplex);
-    FOR p:=0 TO n-1 DO  
-      BEGIN
-        dk:=1 SHL(n-p-1)*SizeOf(TComplex);
-        FOR k:=0 TO ((1 SHL p)-1) DO
-          BEGIN   
-            X:=exp((-(Pi*k)/(1 SHL p))*i);{I prefer storing it to calculating it twice}
-            FOR j:=0 TO ((1 SHL(n-p-1))-1) DO
-              BEGIN
-                dj:=((k SHL(n-p-1))+j)*SizeOf(TComplex);
-                dr:=((k SHL(n-p))+j)*SizeOf(TComplex);
-                z:=(Ci+dr)^+X*(Ci+dk+dr)^; 
-                (Co+dj)^:=z;
-                z:=(Ci+dr)^-X*(Ci+dk+dr)^;
-                (Co+dp+dj)^:=z;
-              END;
-          END;
-        Ct:=Co; 
-        Co:=Ci;
-        Ci:=Ct;        
-      END;
-    r:=1 SHL(n DIV 2);    
-    IF odd(n)
-    THEN
-      r:=r*Sqrt(2);{r=2**(n/2)}
-    Ct:=@C;
-    FOR k:=0 TO (1 SHL n)-1 DO
-      BEGIN
-        z:=(Ci+k*SizeOf(TComplex))^/r;
-        (Ct+k*SizeOf(TComplex))^:=z; 
-      END;
-    IF Odd(n)
-    THEN
-      FreeMem(Ci,(1 SHL n)*SizeOf(TComplex))   
-    ELSE
-      FreeMem(Co,(1 SHL n)*SizeOf(TComplex));
+procedure Read(out z: TComplex);
+begin
+  with z do
+    System.Read(x, y);
+end;
+
+procedure Write(z: TComplex);
+begin
+  with z do
+    System.Write(x:1:Digit, ' + i * ', y:1:Digit);
+end;
+
+procedure FFT(var C{:ARRAY[1..2^n]OF TComplex}; n: Byte);
+var
+  p:BYTE;
+  j,k,dp,dj,dk,dr:DWord;
+  X,z:TComplex;
+  Ci,Co,Ct:PComplex;
+  r:Real;
+begin
+  Ci := @C;
+  GetMem(Co, (1 shl n) * SizeOf(TComplex));
+  dp := (1 shl (n - 1)) * SizeOf(TComplex);
+  for p := 0 to n - 1 do begin
+    dk := 1 shl (n - p - 1) * SizeOf(TComplex);
+    for k := 0 to ((1 shl p) - 1) do begin
+      X := exp((-(Pi * k) / (1 shl p)) * i);{I prefer storing it to calculating it twice}
+      for j := 0 to ((1 shl(n - p - 1)) - 1) do begin
+        dj := ((k shl(n - p - 1)) + j) * SizeOf(TComplex);
+        dr := ((k shl(n - p)) + j) * SizeOf(TComplex);
+        z := (Ci + dr)^ + X * (Ci + dk + dr)^;
+        (Co + dj)^ := z;
+        z := (Ci + dr)^ - X * (Ci + dk + dr)^;
+        (Co + dp + dj)^ := z;
+        end;
+      end;
+      Ct := Co;
+      Co := Ci;
+      Ci := Ct;
+    end;
+    r := 1 shl(n div 2);
+    if odd(n) then
+      r := r * Sqrt(2);{r=2**(n/2)}
+    Ct := @C;
+    for k := 0 to (1 shl n) - 1 do begin
+      z := (Ci + k * SizeOf(TComplex))^ / r;
+      (Ct + k * SizeOf(TComplex))^ := z;
+    end;
+    if Odd(n) then
+      FreeMem(Ci, (1 shl n) * SizeOf(TComplex))
+    else
+      FreeMem(Co, (1 shl n) * SizeOf(TComplex));
     {Return value is C}
-  END;
-PROCEDURE IFFT(VAR C{:ARRAY[1..n]OF TComplex};n:Byte);
-  VAR         
-    p:BYTE;
-    j,k,dp,dj,dk,dr:DWord;
-    X,z:TComplex;
-    Ci,Co,Ct:PComplex;
-    r:Real;
-  BEGIN 
-    Ci:=@C; 
-    GetMem(Co,(1 SHL n)*SizeOf(TComplex)); 
-    dp:=(1 SHL(n-1))*SizeOf(TComplex); 
-    FOR p:=0 TO n-1 DO 
-      BEGIN
-        dk:=1 SHL(n-p-1)*SizeOf(TComplex);
-        FOR k:=0 TO ((1 SHL p)-1)DO
-          BEGIN
-            X:=exp(((Pi*k)/(1 SHL p))*i);{I prefer store it than calculate it twice}
-            FOR j:=0 TO ((1 SHL(n-p-1))-1) DO
-              BEGIN
-                dj:=((k SHL(n-p-1))+j)*SizeOf(TComplex);
-                dr:=((k SHL(n-p))+j)*SizeOf(TComplex);
-                z:=(Ci+dr)^+X*(Ci+dk+dr)^;
-                (Co+dj)^:=z;
-                z:=(Ci+dr)^-X*(Ci+dk+dr)^;
-                (Co+dp+dj)^:=z;
-              END;
-          END;
-        Ct:=Co; 
-        Co:=Ci;
-        Ci:=Ct; 
-      END;
-    r:=1 SHL(n DIV 2); 
-    IF odd(n)
-    THEN 
-      r:=r*Sqrt(2);{r=2**(n/2)} 
-    Ct:=@C; 
-    FOR k:=0 TO (1 SHL n)-1 DO 
-      BEGIN 
-        z:=(Ci+k*SizeOf(TComplex))^/r;                                 
-        (Ct+k*SizeOf(TComplex))^:=z;                                    
-      END;                                                            
-    IF Odd(n)                                         
-    THEN
-      FreeMem(Ci,(1 SHL n)*SizeOf(TComplex))
-    ELSE 
-      FreeMem(Co,(1 SHL n)*SizeOf(TComplex));  
-    {Return value is C}     
-  END;
-END .
+end;
+procedure IFFT(var C{:ARRAY[1..n]OF TComplex}; n: Byte);
+var
+  p:BYTE;
+  j,k,dp,dj,dk,dr:DWord;
+  X,z:TComplex;
+  Ci,Co,Ct:PComplex;
+  r:Real;
+begin
+  Ci := @C;
+  GetMem(Co, (1 shl n) * SizeOf(TComplex));
+  dp:=(1 shl (n - 1)) * SizeOf(TComplex);
+  for p := 0 to n - 1 do begin
+    dk := 1 shl (n - p - 1) * SizeOf(TComplex);
+    for k := 0 to ((1 shl p) - 1) do begin
+      X := exp(((Pi * k) / (1 shl p)) * i);{I prefer store it than calculate it twice}
+      for j := 0 to ((1 shl (n - p - 1)) - 1) do begin
+        dj := ((k shl (n - p - 1)) + j) * SizeOf(TComplex);
+        dr := ((k shl (n - p)) + j) * SizeOf(TComplex);
+        z := (Ci + dr)^ + X * (Ci + dk + dr)^;
+        (Co + dj)^ := z;
+        z := (Ci + dr)^ - X * (Ci + dk + dr)^;
+        (Co + dp + dj)^ := z;
+      end;
+    end;
+    Ct := Co;
+    Co := Ci;
+    Ci := Ct;
+  end;
+  r := 1 shl(n div 2);
+  if odd(n) then
+    r := r * Sqrt(2);{r=2**(n/2)}
+  Ct := @C;
+  for k := 0 to (1 shl n) - 1 do begin
+    z := (Ci + k * SizeOf(TComplex))^ / r;
+    (Ct + k * SizeOf(TComplex))^ := z;
+  end;
+  IF Odd(n) then
+    FreeMem(Ci, (1 shl n) * SizeOf(TComplex))
+  else
+    FreeMem(Co, (1 shl n) * SizeOf(TComplex));
+  {Return value is C}
+end;
+end.
