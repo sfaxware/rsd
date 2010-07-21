@@ -1,17 +1,20 @@
-{*****************************************************************************}
-{ File                   : realvectors.pas
-  Author                 : Mazen NEIFER
-  Creation date          : 13/10/2000
-  Last modification date : 31/10/2000
-  Licence                : GPL                                                
-  Bug report             : mazen_nefer@ayna.com                               }
-{*****************************************************************************}
-UNIT RealVectors;
+//*****************************************************************************
+// File                   : realvectors.pas
+// Author                 : Mazen NEIFER
+// Creation date          : 2000-10-13
+// Last modification date : 2010-07-20
+// Licence                : GPL
+// Bug report             : mazen.neifer@supaero.org
+//*****************************************************************************
+unit RealVectors;
 {$MODE FPC}
-INTERFACE
+interface
 {$DEFINE INTERFACE}
-TYPE
-  TReal = Real;
+
+uses
+  Reals;
+
+type
   TVectorBase = TReal;{If you want more precision you can chage to extended/...}
   TVectorIndex = DWord;{This allows us to use huge vectors}
   {The upper part (just up to this line) is used to define the types that will
@@ -20,8 +23,10 @@ TYPE
   is written in the file <A HREF="vectors.inc.html">vectors.inc</A> to provide
   an type independant implementation.} 
   {$I vectors.inc} {See code of <A HREF="vectors.inc.html#interface">vectors.inc</A>.}
-IMPLEMENTATION
+
+implementation
 {$UNDEF INTERFACE}
+
 {$ASMMODE INTEL}
 PROCEDURE FastMove(VAR Destination,Source;n:DWord);INLINE;ASSEMBLER;
   ASM
@@ -33,5 +38,6 @@ PROCEDURE FastMove(VAR Destination,Source;n:DWord);INLINE;ASSEMBLER;
     REP   MOVSD
   END['ECX','EDI','ESI'];
 {$DEFINE USE_CUSTOM_FASTMOVE}
+
 {$I vectors.inc} {See code of <A HREF="vectors.inc.html#implementation">vectors.inc</A>.}
-END.
+end.
