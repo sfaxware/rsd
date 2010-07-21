@@ -42,7 +42,8 @@ type
     function GetIsEmpty: Boolean;
   public
     property IsEmpty: Boolean read GetIsEmpty;
-    function Pop(out Sample: Integer): Boolean;
+    function Pop(out Samples; Qty: Word): Boolean;
+    function Pop(out Sample: Integer): Boolean; inline;
   end;
   
   TCOutputPort = class(TCPort)
@@ -50,7 +51,8 @@ type
     function GetIsFull: Boolean;
   public
     property IsFull: Boolean read GetIsFull;
-    function Push(Sample: Integer): Boolean;
+    function Push(const Samples; Qty: Word): Boolean;
+    function Push(Sample: Integer): Boolean; inline;
   end;
 
   TCBlock = class(TCDevice)
@@ -82,8 +84,8 @@ type
     procedure SetInputPort(Input:TCInputPort);
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
-    function Push(Sample: Integer): Boolean;
-    function Pop(out Sample: Integer): Boolean;
+    function Push(const Sample): Boolean;
+    function Pop(out Sample): Boolean;
     procedure SetDepth(ADepth: Integer);
   public
     constructor Create(AOwner: TComponent); override;
@@ -106,6 +108,16 @@ implementation
 
 uses
   LResources;
+
+type
+  PPortData = ^TPortData;
+  TPortData = record
+    case Size: Word of
+      1: (AsByte: Byte);
+      2: (AsWord: Word);
+      4: (AsLongWord: LongWord);
+      6: (Raw: array[Word] of Byte);
+  end;
 
 var
   FuncLevel: TFuncName;
@@ -196,17 +208,32 @@ begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
 end;
 
-function TCInputPort.Pop(out Sample: Integer): Boolean;
+function TCInputPort.Pop(out Samples; Qty: Word): Boolean;
+var
+  P: PPortData;
 begin
   //WriteLn(FuncB('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
   if Assigned(FConnector) then begin
     //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
-    Result := FConnector.Pop(Sample);
+    Result := FConnector.Pop(P);
   end else begin
     //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
     Result := False
   end;
+  if Result then with P^ do begin
+    if Qty > Size then begin
+      Qty := Size
+    end;
+    WriteLn(Qty);
+    Move(Raw, Samples, Qty);
+    Freemem(P);
+  end;
   //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+end;
+
+function TCInputPort.Pop(out Sample: Integer): Boolean;
+begin
+  Result := Pop(Sample, SizeOf(Sample));
 end;
 
 function TCOutputPort.GetIsFull: Boolean;
@@ -214,17 +241,35 @@ begin
   Result := Assigned(FConnector) and FConnector.IsFull;
 end;
 
-function  TCOutputPort.Push(Sample: Integer): Boolean;
+function TCOutputPort.Push(const Samples; Qty: Word): Boolean;
+var
+  P: PPortData;
 begin
   //WriteLn(FuncB('TCOutputPort.Push'));
+  P := GetMem(Qty + SizeOf(P^.Size));
+  if not Assigned(P) then begin
+    Exit(False)
+  end;
+  with P^ do begin
+    Size := Qty;
+    Move(Samples, Raw, Qty);
+  end;
+  WriteLn('Pushed Qty = ', Qty);
   if Assigned(FConnector) then begin
     //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
-    Result := FConnector.Push(Sample);
+    Result := FConnector.Push(P);
   end else begin
     //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
     Result := False;
   end;
+  if Result then begin
+  end;
   //WriteLn(FuncE('TCOutputPort.Push'));
+end;
+
+function  TCOutputPort.Push(Sample: Integer): Boolean;
+begin
+  Result := Push(Sample, SizeOf(Sample));
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -395,7 +440,7 @@ begin
   Input.FConnector := Self;
 end;
 
-function TCConnector.Push(Sample: Integer): Boolean;
+function TCConnector.Push(const Sample): Boolean;
 begin
   //WriteLn(FuncB('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
   repeat
@@ -416,7 +461,7 @@ begin
   //WriteLn(FuncE('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.Qty = ', FSamples.GetPendingQty);
 end;
 
-function TCConnector.Pop(out Sample: Integer): Boolean;
+function TCConnector.Pop(out Sample): Boolean;
 begin
   //WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Samples.Qty = ', FSamples.GetPendingQty);
   repeat
