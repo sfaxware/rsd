@@ -8,65 +8,69 @@
 {*****************************************************************************}
 UNIT Filters;
 INTERFACE
-USES Complex;
-PROCEDURE FIR_Word(N,M:Word;VAR e{:ARRAY[0..N-1]OF Word},
+procedure FIR_Word(N,M:Word;var e{:ARRAY[0..N-1]OF Word},
                                 h{:ARRAY[0..M-1]OF Word});
-PROCEDURE FIR_DWord(N,M:Word;VAR e{:ARRAY[0..N-1]OF DWord},
+procedure FIR_DWord(N,M:Word;var e{:ARRAY[0..N-1]OF DWord},
                                  h{:ARRAY[0..M-1]OF DWord});		
-PROCEDURE FIR_Real(N,M:Word;VAR e{:ARRAY[0..N-1]OF TReal},
+procedure FIR_Real(N,M:Word;var e{:ARRAY[0..N-1]OF TReal},
                                 h{:ARRAY[0..M-1]OF TReal});
 {This procedure applaies the h filter to the e signal }
 IMPLEMENTATION
+
+uses
+  Reals;
+
 {$ASMMODE INTEL}
 FUNCTION min(i,j:LongInt):LongInt;INLINE;ASSEMBLER;
-  ASM
+ASM
    MOV  EAX,i
    MOV  EDX,j
    CMP  EAX,EDX
    JB   @1
    MOV  EAX,EDX
 @1: 
-  END;
-PROCEDURE FIR_Word(N,M:Word;VAR e,h);
-  VAR
-    i,j:Word;
-    E_,H_:PWord;
-  BEGIN
-    E_:=@e;
-    H_:=@h;
-    FOR i:=N-1 DOWNTO 0 DO
-      BEGIN
-	E_[i]*=H_[0];
-        FOR j:=1 TO min(M-1,i) DO
-	  E_[i]+=H_[j]*E_[i-j];
-      END;
-  END;
-PROCEDURE FIR_DWord(N,M:Word;VAR e,h);
-  VAR
-    i,j:Word;
-    E_,H_:PDWord;
-  BEGIN
-    E_:=@e;
-    H_:=@h;
-    FOR i:=N-1 DOWNTO 0 DO
-      BEGIN
-	E_[i]*=H_[0];
-        FOR j:=1 TO min(M-1,i) DO
-	  E_[i]+=H_[j]*E_[i-j];
-      END;
-  END;
-PROCEDURE FIR_Real(N,M:Word;VAR e,h);
-  VAR
-    i,j:Word;
-    E_,H_:PReal;
-  BEGIN
-    E_:=@e;
-    H_:=@h;
-    FOR i:=N-1 DOWNTO 0 DO
-      BEGIN
-	E_[i]*=H_[0];
-        FOR j:=1 TO min(M-1,i) DO
-	  E_[i]+=H_[j]*E_[i-j];
-      END;
-  END;
-END .
+end;
+
+procedure FIR_Word(N,M:Word;var e,h);
+var
+  i,j:Word;
+  E_,H_:PWord;
+begin
+  E_:=@e;
+  H_:=@h;
+  for i:=N-1 downto 0 do begin
+	  E_[i]*=H_[0];
+    for j:=1 TO min(M-1,i) do
+	    E_[i]+=H_[j]*E_[i-j];
+  end;
+end;
+
+procedure FIR_DWord(N,M:Word;var e,h);
+var
+  i,j:Word;
+  E_,H_:PDWord;
+begin
+  E_:=@e;
+  H_:=@h;
+  for i:=N-1 downto 0 do begin
+  	E_[i]*=H_[0];
+    for j:=1 TO min(M-1,i) do
+	    E_[i]+=H_[j]*E_[i-j];
+  end;
+end;
+
+procedure FIR_Real(N,M:Word;var e,h);
+var
+  i,j:Word;
+  E_,H_:PReal;
+begin
+  E_:=@e;
+  H_:=@h;
+  for i:=N-1 downto 0 do begin
+  	E_[i]*=H_[0];
+    for j:=1 TO min(M-1,i) do
+	    E_[i]+=H_[j]*E_[i-j];
+  end;
+end;
+
+end .
