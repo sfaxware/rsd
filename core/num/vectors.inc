@@ -108,7 +108,7 @@ create there return variables. This causes a restriction in using vector result
 function as they may be used only this way "y:=f(x...)". Once you didn't need
 "y" any more you need to delete it from the heap yourself.}
 {Implementation part of real/longint/...Vector.pas}
-{$else}
+{$ELSE INTERFACE}
 {$IFNDEF USE_CUSTOM_FASTMOVE}
 procedure FastMove(var Destination, Source: TVectorBase; n: TVectorIndex);inline;
 begin
@@ -302,4 +302,4 @@ begin
   Vector.n := n - 1;
   Vector.Values := GetMem(n * SizeOf(TVectorBase));
 end;
-{$ENDIF}
+{$ENDIF INTERFACE}

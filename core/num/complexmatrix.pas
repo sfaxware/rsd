@@ -7,7 +7,7 @@
   Bug report             : mazen_nefer@ayna.com                               }
 {*****************************************************************************}
 unit ComplexMatrix;
-{$MODE FPC}
+{$MODE OBJFPC}
 interface
 {$DEFINE INTERFACE}
 
@@ -22,8 +22,12 @@ type
   this line will compile with more than base type. Independent implementation
   is written in the file <A HREF="vectors.inc.html">vectors.inc</A> to provide
   an type independant implementation.}
-  {$I matrix.inc} {See code of <A HREF="vectors.inc.html#interface">vectors.inc</A>.}
+
+{$INCLUDE matrix.inc} {See code of <A HREF="vectors.inc.html#interface">vectors.inc</A>.}
+
 implementation
 {$UNDEF INTERFACE}
+
 {$INCLUDE matrix.inc}
+
 end.
