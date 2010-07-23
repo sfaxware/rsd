@@ -11,7 +11,7 @@ TYPE
    PMatrixBase = ^TMatrixBase;
    PMatrix = ^TMatrix;
    TMatrix = record
-     n, p: Word;{It will be nice if we can use "TMatrix=ARRAY[n,p]OF TComplex;"}
+     n, p: TMatrixIndex;{It will be nice if we can use "TMatrix=ARRAY[n,p]OF TComplex;"}
      Values: PMatrixBase;{Till this will be possible we can usally use this}
    end;
 
@@ -21,10 +21,10 @@ operator -(M1, M2: TMatrix): TMatrix;
 operator *(M1, M2: TMatrix): TMatrix;
 operator /(M1, M2: TMatrix): TMatrix;
 function Det(M: TMatrix): TMatrixBase;
-function Cofactor(M: TMatrix; k, l: Byte): TMatrix;
+function Cofactor(M: TMatrix; k, l: TMatrixIndex): TMatrix;
 function Inv(M: TMatrix): TMatrix;
-function Matrix(_n, _p: Byte): TMatrix;
-procedure Read(n, p: Byte; var M: TMatrix); overload;
+function Matrix(_n, _p: TMatrixIndex): TMatrix;
+procedure Read(n, p: TMatrixIndex; var M: TMatrix); overload;
 procedure Write(M: TMatrix); overload;
 {$else INTERFACE}
 procedure GenerateError(c: Char);
@@ -34,7 +34,7 @@ begin
   RunError(1);
 end;
 
-function Matrix(_n, _p: Byte): TMatrix;
+function Matrix(_n, _p: TMatrixIndex): TMatrix;
 begin
   with Matrix do begin
     n := _n;
@@ -52,7 +52,7 @@ begin
   end;
 end;
 
-function max(n, p: Byte): Byte;
+function max(n, p: TMatrixIndex): TMatrixIndex;
 begin
   if n < p
   then
@@ -63,7 +63,7 @@ end;
 
 operator +(M1, M2: TMatrix): TMatrix;
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
   _M, _M1, _M2: PMatrixBase;
 begin
   with Result do begin
@@ -89,7 +89,7 @@ end;
 
 operator -(M1, M2: TMatrix): TMatrix;
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
   _M, _M1, _M2: PMatrixBase;
 begin
   with Result do begin
@@ -115,7 +115,7 @@ end;
 
 operator *(M1, M2: TMatrix): TMatrix;
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
   _M, _M1, _M2: PMatrixBase;
 begin
   with Result do begin
@@ -142,7 +142,7 @@ begin
 end;
 operator /(M1, M2: TMatrix): TMatrix;
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
   _M, _M1, _M2: PMatrixBase;
 begin
   if Det(M2)=0
@@ -171,9 +171,9 @@ begin
     end;
 end;
 
-function Cofactor(M: TMatrix; k, l: Byte): TMatrix;
+function Cofactor(M: TMatrix; k, l: TMatrixIndex): TMatrix;
 var
-  i, j, i2, j2:Byte;
+  i, j, i2, j2:TMatrixIndex;
 begin
   with M do
     Cofactor := Matrix(n - 1, p - 1);
@@ -199,17 +199,17 @@ end;
 
 function Det(M: TMatrix): TMatrixBase;
 var
-  j: Byte;
+  j: TMatrixIndex;
 begin
   Det := 0;
   with M do
-    for j := 1 to n do
-      Det := Det + Det(Cofactor(M, 1, j)) * Values[j];
+    for j := 0 to n do
+      Det += Det(Cofactor(M, 1, j)) * Values[j];
 end;
 
 procedure Write(M: TMatrix);
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
 begin
   with M do
     for i := 0 to n do begin
@@ -239,9 +239,9 @@ begin
   end;{we used Values[j,i] instead of Values[i,j]}
 end;
 
-procedure Read(n, p: Byte; var M: TMatrix);
+procedure Read(n, p: TMatrixIndex; var M: TMatrix);
 var
-  i, j: Byte;
+  i, j: TMatrixIndex;
 begin
   M := Matrix(n, p);
   with M do
