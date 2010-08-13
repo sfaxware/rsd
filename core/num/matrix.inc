@@ -235,7 +235,7 @@ begin
     with Inv do
       for i := 0 to n do
         for j := 0 to p do
-	        Values[j * n + i] := Det(Cofactor(M, i, j))/d;{Transposition is done as}
+	        Values[j * n + i] := Det(Cofactor(M, i, j)) / d;{Transposition is done as}
   end;{we used Values[j,i] instead of Values[i,j]}
 end;
 

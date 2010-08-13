@@ -226,63 +226,23 @@ var
   X,z:TComplex;
   Ci,Co,Ct:PComplex;
   r:Real;
+  tmpBuf: Pointer;
 begin
   Ci := @C;
-  GetMem(Co, (1 shl n) * SizeOf(TComplex));
-  dp := (1 shl (n - 1)) * SizeOf(TComplex);
+  tmpBuf := GetMem((1 shl n) * SizeOf(TComplex));
+  Co := tmpBuf;
+  dp := 1 shl (n - 1);
   for p := 0 to n - 1 do begin
-    dk := 1 shl (n - p - 1) * SizeOf(TComplex);
-    for k := 0 to ((1 shl p) - 1) do begin
+    dk := 1 shl (n - p - 1);
+    for k := 0 to (1 shl p) - 1 do begin
       X := exp((-(Pi * k) / (1 shl p)) * i);{I prefer storing it to calculating it twice}
-      for j := 0 to ((1 shl(n - p - 1)) - 1) do begin
-        dj := ((k shl(n - p - 1)) + j) * SizeOf(TComplex);
-        dr := ((k shl(n - p)) + j) * SizeOf(TComplex);
-        z := (Ci + dr)^ + X * (Ci + dk + dr)^;
-        (Co + dj)^ := z;
-        z := (Ci + dr)^ - X * (Ci + dk + dr)^;
-        (Co + dp + dj)^ := z;
-        end;
-      end;
-      Ct := Co;
-      Co := Ci;
-      Ci := Ct;
-    end;
-    r := 1 shl(n div 2);
-    if odd(n) then
-      r := r * Sqrt(2);{r=2**(n/2)}
-    Ct := @C;
-    for k := 0 to (1 shl n) - 1 do begin
-      z := (Ci + k * SizeOf(TComplex))^ / r;
-      (Ct + k * SizeOf(TComplex))^ := z;
-    end;
-    if Odd(n) then
-      FreeMem(Ci, (1 shl n) * SizeOf(TComplex))
-    else
-      FreeMem(Co, (1 shl n) * SizeOf(TComplex));
-    {Return value is C}
-end;
-procedure IFFT(var C{:ARRAY[1..n]OF TComplex}; n: Byte);
-var
-  p:BYTE;
-  j,k,dp,dj,dk,dr:DWord;
-  X,z:TComplex;
-  Ci,Co,Ct:PComplex;
-  r:Real;
-begin
-  Ci := @C;
-  GetMem(Co, (1 shl n) * SizeOf(TComplex));
-  dp:=(1 shl (n - 1)) * SizeOf(TComplex);
-  for p := 0 to n - 1 do begin
-    dk := 1 shl (n - p - 1) * SizeOf(TComplex);
-    for k := 0 to ((1 shl p) - 1) do begin
-      X := exp(((Pi * k) / (1 shl p)) * i);{I prefer store it than calculate it twice}
-      for j := 0 to ((1 shl (n - p - 1)) - 1) do begin
-        dj := ((k shl (n - p - 1)) + j) * SizeOf(TComplex);
-        dr := ((k shl (n - p)) + j) * SizeOf(TComplex);
-        z := (Ci + dr)^ + X * (Ci + dk + dr)^;
-        (Co + dj)^ := z;
-        z := (Ci + dr)^ - X * (Ci + dk + dr)^;
-        (Co + dp + dj)^ := z;
+      for j := 0 to (1 shl(n - p - 1)) - 1 do begin
+        dj := (k shl(n - p - 1)) + j;
+        dr := (k shl(n - p)) + j;
+        z := Ci[dr] + X * Ci[dk + dr];
+        Co[dj] := z;
+        z := Ci[dr] - X * Ci[dk + dr];
+        Co[dp + dj] := z;
       end;
     end;
     Ct := Co;
@@ -295,12 +255,51 @@ begin
   Ct := @C;
   for k := 0 to (1 shl n) - 1 do begin
     z := (Ci + k * SizeOf(TComplex))^ / r;
-    (Ct + k * SizeOf(TComplex))^ := z;
+    Ct[k] := z;
   end;
-  IF Odd(n) then
-    FreeMem(Ci, (1 shl n) * SizeOf(TComplex))
-  else
-    FreeMem(Co, (1 shl n) * SizeOf(TComplex));
+  FreeMem(tmpBuf);
+  {Return value is C}
+end;
+
+procedure IFFT(var C{:ARRAY[1..n]OF TComplex}; n: Byte);
+var
+  p:BYTE;
+  j,k,dp,dj,dk,dr:DWord;
+  X,z:TComplex;
+  Ci,Co,Ct:PComplex;
+  r:Real;
+  tmpBuf: Pointer;
+begin
+  Ci := @C;
+  tmpBuf := GetMem((1 shl n) * SizeOf(TComplex));
+  Co := tmpBuf;
+  dp := 1 shl (n - 1);
+  for p := 0 to n - 1 do begin
+    dk := 1 shl (n - p - 1);
+    for k := 0 to (1 shl p) - 1 do begin
+      X := exp(((Pi * k) / (1 shl p)) * i);{I prefer store it than calculate it twice}
+      for j := 0 to ((1 shl (n - p - 1)) - 1) do begin
+        dj := (k shl (n - p - 1)) + j;
+        dr := (k shl (n - p)) + j;
+        z := Ci[dr] + X * Ci[dk + dr];
+        Co[dj] := z;
+        z := Ci[dr] - X * Ci[dk + dr];
+        Co[dp + dj] := z;
+      end;
+    end;
+    Ct := Co;
+    Co := Ci;
+    Ci := Ct;
+  end;
+  r := 1 shl (n div 2);
+  if odd(n) then
+    r := r * Sqrt(2);{r=2**(n/2)}
+  Ct := @C;
+  for k := 0 to (1 shl n) - 1 do begin
+    z := Ci[k] / r;
+    Ct[k] := z;
+  end;
+  FreeMem(tmpBuf);
   {Return value is C}
 end;
 end.
