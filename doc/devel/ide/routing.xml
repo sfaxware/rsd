@@ -3,7 +3,7 @@
   <package name="dtsl_ide">
     <module name="routing">
       <element name="TSegment">
-        <short>Modelizes a straight line linkling two points</short>
+        <short>Modelizes a straight line joining two points</short>
       </element>
       <element name="TSegments">
         <short>Modelizes a set of segments.</short>
@@ -21,6 +21,18 @@
       </element>
       <element name="Bounds">
         <short>Creates the smallest rectangle containing all the route points.</short>
+      </element>
+      <element name="RectCenter">
+        <short>Returns the coordinates of the center point of a rectrangle.</short>
+      </element>
+      <element name="Intersect">
+        <short>Returns <i>False</i> if the segments have a null intersection and <i>True</i> otherwise</short>
+      </element>
+      <element name="Segment">
+        <short>Returns a segment joining the two points given as arguments</short>
+      </element>
+      <element name="Intersection">
+        <short>Returns an area which results from the intersection of a given area with a given rectangle and provides the indexes of the rectangles of the area which intersection with the rectangle given as parameter is non null.</short>
       </element>
     </module>
   </package>
