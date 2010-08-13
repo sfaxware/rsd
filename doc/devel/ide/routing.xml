@@ -34,6 +34,9 @@
       <element name="Intersection">
         <short>Returns an area which results from the intersection of a given area with a given rectangle and provides the indexes of the rectangles of the area which intersection with the rectangle given as parameter is non null.</short>
       </element>
+      <element name="Route">
+        <short>Create a route joining two given points inside a given area. Returns <i>True</i> if it succeeds to build the roote, otherwise it returns <i>True</i>.</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>
