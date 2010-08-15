@@ -13,6 +13,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
+    <Version Minor="1"/>
     <Files Count="17">
       <Item1>
         <Filename Value="fifo/fifobasics.pas"/>
