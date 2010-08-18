@@ -37,6 +37,7 @@ type
     function DeviceType: string;
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string; virtual;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual; abstract;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
   end;
   TDeviceClass = class of TDevice;
@@ -52,7 +53,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     function DeviceDescription(Indent: string): string; override;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
   TInputPort = class(TPort)
   protected
@@ -93,7 +94,7 @@ type
     function AddNewPort(PortType: TPortType): TPort; virtual;
     function DeviceDescription(Indent: string): string; override;
     function Load: boolean;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     function Save: boolean;
     procedure Magnify(m: Real); override;
     property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
@@ -114,9 +115,11 @@ type
     procedure SetOutputPort(Value: TOutputPort);
     procedure UpdatePoints; virtual;
   public
+    Depth: Integer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function DeviceDescription(Indent: string): string; override;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     procedure Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
   published
     property InputPort: TInputPort read FInputPort write SetInputPort;
@@ -126,17 +129,23 @@ type
   protected
     procedure DoPaint(Sender: TObject); override;
   public
+    InitialSeed: Integer;
+    Amplitude: Integer;
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TPort; override;
     function DeviceDescription(Indent: string): string; override;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
   TProbe = class(TBlock)
   protected
     procedure DoPaint(Sender: TObject); override;
   public
+    FileName: string;
+    SampleQty: Integer;
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TPort; override;
     function DeviceDescription(Indent: string): string; override;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
 
 function CreateDevice(DeviceName, DeviceType: string; AncestorType: TDeviceClass; AOwner: TComponent): TDevice;
@@ -230,7 +239,7 @@ begin
     if DeviceType <> '' then begin
       Result.FDeviceType := DeviceType;
     end;
-    if DeviceAncestorType <>'' then begin
+    if DeviceAncestorType <> '' then begin
       Result.FDeviceAncestorType := DeviceAncestorType;
     end;
   end else begin
@@ -923,6 +932,7 @@ begin
   Name := 'Connector';
   FDeviceType := 'T' + Name;
   FDeviceAncestorType := 'TConnector';
+  Depth := 127;
 end;
 
 destructor TConnector.Destroy;
@@ -943,7 +953,14 @@ begin
   Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
     Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
     Indent + '  InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
+    Indent + '  Depth = ' + IntToStr(Depth) + LineEnding +
     Indent + 'end' + LineEnding;
+end;
+
+function TConnector.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+begin
+  Depth := StrToInt(GetPropertyValue(ContextNode, 'Depth', DesignDescription));
+  Result := True;
 end;
 
 procedure TConnector.Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
@@ -1067,6 +1084,8 @@ begin
     end;
   end else with OriginalBounds do begin
     Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
+      Indent + '  InitialSeed = ' + IntToStr(InitialSeed) + LineEnding +
+      Indent + '  Amplitude = ' + IntToStr(Amplitude) + LineEnding +
       Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
       Indent + '  Left = ' + IntToStr(Left) + LineEnding +
       Indent + '  Top = ' + IntToStr(Top) + LineEnding +
@@ -1074,6 +1093,13 @@ begin
       Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
   Result += Indent + 'end' + LineEnding;
+end;
+
+function TSource.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+begin
+  Result := inherited Load(DesignDescription, ContextNode);
+  InitialSeed := StrToInt(GetPropertyValue(ContextNode, 'InitialSeed', DesignDescription));
+  Amplitude := StrToInt(GetPropertyValue(ContextNode, 'Amplitude', DesignDescription));
 end;
 
 constructor TProbe.Create(AOwner:TComponent);
@@ -1143,6 +1169,8 @@ begin
     end;
   end else with OriginalBounds do begin
     Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
+      Indent + '  FileName = ''' + FileName + '''' + LineEnding +
+      Indent + '  SampleQty = ' + IntToStr(SampleQty) + LineEnding +
       Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
       Indent + '  Left = ' + IntToStr(Left) + LineEnding +
       Indent + '  Top = ' + IntToStr(Top) + LineEnding +
@@ -1150,6 +1178,13 @@ begin
       Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
   Result += Indent + 'end' + LineEnding;
+end;
+
+function TProbe.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+begin
+  Result := inherited Load(DesignDescription, ContextNode);
+  FileName := GetPropertyValue(ContextNode, 'FileName', DesignDescription);
+  SampleQty := StrToInt(GetPropertyValue(ContextNode, 'SampleQty', DesignDescription));
 end;
 
 end.

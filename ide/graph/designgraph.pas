@@ -243,7 +243,7 @@ var
   p: Integer;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
-  Component: TComponent;
+  Device: TDevice;
 begin
   Result := true;
   codeFile[ctSource] := SourceFileName(Name);
@@ -282,22 +282,23 @@ begin
       //WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('OutputPortName = ', PortName);
-      Component := FindComponent(BlockName);
+      Device := FindComponent(BlockName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      Component := Component.FindComponent(PortName);
+      Device := Device.FindComponent(PortName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedOutputPort := Component as TOutputPort;
+      SelectedOutputPort := Device as TOutputPort;
       PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('InputPortName = ', PortName);
-      Component := FindComponent(BlockName);
+      Device := FindComponent(BlockName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      Component := Component.FindComponent(PortName);
+      Device := Device.FindComponent(PortName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedInputPort := Component as TInputPort;
-      AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
+      SelectedInputPort := Device as TInputPort;
+      Device := AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
+      Device.Load(DesignDescription, BlockDescription);
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
