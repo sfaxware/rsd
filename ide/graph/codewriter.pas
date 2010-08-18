@@ -128,7 +128,12 @@ function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCode
 var
   CodeFileName: string;
 begin
-  CodeFileName := SourceFileName(Owner.DeviceIdentifier);
+  case template of
+  cttDescription: CodeFileName := ReSourceFileName(Owner.DeviceIdentifier);
+  cttSimulator: CodeFileName := SourceFileName('Simulate' + Owner.DeviceIdentifier);
+  else
+    CodeFileName := SourceFileName(Owner.DeviceIdentifier);
+  end;
   Result := GetCodeBuffer(CodeFileName, template, Owner);
 end;
 

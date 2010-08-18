@@ -109,7 +109,7 @@ begin
     FOnChildrenCreate(Result);
   end;
   if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
   CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
@@ -130,7 +130,7 @@ begin
     FOnChildrenCreate(Result);
   end;
   if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
 end;
 
@@ -313,14 +313,11 @@ function TDesign.Save: Boolean;
 var
   Component: TComponent;
   i: Integer;
-  CodeFileName: string;
 begin
-  CodeFileName := ResourceFileName(Name);
-  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttAny,Self);
+  CodeBuffer[ctDescription] := GetCodeBuffer(cttDescription, Self);
   CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := SourceFileName(Name);
-  CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
+  CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
@@ -328,8 +325,7 @@ begin
       Result := Result and Save;
     end; 
   end;
-  CodeFileName := SourceFileName('Simulate' + Name);
-  SimCodeBuffer := GetCodeBuffer(CodeFileName, cttSimulator, Self);
+  SimCodeBuffer := GetCodeBuffer(cttSimulator, Self);
   Result := Result and SimCodeBuffer.Save;
 end;
 

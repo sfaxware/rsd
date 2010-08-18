@@ -16,7 +16,7 @@ const
 
 type
   TCodeType = (ctSource, ctDescription);
-  TCodeTemplateType = (cttNone, cttAny, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
+  TCodeTemplateType = (cttNone, cttDescription, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
   TIGraphDevice = interface
     function DeviceIdentifier: string;
     function DeviceType: string;
@@ -731,14 +731,11 @@ function TBlock.Save: boolean;
 var
   Component: TComponent;
   i: Integer;
-  CodeFileName: string;
 begin
-  CodeFileName := ReSourceFileName(Name);
-  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttAny,Self);
+  CodeBuffer[ctDescription] := GetCodeBuffer(cttDescription,Self);
   CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := SourceFileName(Name);
-  CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
+  CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
