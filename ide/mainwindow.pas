@@ -5,8 +5,8 @@ unit mainWindow;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
+  Classes, process, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
+  Menus, ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
   SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees, DesignGraph;
 
 type
@@ -46,6 +46,7 @@ type
     MenuItem15: TMenuItem;
     ConnectorPopupMenu: TPopupMenu;
     PortsSubMenu: TMenuItem;
+    BuilderProcess: TProcess;
     ViewMenuItem: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
     dtslEditGraphInsertBlockMenuItem: TMenuItem;

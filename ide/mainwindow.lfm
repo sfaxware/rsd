@@ -1093,4 +1093,21 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     ShortCut = 16416
     left = 64
   end
+  object BuilderProcess: TProcess
+    Active = False
+    ApplicationName = 'Lazarus Builder'
+    CommandLine = 'lazbuild'
+    Options = []
+    Priority = ppNormal
+    StartupOptions = []
+    ShowWindow = swoNone
+    WindowColumns = 0
+    WindowHeight = 0
+    WindowLeft = 0
+    WindowRows = 0
+    WindowTop = 0
+    WindowWidth = 0
+    FillAttribute = 0
+    top = 128
+  end
 end
