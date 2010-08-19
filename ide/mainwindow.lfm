@@ -1095,9 +1095,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object BuilderProcess: TProcess
     Active = False
-    ApplicationName = 'Lazarus Builder'
-    CommandLine = 'lazbuild'
-    Options = []
+    Options = [poWaitOnExit]
     Priority = ppNormal
     StartupOptions = []
     ShowWindow = swoNone
