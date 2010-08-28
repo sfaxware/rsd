@@ -39,6 +39,8 @@ type
     CompileProjectMenuItem: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     DeleteConnectorMenuItem: TMenuItem;
+    FileReadSourceMenuItem: TMenuItem;
+    RandomSourceMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
@@ -71,8 +73,9 @@ type
     procedure CompileProject(Sender: TObject);
     procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
+    procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
-    procedure dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
+    procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
@@ -286,12 +289,17 @@ begin
   end;
 end;
 
+procedure TdtslIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
+begin
+  AddNewBlock('TFileReadSource');
+end;
+
 procedure TdtslIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TFileDumpProbe');
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
+procedure TdtslIdeMainWindow.dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TRandomSource');
 end;

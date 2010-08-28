@@ -1023,7 +1023,14 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       end
       object AddSourceMenuItem: TMenuItem
         Caption = 'Add source'
-        OnClick = dtslEditGraphInsertSourceMenuItemClick
+        object RandomSourceMenuItem: TMenuItem
+          Caption = 'Random generator'
+          OnClick = dtslEditGraphInsertRandomSourceMenuItemClick
+        end
+        object FileReadSourceMenuItem: TMenuItem
+          Caption = 'File Read'
+          OnClick = dtslEditGraphInsertFileReadSourceMenuItemClick
+        end
       end
       object AddProbeMenuItem: TMenuItem
         Caption = 'Add probe'

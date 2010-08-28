@@ -1284,5 +1284,6 @@ initialization
   RegisterDevice('TConnector', TConnector, [DeviceProperty('OutputPort', lfmvSymbol), DeviceProperty('InputPort', lfmvSymbol), DeviceProperty('Depth', lfmvInteger)]);
   RegisterDevice('TBlock', TBlock, []);
   RegisterDevice('TRandomSource', TSource, [DeviceProperty('InitialSeed', lfmvInteger), DeviceProperty('Amplitude', lfmvInteger)]);
+  RegisterDevice('TFileReadSource', TSource, [DeviceProperty('FileName', lfmvString)]);
   RegisterDevice('TFileDumpProbe', TProbe, [DeviceProperty('FileName', lfmvString), DeviceProperty('SampleQty', lfmvInteger)]);
 end.
