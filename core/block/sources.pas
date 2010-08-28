@@ -42,6 +42,19 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
+  TFileReadSource = class(TSource)
+  private
+    FFile: Text;
+    FFileName:string;
+    procedure SetFileName(AFileName: string);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Execute; override;
+  published
+    property FileName: string read FFileName write SetFileName;
+  end;
+
 implementation
 
 uses
@@ -243,6 +256,50 @@ constructor TRandomSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   InitialSeed := Trunc(Now * 123456789);
+end;
+
+procedure TFileReadSource.SetFileName(AFileName: string);
+var
+  Size: LongInt;
+begin
+  //WriteLn(FuncB('TFileDumpProbe.SetFileName'), 'AFileNAme = ', AFileNAme);
+  if FFileName = AFileNAme then
+    Exit;
+  if FFileName <> '' then begin
+    Close(FFile);
+  end;
+  FFileName := AFileName;
+  System.Assign(FFile, FFileName);
+  Reset(FFile);
+  //WriteLn(FuncE('TFileDumpProbe.SetFileName'), 'FFileName = ', FFileName);
+end;
+
+constructor TFileReadSource.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FileName := GetTempFileName;
+end;
+
+procedure TFileReadSource.Execute;
+var
+  Sample: Integer;
+begin
+  //WriteLn(FuncB('TFileReadSource.Execute'), 'IsEmpty = ', Input.IsEmpty, ', SampleQty = ', FSampleQty);
+  if EoF(FFile) then begin
+    Include(FRunStatus, drfTerminated);
+  end else begin
+    ReadLn(FFile, Sample);
+    with Output do begin
+      //WriteLn(FuncC('TFileReadSource.Execute'), 'IsEmpty = ', IsEmpty, ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
+      Push(Sample);
+    end;
+  end;
+  //WriteLn(FuncE('TFileReadSource.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
+end;
+
+destructor TFileReadSource.Destroy;
+begin
+  Close(FFile);
 end;
 
 initialization
