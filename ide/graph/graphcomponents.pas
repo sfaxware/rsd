@@ -28,6 +28,7 @@ type
     FOnCreate: TNotifyEvent;
     FDeviceType: string;
     FDeviceAncestorType: string;
+    FProperties: array of string;
   protected
     procedure SetName(const Value: TComponentName); override;
     procedure DoPaint(Sender: TObject); virtual; abstract;
@@ -161,24 +162,57 @@ implementation
 uses
   DesignGraph, CodeToolManager, CodeWriter, Configuration;
 
-function GetDeviceClass(DeviceType: string): TDeviceClass;
+type
+  TDeviceInfo = record
+     TypeName: string;
+     TypeClass: TDeviceClass;
+     Properties: array of string;
+  end;
+
+var
+  Devices: array of TDeviceInfo;
+
+procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceProperties: array of string);
+var
+  l: Integer;
 begin
-  if Pos('T', DeviceType) <> 1 then begin
-    Result := nil;
-  end else if DeviceType = 'TInputPort' then begin
-    Result := TInputPort;
-  end else if DeviceType = 'TOutputPort' then begin
-    Result := TOutputPort;
-  end else if DeviceType = 'TPort' then begin
-    Result := TPort;
-  end else if DeviceType = 'TConnector' then begin
-    Result := TConnector;
-  end else if DeviceType = 'TBlock' then begin
-    Result := TBlock;
-  end else if DeviceType = 'TRandomSource' then begin
-    Result := TSource;
-  end else if DeviceType = 'TFileDumpProbe' then begin
-    Result := TProbe;
+  l := Length(Devices);
+  WriteLn(l);
+  SetLength(Devices, l + 1);
+  WriteLn(Length(Devices));
+  with Devices[l] do begin
+    TypeName := DeviceType;
+    TypeClass := DeviceClass;
+    l := Length(DeviceProperties);
+    SetLength(Properties, l);
+    while l > 0 do begin
+      l -= 1;
+      Properties[l] := DeviceProperties[l];
+    end;
+  end;
+end;
+
+function GetDeviceIndex(DeviceType: string): Integer;
+var
+  i: Integer;
+begin
+  Result := -1;
+  if Pos('T', DeviceType) = 1 then begin
+    for i := Low(Devices) to High(Devices) do with Devices[i] do begin
+      if DeviceType = TypeName then begin
+        Exit(i);
+      end;
+    end;
+  end;
+end;
+
+function GetDeviceClass(DeviceType: string): TDeviceClass;
+var
+  i: Integer;
+begin
+  i := GetDeviceIndex(DeviceType);
+  if i > 0 then begin
+    Result := Devices[i].TypeClass;
   end else begin
     Result := nil;
   end;
@@ -410,9 +444,17 @@ begin
 end;
 
 function TDevice.DeviceDescription(Indent: string): string;
+var
+  i: Integer;
 begin
-  Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding +
-    Indent + 'end' + LineEnding;
+  Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
+  i := GetDeviceIndex(FDeviceAncestorType);
+  if i >= 0 then with Devices[i] do begin
+    for i := Low(Properties) to High(Properties) do begin;
+      Result += Indent + '  ' + Properties[i] + ' = ' + FProperties[i];
+    end;
+  end;
+  Result += Indent + 'end' + LineEnding;
 end;
 
 constructor TPort.Create(AOwner: TComponent);
@@ -1187,5 +1229,12 @@ begin
   SampleQty := StrToInt(GetPropertyValue(ContextNode, 'SampleQty', DesignDescription));
 end;
 
+initialization
+  RegisterDevice('TInputPort', TInputPort, ['DeviceName']);
+  RegisterDevice('TOutputPort', TOutputPort, ['DeviceName']);
+  RegisterDevice('TConnector', TConnector, ['DeviceName', 'OutputPort', 'InputPort', 'Depth']);
+  RegisterDevice('TBlock', TBlock, ['DeviceName']);
+  RegisterDevice('TRandomSource', TSource, ['DeviceName', 'InitialSeed', 'Amplitude']);
+  RegisterDevice('TFileDumpProbe', TProbe, ['DeviceName', 'FileName', 'SampleQty']);
 end.
 
