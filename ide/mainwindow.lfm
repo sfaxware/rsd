@@ -56,6 +56,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -1068,6 +1069,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object BlockPropertiesMenuItem: TMenuItem
       Caption = '&Properties'
+      OnClick = SetBlockProperties
       object BlockNameMenuItem: TMenuItem
         Caption = 'Name...'
         OnClick = SelectBlockName

@@ -35,6 +35,8 @@ type
     function GetPropertyIndex(const PropName: string): Integer;
     function GetProperty(PropIndex: Integer): TDeviceProperty; virtual;
     function GetProperty(const PropName: string): TDeviceProperty;
+    function GetPropName(PropIndex: Integer): string;
+    function GetPropQty: Integer;
     function SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean; virtual;
     function SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
     procedure SetAncestorType(const AncestorType: string);
@@ -48,6 +50,9 @@ type
     function DeviceDescription(Indent: string): string; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual; abstract;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
+    property PropQty: Integer read GetPropQty;
+    property PropName[PropIndex: Integer]: string read GetPropName;
+    property PropVal[PropIndex: Integer]: TDeviceProperty read GetProperty;
   end;
   TDeviceClass = class of TDevice;
   TConnector = class;
@@ -459,6 +464,22 @@ begin
   Result := GetProperty(PropIndex);
 end;
 
+function TDevice.GetPropName(PropIndex: Integer): string;
+begin
+  with Devices[FDeviceId] do begin
+    if(PropIndex >= Low(Properties)) and (PropIndex <= High(Properties)) then begin
+      Result := Properties[PropIndex].PropName;
+    end else begin
+      Result := '';
+    end;
+  end;
+end;
+
+function TDevice.GetPropQty: Integer;
+begin
+  Result := Length(FProperties);
+end;
+
 function TDevice.SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean;
 begin
   Result := (PropIndex >= Low(FProperties)) and (PropIndex <= High(FProperties));
@@ -519,7 +540,7 @@ end;
 function TDevice.DeviceDescription(Indent: string): string;
 var
   i: Integer;
-  PropValue: string;
+  PropValue: TDeviceProperty;
 begin
   Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
   if Indent <> '' then begin

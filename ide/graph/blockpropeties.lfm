@@ -1,0 +1,61 @@
+object BlockPropertiesDialog: TBlockPropertiesDialog
+  Left = 336
+  Height = 300
+  Top = 191
+  Width = 400
+  ActiveControl = StringGrid1
+  Caption = 'BlockPropertiesDialog'
+  ClientHeight = 300
+  ClientWidth = 400
+  LCLVersion = '0.9.28.2'
+  object StringGrid1: TStringGrid
+    Left = 0
+    Height = 256
+    Top = 0
+    Width = 400
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoFillColumns = True
+    ColCount = 3
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goSmoothScroll]
+    RowCount = 1
+    ScrollBars = ssBoth
+    TabOrder = 0
+    TitleStyle = tsNative
+    OnSelectCell = StringGrid1SelectCell
+    ColWidths = (
+      160
+      118
+      118
+    )
+    Cells = (
+      3
+      0
+      0
+      'Property name'
+      1
+      0
+      'Property type'
+      2
+      0
+      'Property value'
+    )
+  end
+  object ApplyButton: TButton
+    Left = 270
+    Height = 33
+    Top = 264
+    Width = 105
+    Caption = 'Apply'
+    OnClick = ApplyButtonClick
+    TabOrder = 1
+  end
+  object CancelButton: TButton
+    Left = 29
+    Height = 33
+    Top = 264
+    Width = 105
+    Caption = 'Cancel'
+    OnClick = CancelButtonClick
+    TabOrder = 2
+  end
+end

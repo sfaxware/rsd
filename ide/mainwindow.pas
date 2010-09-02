@@ -80,6 +80,7 @@ type
     procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
+    procedure SetBlockProperties(Sender: TObject);
     procedure ViewFile(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
     procedure SelectBlockName(Sender: TObject);
@@ -107,7 +108,7 @@ var
 implementation
 
 uses
-  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration;
+  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockPropeties;
 
 { TdtslIdeMainWindow }
 
@@ -207,6 +208,27 @@ begin
      MarkTextAsSaved;
   end;
   Design.Save;
+end;
+
+procedure TdtslIdeMainWindow.SetBlockProperties(Sender: TObject);
+var
+  i: Integer;
+  DevicePropQty: Integer;
+begin
+  with BlockPropertiesDialog do begin
+    with StringGrid1 do begin
+      if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
+        DevicePropQty := PropQty;
+        RowCount := DevicePropQty + 1;
+        for i := 1 to DevicePropQty do with Rows[i] do begin
+          Strings[0] := PropName[i - 1];
+          Strings[1] := 'string';
+          Strings[2] := PropVal[i - 1];
+        end;
+      end;
+    end;
+    Visible := True;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
