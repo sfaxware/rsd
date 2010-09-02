@@ -108,7 +108,7 @@ var
 implementation
 
 uses
-  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockPropeties;
+  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockProperties;
 
 { TdtslIdeMainWindow }
 
