@@ -9,7 +9,6 @@ uses
   Controls, Graphics, Dialogs, GraphComponents;
 
 type
-  TApplyChange = function(Sender: TObject): Boolean of object;
   { TBlockPropertiesDialog }
 
   TBlockPropertiesDialog = class(TForm)
@@ -81,14 +80,10 @@ var
   i: Integer;
 begin
   Visible := not Assigned(FDevice);
-  if Sender is TBlockPropertiesDialog then with Sender as TBlockPropertiesDialog do begin
-    with StringGrid1 do begin
-      with FDevice do begin
-        DevicePropQty := PropQty;
-        for i := 0 to DevicePropQty - 1 do with Rows[i + 1] do begin
-          PropVal[i] := Strings[2];
-        end;
-      end;
+  with FDevice, StringGrid1 do begin
+    DevicePropQty := PropQty;
+    for i := 0 to DevicePropQty - 1 do with Rows[i + 1] do begin
+      PropVal[i] := Strings[2];
     end;
   end;
 end;
@@ -100,8 +95,8 @@ end;
 
 procedure TBlockPropertiesDialog.SetDevice(ADevice: TBlock);
 var
-  i: Integer;
   DevicePropQty: Integer;
+  i: Integer;
 begin
   FDevice := ADevice;
   with FDevice, StringGrid1 do begin
@@ -116,7 +111,7 @@ begin
 end;
 
 initialization
-  {$I blockpropeties.lrs}
+  {$R blockproperties.lfm}
 
 end.
 
