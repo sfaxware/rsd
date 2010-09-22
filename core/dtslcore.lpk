@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <OtherUnitFiles Value="fifo/;block/;num/"/>
-        <UnitOutputDirectory Value="lib"/>
+        <UnitOutputDirectory Value="../build/lib/dtsl/core"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -94,7 +94,7 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgDir)/"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
