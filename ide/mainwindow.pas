@@ -145,7 +145,6 @@ begin
       FileName := OpenDialog1.FileName
     else
       Exit;
-    BuilderProcess.CommandLine := 'lazbuild ' + FileName;
     Path := ExtractFilePath(FileName);
     Units.Count := GetValue('ProjectOptions/Units/Count', 0);
     if Units.Count > 1 then begin
@@ -166,6 +165,7 @@ end;
 procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
 var
   APath: string;
+  BuildPath: string;
 begin
   with Project, ProjectSettings do begin
     if Filename = '' then
@@ -200,8 +200,15 @@ begin
     SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Valid', True);
     SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Minor', 1);
     SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Valid', True);
+    //SetValue('ProjectOptions/RequiredPackages/Item1/DefaultFilename/Value', );
     SetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', BuildDir);
     Flush;
+    BuildPath := Path + '/' + BuildDir;
+    if not DirectoryExists(BuildPath) then begin
+      if not CreateDir(BuildPath) then begin
+        ShowMessage('Directory "' + BuildPath + '" could not be created');
+      end;
+    end;
   end;
   if Assigned(EditorCodeBuffer) then with SynEdit1 do begin
      EditorCodeBuffer.Source := Text;
@@ -272,6 +279,7 @@ procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
 begin
   SaveProject(Sender);
   with BuilderProcess do begin
+    CommandLine := 'lazbuild ' + Project.FileName;
     try
       Execute;
     except
