@@ -2187,8 +2187,8 @@ endif
 .PHONY: all clean install
 all:mo_files
 	lazbuild ide/${PACKAGE_NAME}_ide.lpi
-	lazbuild core/${PACKAGE_NAME}core.lpk
-	sed -e 's@\.\./build/lib/dtsl/@@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/${PACKAGE_NAME}core.lpk
+	lazbuild -B core/${PACKAGE_NAME}core.lpk
+	sed -e 's@\.\./build/lib/dtsl/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/${PACKAGE_NAME}core.lpk
 	${COPY} -t build/lib/dtsl/ core/${PACKAGE_NAME}core.pas
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
