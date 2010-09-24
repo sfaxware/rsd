@@ -2186,30 +2186,20 @@ include fpcmake.loc
 endif
 .PHONY: all clean install
 all:mo_files
-	lazbuild ide/dtsl_ide.lpi
-	lazbuild core/dtslcore.lpk
+	lazbuild ide/${PACKAGE_NAME}_ide.lpi
+	lazbuild core/${PACKAGE_NAME}core.lpk
+	sed -e 's@\.\./build/lib/dtsl/@@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/${PACKAGE_NAME}core.lpk
+	${COPY} -t build/lib/dtsl/ core/${PACKAGE_NAME}core.pas
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 	${MKDIR} $(dir $@)
 	msgfmt -o $@ $<
 install:
-	${MKDIR} $(INSTALL_PREFIX)/usr/bin
-	${COPYTREE} -t $(INSTALL_PREFIX)/usr/bin \
-		build/bin/dtsl_ide
-	${MKDIR} $(INSTALL_PREFIX)/usr/lib
-	${COPYTREE} -t $(INSTALL_PREFIX)/usr/lib \
-		build/lib/${PACKAGE_NAME}
-	$(COPYTREE) -t $(INSTALL_PREFIX)/usr/lib/${PACKAGE_NAME}/core \
-		core/${PACKAGE_NAME}core.lpk \
-		core/${PACKAGE_NAME}core.pas
-	${MKDIR} $(INSTALL_PREFIX)/usr/share
-	${COPYTREE} -t $(INSTALL_PREFIX)/usr/share \
-		build/share/applications \
-		build/share/icons \
-		build/share/images \
-		build/share/locale \
-		build/share/man \
-		build/share/sounds
+	${MKDIR} ${INSTALL_PREFIX}/usr
+	${COPYTREE} -t ${INSTALL_PREFIX}/usr \
+		build/bin \
+		build/lib \
+		build/share
 ifeq ($(OS_TARGET),linux)
 ifndef DEBDIR
 DEBDIR=debian
