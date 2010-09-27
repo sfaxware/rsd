@@ -17,7 +17,7 @@ exampledirs=
 [compiler]
 
 [clean]
-files=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+files=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 
 [install]
 fpcpackage=n
@@ -29,14 +29,23 @@ MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/
 LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
 #-----------------------------------------------------------------------------
 [rules]
-.PHONY: all clean install
+.PHONY: all clean install ide
 
 #-----------------------------------------------------------------------------
-all:mo_files
-	lazbuild ide/${PACKAGE_NAME}_ide.lpi
+all:mo_files ide
 	lazbuild -B core/${PACKAGE_NAME}core.lpk
-	sed -e 's@\.\./build/lib/dtsl/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/${PACKAGE_NAME}core.lpk
-	${COPY} -t build/lib/dtsl/ core/${PACKAGE_NAME}core.pas
+	sed -e 's@\.\./build/lib/dtsl/core/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/core/${PACKAGE_NAME}core.lpk
+	${COPY} -t build/lib/dtsl/core/ core/${PACKAGE_NAME}core.pas
+
+clean:fpc_clean clean_packages
+
+clean_packages:
+	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
+
+ide:build/bin/${TARGET_PROGRAMS}
+
+build/bin/%:ide/%.lpi
+	lazbuild $<
 
 mo_files:${MO_FILES}
 

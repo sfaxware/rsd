@@ -443,178 +443,178 @@ ifeq ($(FULL_TARGET),armeb-embedded)
 override TARGET_PROGRAMS+=dtsl_ide
 endif
 ifeq ($(FULL_TARGET),i386-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-go32v2)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-win32)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-os2)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-freebsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-beos)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-haiku)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-netbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-solaris)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-qnx)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-netware)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-openbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-wdosx)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-darwin)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-emx)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-watcom)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-netwlibc)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-wince)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),i386-symbian)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-freebsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-netbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-amiga)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-atari)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-openbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-palmos)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),m68k-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-netbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-amiga)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-macos)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-darwin)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-morphos)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),sparc-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),sparc-netbsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),sparc-solaris)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),sparc-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),x86_64-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),x86_64-freebsd)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),x86_64-darwin)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),x86_64-win64)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),x86_64-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-palmos)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-darwin)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-wince)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-gba)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-nds)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),arm-symbian)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc64-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc64-darwin)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),powerpc64-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),avr-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),armeb-linux)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 ifeq ($(FULL_TARGET),armeb-embedded)
-override CLEAN_FILES+=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
+override CLEAN_FILES+=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
 endif
 override INSTALL_BASEDIR=usr
 override INSTALL_FPCPACKAGE=n
@@ -2175,21 +2175,25 @@ zipinstall: fpc_zipinstall
 zipsourceinstall: fpc_zipsourceinstall
 zipexampleinstall: fpc_zipexampleinstall
 zipdistinstall: fpc_zipdistinstall
-clean: fpc_clean
 distclean: fpc_distclean
 cleanall: fpc_cleanall
 info: fpc_info
 makefiles: fpc_makefiles
-.PHONY: debug smart release units examples shared sourceinstall exampleinstall distinstall zipinstall zipsourceinstall zipexampleinstall zipdistinstall clean distclean cleanall info makefiles
+.PHONY: debug smart release units examples shared sourceinstall exampleinstall distinstall zipinstall zipsourceinstall zipexampleinstall zipdistinstall distclean cleanall info makefiles
 ifneq ($(wildcard fpcmake.loc),)
 include fpcmake.loc
 endif
-.PHONY: all clean install
-all:mo_files
-	lazbuild ide/${PACKAGE_NAME}_ide.lpi
+.PHONY: all clean install ide
+all:mo_files ide
 	lazbuild -B core/${PACKAGE_NAME}core.lpk
-	sed -e 's@\.\./build/lib/dtsl/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/${PACKAGE_NAME}core.lpk
-	${COPY} -t build/lib/dtsl/ core/${PACKAGE_NAME}core.pas
+	sed -e 's@\.\./build/lib/dtsl/core/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/core/${PACKAGE_NAME}core.lpk
+	${COPY} -t build/lib/dtsl/core/ core/${PACKAGE_NAME}core.pas
+clean:fpc_clean clean_packages
+clean_packages:
+	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
+ide:build/bin/${TARGET_PROGRAMS}
+build/bin/%:ide/%.lpi
+	lazbuild $<
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 	${MKDIR} $(dir $@)
