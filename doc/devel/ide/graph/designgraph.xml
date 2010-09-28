@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <fpdoc-descriptions>
-  <package name="dtsl_ide">
+  <package name="rsd_ide">
     <module name="DesignGraph">
       <element name="TDesign">
         <short>Class modeling a design board where blocks could be drown graphically and routed.</short>

@@ -3,14 +3,14 @@
 #
 
 [package]
-name=dtsl
+name=rsd
 version=0.0.1
 
 [require]
 packages=
 
 [target]
-programs=dtsl_ide
+programs=rsd_ide
 dirs=
 exampledirs=
 
@@ -45,14 +45,14 @@ ide:build/bin/${TARGET_PROGRAMS}
 build/bin/%:ide/%.lpi
 	lazbuild $<
 
-packages:$(addprefix build/lib/dtsl/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
+packages:$(addprefix build/lib/rsd/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
 
-build/lib/dtsl/%.pas:%.pas build/lib/dtsl/%.lpk
+build/lib/rsd/%.pas:%.pas build/lib/rsd/%.lpk
 	${COPY} $< $@
 
-build/lib/dtsl/%.lpk:%.lpk %.pas
+build/lib/rsd/%.lpk:%.lpk %.pas
 	lazbuild -B $<
-	sed -e 's@\.\./build/lib/dtsl/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g' $< > $@
+	sed -e 's@\.\./build/lib/rsd/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g' $< > $@
 
 mo_files:${MO_FILES}
 
@@ -63,7 +63,7 @@ build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 # Many C expect 'make install' to copy the binaries to somewhere
 # Copy the fptc tree to the install directory and set a link
 install:
-	# copy dtsl to /usr
+	# copy rsd to /usr
 	${MKDIR} ${INSTALL_PREFIX}/usr
 	${COPYTREE} -t ${INSTALL_PREFIX}/usr \
 		build/bin \

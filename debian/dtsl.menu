@@ -1,6 +1,0 @@
-?package(dtsl-bin):needs="X11"\
-  	title="Free Prayer Time Calculator"\
-	section="Applications/Others"\
-	hints="Muslim, Prayer"\
-	icon="/usr/share/images/Mosque_32x24.png"\
-	command="/usr/bin/dtsl"

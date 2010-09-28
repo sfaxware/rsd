@@ -1,0 +1,6 @@
+?package(rsd):needs="X11"\
+  	title="Rapid Simulator Designer"\
+	section="Applications/Programming"\
+	hints="Create your data driven or clock driver simulator in a few clicks"\
+	icon="/usr/share/images/rsd_32x24.png"\
+	command="/usr/bin/rsd"

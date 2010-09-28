@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <fpdoc-descriptions>
-  <package name="dtsl_ide">
+  <package name="rsd_ide">
     <module name="Magnifier">
       <element name="TMagnifier.Magnify">
         <short>Change size of control</short>

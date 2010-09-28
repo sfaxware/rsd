@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="dtslcore"/>
+    <Name Value="rsdcore"/>
     <AddToProjectUsesSection Value="False"/>
     <AutoUpdate Value="Manually"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
         <OtherUnitFiles Value="fifo/;block/;num/"/>
-        <UnitOutputDirectory Value="../build/lib/dtsl/core/units/$(TargetCPU)-$(TargetOS)"/>
+        <UnitOutputDirectory Value="../build/lib/rsd/core/units/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>

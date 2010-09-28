@@ -65,8 +65,8 @@
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <OtherUnitFiles Value="../../build/lib/dtsl/core/fifo/;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)/"/>
-      <UnitOutputDirectory Value="../../build/lib/dtsl/core/block"/>
+      <OtherUnitFiles Value="../../build/lib/rsd/core/fifo/;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)/"/>
+      <UnitOutputDirectory Value="../../build/lib/rsd/core/block"/>
     </SearchPaths>
     <Other>
       <CompilerPath Value="$(CompPath)"/>

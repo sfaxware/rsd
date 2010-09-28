@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# debian/rules for dtsl
+# debian/rules for rsd
 
 DEB_DH_BUILDDEB_ARGS := -- -Z bzip2
 export DH_ALWAYS_EXCLUDE := COPYING:LICENSE
@@ -19,8 +19,8 @@ DEB_UPSTREAM_MAIN_VERSION:=$(shell echo ${DEB_UPSTREAM_VERSION} | sed -e 's/^\([
 CURDIR:=$(shell pwd)
 BUILD_DIR=$(CURDIR)/debian/build
 INSTALL_DIR=$(CURDIR)/debian/tmp
-DOC_DIR=${INSTALL_DIR}/usr/share/doc/dtsl
-SRC_DIR=$(INSTALL_DIR)/usr/share/src/dtsl
+DOC_DIR=${INSTALL_DIR}/usr/share/doc/rsd
+SRC_DIR=$(INSTALL_DIR)/usr/share/src/rsd
 # Get utils
 ifndef MKDIR
 MKDIR=mkdir -p

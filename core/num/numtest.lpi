@@ -40,7 +40,7 @@
     <Version Value="8"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)/"/>
-      <UnitOutputDirectory Value="../../build/lib/dtsl/core/num"/>
+      <UnitOutputDirectory Value="../../build/lib/rsd/core/num"/>
     </SearchPaths>
     <Other>
       <CompilerPath Value="$(CompPath)"/>

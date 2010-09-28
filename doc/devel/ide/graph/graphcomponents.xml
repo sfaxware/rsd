@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <fpdoc-descriptions>
-  <package name="dtsl_ide">
+  <package name="rsd_ide">
     <module name="GraphComponents">
       <element name="TCGraphPort.Paint">
         <short>Paints the graphical port on the attached component canvas</short>

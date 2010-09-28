@@ -18,7 +18,7 @@
  * description of the various syntax elements. You can find more
  * information about TaskJuggler at http://www.taskjuggler.org!
  */
-project dtsl "Discreete Time Simulator Library (D.T.S.L)" "1.0" 2007-06-17 - 2007-12-14 {
+project rsd "Discreete Time Simulator Library (D.T.S.L)" "1.0" 2007-06-17 - 2007-12-14 {
   # Hide the clock time. Only show the date.
   timeformat "%Y-%m-%d"
   # The currency for all money values is EUR.
