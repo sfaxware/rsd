@@ -184,6 +184,7 @@ end;
 procedure TDesign.HandleMouseLeave(Sender: TObject);
 begin
   if Sender = PointedDevice then begin
+    PointedDevice.MouseLeaved(Sender);
     PointedDevice := nil;
   end;
 end;
@@ -300,9 +301,7 @@ begin
       Device := AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
       Device.Load(DesignDescription, BlockDescription);
     end else begin
-      if Assigned(SelectedBlock) then
-        SelectedBlock.Selected := False;
-      SelectedBlock := AddNewBlock(BlockDescription.Name, BlockDescription.TypeName);
+      SelectBlock(AddNewBlock(BlockDescription.Name, BlockDescription.TypeName));
       SelectedBlock.Load(DesignDescription, BlockDescription);
       //WriteLn('++++++++++++++');
     end;

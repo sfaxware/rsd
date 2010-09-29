@@ -372,9 +372,7 @@ begin
     EditorCodeBuffer.Source := SynEdit1.Text;
   end;
   with Design do begin
-    if Assigned(SelectedBlock) then
-      SelectedBlock.Selected := False;
-    SelectedBlock := AddNewBlock('', ADeviceType);
+    SelectBlock(AddNewBlock('', ADeviceType));
   end;
 
   if SameBuffer then begin

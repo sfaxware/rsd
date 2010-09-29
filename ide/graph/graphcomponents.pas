@@ -52,6 +52,7 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual; abstract;
+    procedure MouseLeaved(Sender: TObject);
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property PropQty: Integer read GetPropQty;
     property PropName[PropIndex: Integer]: string read GetPropName;
@@ -108,7 +109,6 @@ type
   end;
   TBlock = class(TDevice)
   private
-    _MouseDown: Boolean;
     _MousePos: TPoint;
     FInputComponentCount: Integer;
     FOutputComponentCount: Integer;
@@ -116,7 +116,6 @@ type
     procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure MouseLeaved(Sender: TObject);
   protected
     FSelected: Boolean;
     procedure SetSeleted(AValue: Boolean);
@@ -188,6 +187,7 @@ const
   DevicePropertyType: array[TDevicePropertyType] of string = ('', 'Integer', 'Real', 'String', 'Symbol', 'Set', 'List', 'Collection', 'Binary');
 var
   Devices: array of TDeviceInfo;
+  PointedDevice: TDevice;
 
 function DeviceProperty(const PropName: string; PropType: TDevicePropertyType; DefaultValue: TDeviceProperty): TDevicePropertyInfo;
 begin
@@ -597,6 +597,11 @@ begin
               Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
   Result += Indent + 'end' + LineEnding;
+end;
+
+procedure TDevice.MouseLeaved(Sender: TObject);
+begin
+  PointedDevice := nil;
 end;
 
 constructor TPort.Create(AOwner: TComponent);
@@ -1052,7 +1057,7 @@ procedure TBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftS
 begin
   case Button of
     mbLeft:begin
-      _MouseDown := True;
+      PointedDevice := Self;
       _MousePos.x := X + Left;
       _MousePos.y := Y + Top;
     end;
@@ -1066,14 +1071,9 @@ procedure TBlock.EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftSta
 begin
   case Button of
     mbLeft:begin
-      _MouseDown := False;
+      PointedDevice := nil;
     end;
   end;
-end;
-
-procedure TBlock.MouseLeaved(Sender: TObject);
-begin
-  _MouseDown := False;
 end;
 
 procedure TBlock.Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -1081,7 +1081,10 @@ var
   dx, dy: Integer;
   R: TRect;
 begin
-  if(Sender = Self)and _MouseDown then begin
+  if Sender <> Self then begin
+    PointedDevice := nil;
+  end;
+  if PointedDevice = self then begin
     X += Left;
     Y += Top;
     dx := X - _MousePos.x;
