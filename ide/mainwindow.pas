@@ -10,9 +10,9 @@ uses
   SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees, DesignGraph;
 
 type
-  { TdtslIdeMainWindow }
+  { TRsdIdeMainWindow }
 
-  TdtslIdeMainWindow = class(TForm)
+  TRsdIdeMainWindow = class(TForm)
     AddBlockMenuItem: TMenuItem;
     AddInputPortMenuItem: TMenuItem;
     AddOutputPortMenuItem: TMenuItem;
@@ -103,21 +103,21 @@ type
   end;
 
 var
-  dtslIdeMainWindow: TdtslIdeMainWindow;
+  RsdIdeMainWindow: TRsdIdeMainWindow;
 
 implementation
 
 uses
   StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockProperties;
 
-{ TdtslIdeMainWindow }
+{ TRsdIdeMainWindow }
 
-procedure TdtslIdeMainWindow.dtslIdeFileExitMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.dtslIdeFileExitMenuItemClick(Sender: TObject);
 begin
   Application.Terminate;
 end;
 
-procedure TdtslIdeMainWindow.NewProject(Sender: TObject);
+procedure TRsdIdeMainWindow.NewProject(Sender: TObject);
 begin
   with ProjectSettings do begin
     Name := 'Design';
@@ -128,7 +128,7 @@ begin
     Units.ResourceExt := 'lfm';
     Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
     //WriteLn('Core.Path = "', Core.Path, '"');
-    Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
+    Self.Caption := 'R.S.D. IDE (' +  Name + ')';
   end;
   with Project do begin
     Filename := '';
@@ -136,7 +136,7 @@ begin
   Design.Cleanup;
 end;
 
-procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
+procedure TRsdIdeMainWindow.LoadProject(Sender: TObject);
 var
   p: Integer;
 begin
@@ -162,7 +162,7 @@ begin
   TabControl.TabIndex := 0;
 end;
 
-procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
+procedure TRsdIdeMainWindow.SaveProject(Sender: TObject);
 var
   APath: string;
   BuildPath: string;
@@ -217,7 +217,7 @@ begin
   Design.Save;
 end;
 
-procedure TdtslIdeMainWindow.SetBlockProperties(Sender: TObject);
+procedure TRsdIdeMainWindow.SetBlockProperties(Sender: TObject);
 begin
   with BlockPropertiesDialog do begin
     if Design.PointedDevice is TBlock then begin
@@ -227,12 +227,12 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
+procedure TRsdIdeMainWindow.SelectBlockColor(Sender: TObject);
 begin
   ColorDialog1.Execute;
 end;
 
-procedure TdtslIdeMainWindow.SelectBlockName(Sender: TObject);
+procedure TRsdIdeMainWindow.SelectBlockName(Sender: TObject);
 begin
   with Design.PointedDevice do begin
     Caption := InputBox('Change block name', 'Please type the new block name', Caption);
@@ -240,7 +240,7 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.SetBlockColor(Sender: TObject);
+procedure TRsdIdeMainWindow.SetBlockColor(Sender: TObject);
 begin
   if Sender is TColorDialog then with Sender as TColorDialog do begin
     //WriteLn('Change Color from ', hexStr(Design.PointedDevice.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
@@ -249,7 +249,7 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
+procedure TRsdIdeMainWindow.FormCreate(Sender: TObject);
 begin
   with CodeToolBoss do begin
     OnSearchUsedUnit := @SearchUsedUnit;
@@ -260,7 +260,7 @@ begin
   NewProject(Sender);
 end;
 
-procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
@@ -268,14 +268,14 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
     AddNewPort(TOutputPort, '');
   end;
 end;
 
-procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
+procedure TRsdIdeMainWindow.CompileProject(Sender: TObject);
 begin
   SaveProject(Sender);
   with BuilderProcess do begin
@@ -295,12 +295,12 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.ConnectPorts(Sender: TObject);
+procedure TRsdIdeMainWindow.ConnectPorts(Sender: TObject);
 begin
   AddNewConnector('TConnector');
 end;
 
-procedure TdtslIdeMainWindow.DeleteConnector(Sender: TObject);
+procedure TRsdIdeMainWindow.DeleteConnector(Sender: TObject);
 begin
   with Design do begin
     if Assigned(PointedDevice) and (PointedDevice is TConnector) then  begin
@@ -309,22 +309,22 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TFileReadSource');
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TFileDumpProbe');
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TRandomSource');
 end;
 
-procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
+procedure TRsdIdeMainWindow.TabControlChange(Sender: TObject);
 begin
   with Sender as TTabControl do begin
     case TabIndex of
@@ -340,7 +340,7 @@ begin
   end;
 end;
 
-function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
+function TRsdIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
 var
   FileName: string;
   DirList: string;
@@ -363,7 +363,7 @@ begin
     Result := GetCodeBuffer(FileName, cttNone, nil);
 end;
 
-procedure TdtslIdeMainWindow.AddNewBlock(ADeviceType: string);
+procedure TRsdIdeMainWindow.AddNewBlock(ADeviceType: string);
 var
   SameBuffer: Boolean;
 begin
@@ -380,12 +380,12 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.AddNewConnector(ADeviceType: string);
+procedure TRsdIdeMainWindow.AddNewConnector(ADeviceType: string);
 begin
   Design.AddNewConnector('', ADeviceType);
 end;
 
-procedure TdtslIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TRsdIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TPort.HandleMouseDownEvents');
   case Button of
@@ -398,7 +398,7 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TRsdIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TPort.HandleMouseUpEvents');
   case Button of
@@ -414,7 +414,7 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.SetupChildrenEvents(Sender: TObject);
+procedure TRsdIdeMainWindow.SetupChildrenEvents(Sender: TObject);
 begin
   if Sender is TBlock then with Sender as TBlock do begin
     OnDblClick := @ViewFile;
@@ -435,12 +435,12 @@ begin
   end;
 end;
 
-destructor TdtslIdeMainWindow.Destroy;
+destructor TRsdIdeMainWindow.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
+procedure TRsdIdeMainWindow.ViewFile(Sender: TObject);
 var
   CodeFileName: string;
   GraphDevice: TIGraphDevice;
@@ -475,7 +475,7 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
+procedure TRsdIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
   if Assigned(Design.SelectedBlock) then begin
     //WriteLn('Removing block');
@@ -483,12 +483,12 @@ begin
   end;
 end;
 
-procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
+procedure TRsdIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
   AddNewBlock('');
 end;
 
-procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
+procedure TRsdIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
 begin
   with ProjectSettings, SelectDirectoryDialog1 do begin
     if Execute then begin
