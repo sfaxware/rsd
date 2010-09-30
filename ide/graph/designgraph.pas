@@ -12,8 +12,10 @@ type
   private
     FMagnification: Real;
     FOnChildrenCreate: TNotifyEvent;
+    FMousePos: TPoint;
     procedure HandleMouseEnter(Sender: TObject);
     procedure HandleMouseLeave(Sender: TObject);
+    procedure MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
@@ -50,6 +52,7 @@ begin
   inherited Create(AOwner);
   //WriteLn('Created new TDesign class instance');
   OnMouseWheel := @MouseWheele;
+  OnMouseMove := @MouseMove;
   FMagnification := 1;
 end;
 
@@ -89,8 +92,8 @@ begin
     with R do begin
       w := Right - Left;
       h := Bottom - Top;
-      Left := Random(Width - w);
-      Top := Random(Height - h);
+      Left := FMousePos.X;
+      Top := FMousePos.Y;
       Right := Left + w;
       Bottom := Top + h;
     end;
@@ -186,6 +189,14 @@ begin
   if Sender = PointedDevice then begin
     PointedDevice.MouseLeaved(Sender);
     PointedDevice := nil;
+  end;
+end;
+
+procedure TDesign.MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+begin
+  if Sender = Self then begin
+    FMousePos.x := X;
+    FMousePos.y := Y;
   end;
 end;
 
