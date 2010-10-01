@@ -11,7 +11,7 @@
         <short>Create a port for a given block</short>
       </element>
       <element name="CreateDevice">
-        <short>Create a new device guessing devuce name and type if not passed.</short>
+        <short>Create a new device guessing device name and type if not passed.</short>
         <descr>This function creates a new device. The user may pass name and type information or it may guess is automatically.
 
 For devices loaded from a FLM file, the name and the type are already known.
