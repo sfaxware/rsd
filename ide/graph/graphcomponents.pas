@@ -257,16 +257,6 @@ begin
     if DeviceType = '' then begin
       Device := nil;
     end else begin
-      if DeviceName = '' then begin
-        Device := nil;
-      end else begin
-        CodeFile := SourceFileName(DeviceName);
-        //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-        ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-        if Assigned(ACodeBuffer) then begin
-          CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
-        end;
-      end;
     end;
   end else begin
     if DeviceName = '' then begin
@@ -283,16 +273,18 @@ begin
       if DeviceType = '' then begin
         DeviceType := 'T' + DeviceName;
       end else begin
-        CodeFile := SourceFileName(DeviceName);
-        //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-        ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-        if Assigned(ACodeBuffer) then begin
-          CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
-        end;
-        //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
       end;
     end;
   end;
+  if DeviceAncestorType = '' then begin
+    CodeFile := SourceFileName(DeviceName);
+    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+    if Assigned(ACodeBuffer) then begin
+      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+    end;
+  end;
+  //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
   DeviceId := GetDeviceId(DeviceType);
   if DeviceId < 0 then begin
     DeviceId := GetDeviceId(DeviceAncestorType);
