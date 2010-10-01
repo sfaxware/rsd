@@ -158,8 +158,8 @@ type
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
 
-function CreateDevice(DeviceName, DeviceType: string; AncestorType: TDeviceClass; AOwner: TComponent): TDevice;
-function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TBlock;
+function CreateDevice(out Device: TDevice; DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): Boolean;
+function CreateBlock(DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): TBlock;
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
 function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TOutputPort;
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
@@ -245,40 +245,52 @@ begin
   Result := GetDeviceClass(i);
 end;
 
-function CreateDevice(DeviceName, DeviceType: string; AncestorType: TDeviceClass; AOwner: TComponent): TDevice;
+function CreateDevice(out Device: TDevice; DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): Boolean;
 var
   DeviceId: Integer;
   DeviceClass: TDeviceClass;
   CodeFile: string;
   ACodeBuffer: TCodeBuffer;
-  DeviceAncestorType: string;
 begin
-  if DeviceName = '' then begin
+  //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+  if DeviceAncestorType = '' then begin
     if DeviceType = '' then begin
-      DeviceAncestorType := AncestorType.ClassName;
+      Device := nil;
     end else begin
-      DeviceAncestorType := DeviceType;
-    end;
-    if Pos('T', DeviceAncestorType) = 1 then begin
-      DeviceName := Copy(DeviceAncestorType, 2, Length(DeviceAncestorType));
-    end else begin
-      DeviceName := 'A' + DeviceAncestorType;
-    end;
-    DeviceName += IntToStr(AOwner.ComponentCount + 1);
-    if DeviceType = '' then begin
-      DeviceType := 'T' + DeviceName;
+      if DeviceName = '' then begin
+        Device := nil;
+      end else begin
+        CodeFile := SourceFileName(DeviceName);
+        //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+        ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+        if Assigned(ACodeBuffer) then begin
+          CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+        end;
+      end;
     end;
   end else begin
-    if DeviceType = '' then begin
-      DeviceType := 'T' + DeviceName;
-    end else begin
-      CodeFile := SourceFileName(DeviceName);
-      //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-      ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-      if Assigned(ACodeBuffer) then begin
-        CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+    if DeviceName = '' then begin
+      if Pos('T', DeviceAncestorType) = 1 then begin
+        DeviceName := Copy(DeviceAncestorType, 2, Length(DeviceAncestorType));
+      end else begin
+        DeviceName := 'A' + DeviceAncestorType;
       end;
-      //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+      DeviceName += IntToStr(AOwner.ComponentCount + 1);
+      if DeviceType = '' then begin
+        DeviceType := 'T' + DeviceName;
+      end;
+    end else begin
+      if DeviceType = '' then begin
+        DeviceType := 'T' + DeviceName;
+      end else begin
+        CodeFile := SourceFileName(DeviceName);
+        //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+        ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+        if Assigned(ACodeBuffer) then begin
+          CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+        end;
+        //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+      end;
     end;
   end;
   DeviceId := GetDeviceId(DeviceType);
@@ -287,38 +299,31 @@ begin
   end;
   DeviceClass := GetDeviceClass(DeviceId);
   if Assigned(DeviceClass) then begin
-    Result := DeviceClass.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
-    if Assigned(Result) then begin
-      if not (Result is AncestorType) then begin
-        FreeAndNil(Result);
-      end;
-    end;
-    if not Assigned(Result) then begin
-      Result := AncestorType.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
-    end;
+    Device := DeviceClass.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
   end else begin
-    Result := nil;
+    Device := nil;
   end;
+  Result := Assigned(Device);
 end;
 
-function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TBlock;
+function CreateBlock(DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): TBlock;
 begin
-  Result := CreateDevice(DeviceName, DeviceType, TBlock, AOwner) as TBlock;
+  CreateDevice(Result, DeviceName, DeviceType, DeviceAncestorType, AOwner);
 end;
 
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
 begin
-  Result := CreateDevice(DeviceName, DeviceType, TInputPort, AOwner) as TInputPort;
+  CreateDevice(Result, DeviceName, DeviceType, 'TInputPort', AOwner);
 end;
 
 function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TOutputPort;
 begin
-  Result := CreateDevice(DeviceName, DeviceType, TOutputPort, AOwner) as TOutputPort;
+  CreateDevice(Result, DeviceName, DeviceType, 'TOutputPort', AOwner);
 end;
 
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
 begin
-  Result := CreateDevice(DeviceName, DeviceType, TConnector, AOwner) as TConnector;
+  CreateDevice(Result, DeviceName, DeviceType, 'TConnector', AOwner);
 end;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): TDeviceProperty;
