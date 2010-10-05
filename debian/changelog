@@ -2,4 +2,4 @@ rsd (0.0.1-0) unstable; urgency=low
 
   * First attempt to build DTSL deb package.
 
- -- Abou Al Montacir <abou.almontacir@sfr.fr>  Mon, 28 Sep 2010 08:45:00 +0100
+ -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 04 Oct 2010 09:22:00 +0200
