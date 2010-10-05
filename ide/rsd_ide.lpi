@@ -4,6 +4,7 @@
     <Version Value="7"/>
     <General>
       <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <AlwaysBuild Value="False"/>
       </Flags>
