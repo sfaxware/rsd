@@ -117,7 +117,6 @@ begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
-  WriteLn(' adding ', Result.DeviceIdentifier);
   CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
   CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
