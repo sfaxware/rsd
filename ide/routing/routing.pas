@@ -264,7 +264,7 @@ begin
   l := 0;
   SetLength(Result, l);
   for p := Low(A) to High(A) do begin
-    if IntersectRect(X, A[p], A[n]) then begin
+    if(n <> p) and IntersectRect(X, A[p], A[n]) then begin
       SetLength(Result, l + 1);
       Result[l] := p;
       l += 1;
