@@ -37,6 +37,37 @@
       <element name="Route">
         <short>Create a route joining two given points inside a given area. Returns <i>True</i> if it succeeds to build the roote, otherwise it returns <i>True</i>.</short>
       </element>
+      <element name="TIndex">
+        <short>Base integer type for indexing arrays in the rooting unit</short>
+        <descr>This is the base type for indexing arrays in the rooting unit. Using an alias instead of directly a standard type can help if we need to change the base type. Even if this is unlikely to happen, it is always a good programming practice.</descr>
+      </element>
+      <element name="TIndexes">
+        <short>A list of indexes to reference subsets of elements in other lists like TArea and TSegments.</short>
+      </element>
+      <element name="TAdjacenceGraph">
+        <short>lIst of list of adjacent rectangles</short>
+        <descr>This list gives for each rectrangle, referenced by the same index in a given area,  the list the adjacent rectangles.
+Two rectangles are adjacent if their intersection is not empty and not reduced to a unique point.
+
+Adjacent rectangles are used to identify which rectangles are candidates to route throught.
+
+The adjacence grapgh can be seen as a compact implementation of a tree. It allow roouting by walking in the tree from the start point to the end point.</descr>
+      </element>
+      <element name="AddRect">
+        <short>Adds a rectangle to an area.</short>
+      </element>
+      <element name="RemoveRect">
+        <short>Removes a rectangle from an area. If the rectangle is only a sub rectangle of one in the list, the latter is split into mutiple sub rectangles.</short>
+      </element>
+      <element name="Containers">
+        <short>Returns the list of indexes of the rectangles containing the given point for the given area.</short>
+      </element>
+      <element name="Adjacents">
+        <short>Returns the list of indexes of the rectangles intersecting a particular rectangle in an area for the given area.</short>
+      </element>
+      <element name="AdjacenceGraph">
+        <short>Return the adjacence graph of a given area.</short>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>
