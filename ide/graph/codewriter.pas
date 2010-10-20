@@ -21,15 +21,23 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'program Simulate' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
-      '  ' + Owner.DeviceIdentifier + ';' + LineEnding +
+      '  SysUtils, ' + Owner.DeviceIdentifier + ';' + LineEnding +
       LineEnding +
       'var' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator: TCustom' + Owner.DeviceIdentifier + ';' + LineEnding +
+      '  ' + 'progPath, ProgDir, SimDir: string;' + LineEnding +
       LineEnding +
       'begin' + LineEnding +
+      '  ProgPath := ParamStr(0);' + LineEnding +
+      '  ProgDir := ExtractFileDir(ProgPath);' + LineEnding +
+      '  SimDir := ExtractFileDir(ProgDir) + ''/simulations'';' + LineEnding +
+      '  if not DirectoryExists(SimDir) then begin' + LineEnding +
+      '    MkDir(SimDir);' + LineEnding +
+      '  end;' + LineEnding +
+      '  ChDir(SimDir);' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator.Run;' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator.Free;' + LineEnding +
@@ -42,7 +50,7 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
@@ -72,7 +80,7 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
       LineEnding +
       'interface' + LineEnding +
       LineEnding +
