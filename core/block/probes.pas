@@ -65,7 +65,6 @@ begin
   end;
   FFileName := AFileName;
   System.Assign(FFile, FFileName);
-  WriteLn(AFileName);
   {$IOCHECKS OFF}
   ReWrite(FFile);
   {$IOCHECKS ON}
