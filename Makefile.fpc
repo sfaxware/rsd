@@ -17,7 +17,8 @@ exampledirs=
 [compiler]
 
 [clean]
-files=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES}
+TEST_PROGS=$(wildcard build/bin/test*)
+files=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES} ${TEST_PROGS}
 
 [install]
 fpcpackage=n
@@ -27,7 +28,6 @@ basedir=usr
 PACKAGES=core/${PACKAGE_NAME}core
 PO_FILES=$(wildcard locale/*_*.po)
 MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
-LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
 #-----------------------------------------------------------------------------
 [rules]
 .PHONY: all clean install ide packages
