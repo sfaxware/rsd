@@ -17,12 +17,10 @@ object PackagesManagerForm: TPackagesManagerForm
     Height = 266
     Top = 0
     Width = 392
-    AutoFill = True
+    AutoFill = False
     Caption = 'Installed packages'
     ChildSizing.LeftRightSpacing = 6
     ChildSizing.TopBottomSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
     ChildSizing.ShrinkHorizontal = crsScaleChilds
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
