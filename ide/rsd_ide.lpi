@@ -113,8 +113,8 @@
       <Filename Value="../build/bin/rsd"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)/"/>
-      <OtherUnitFiles Value="graph/;routing/"/>
+      <IncludeFiles Value="$(ProjOutDir)/;$(LazarusDir)/ide/include/$(TargetOS)/;$(LazarusDir)/ide/include/"/>
+      <OtherUnitFiles Value="graph/;routing/;$(LazarusDir)/packager/;$(LazarusDir)/ide/"/>
       <UnitOutputDirectory Value="../build"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
