@@ -980,7 +980,8 @@ object IdeMainWindow: TIdeMainWindow
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    Filter = '*.lpi|*.lpi'
+    Filter = '*.lpi'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
     left = 32
     top = 32
   end
