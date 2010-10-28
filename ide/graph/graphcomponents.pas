@@ -48,7 +48,7 @@ type
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
-    constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string; DeviceId: Integer);
+    constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
     function DeviceAncestorUnitName: string;
     function DeviceIdentifier: string;
     function DeviceType: string;
@@ -297,7 +297,7 @@ begin
   end;
   DeviceClass := GetDeviceClass(DeviceId);
   if Assigned(DeviceClass) then begin
-    Device := DeviceClass.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
+    Device := DeviceClass.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType);
   end else begin
     Device := nil;
   end;
@@ -434,7 +434,7 @@ begin
   OnPaint := @DoPaint;
 end;
 
-constructor TDevice.Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string; DeviceId: Integer);
+constructor TDevice.Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
 begin
   Create(AOwner);
   if DeviceName <> '' then begin
@@ -705,7 +705,6 @@ end;
 
 procedure TInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
-  PortTop, PortLeft: Integer;
   R: TRect;
 begin
   with Owner as TBlock do begin
@@ -759,7 +758,6 @@ end;
 
 procedure TOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
-  PortTop, PortLeft: Integer;
   R: TRect;
 begin
   with Owner as TBlock do begin
@@ -786,8 +784,6 @@ begin
 end;
 
 constructor TConnector.Create(AOwner: TComponent);
-var
-  DeviceId: Integer;
 begin
   inherited Create(AOwner);
   Name := 'Connector';
@@ -928,11 +924,10 @@ var
   DesignDescription: TLFMTree;
   DeviceDescriptionNode: TLFMObjectNode;
   PortName: string;
-  BlockName: string;
+  //BlockName: string;
   p: Integer;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
-  ChildNode: TLFMTreeNode;
   Port: TPort;
 begin
   Result := true;
@@ -951,8 +946,8 @@ begin
     Exit(False);
   end;
   with CodeToolBoss do begin
-    WriteLn('TBlock.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
-    WriteLn('TBlock.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
+    //WriteLn('TBlock.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
+    //WriteLn('TBlock.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
     if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
       if not Assigned(DesignDescription) then begin
@@ -962,7 +957,7 @@ begin
       end;
     end;
   end;
-  WriteLn('TBlock.Load : LFM created');
+  //WriteLn('TBlock.Load : LFM created');
   DeviceDescriptionNode := FindObjectProperty(nil, DesignDescription);
   Port := nil;
   while Assigned(DeviceDescriptionNode) do begin
@@ -974,12 +969,12 @@ begin
     end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
-      BlockName := Copy(PortName, 1, p - 1);
+      //BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('OutputPortName = ', PortName);
       PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
-      BlockName := Copy(PortName, 1, p - 1);
+      //BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('InputPortName = ', PortName);
     end else begin
@@ -1246,13 +1241,16 @@ var
   c: TComponent;
 begin
   Result := nil;
-  c := FindComponent('Output');
+  if PortName = '' then begin
+    PortName := 'Output';
+  end;
+  c := FindComponent(PortName);
   if Assigned(c) and (c is TOutputPort) then begin
     Result := c as TOutputPort;
   end;
   if not Assigned(Result) then begin
     Result := TOutputPort.Create(Self);
-    Result.Name := 'Output';
+    Result.Name := PortName;
   end;
 end;
 
@@ -1324,13 +1322,16 @@ var
   c: TComponent;
 begin
   Result := nil;
-  c := FindComponent('Input');
+  if PortName = '' then begin
+    PortName := 'Input';
+  end;
+  c := FindComponent(PortName);
   if Assigned(c) and (c is TInputPort) then begin
     Result := c as TInputPort;
   end;
   if not Assigned(Result) then begin
     Result := TInputPort.Create(Self);
-    Result.Name := 'Input';
+    Result.Name := PortName;
   end;
 end;
 
