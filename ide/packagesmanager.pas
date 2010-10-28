@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, ExtCtrls, StdCtrls, SysUtils, FileUtil, LResources, Forms, Controls,
-  Graphics, Dialogs, XMLCfg;
+  Graphics, Dialogs;
 
 type
 
@@ -36,7 +36,7 @@ var
 implementation
 
 uses
-  Configuration, PackageLinks, PackageDefs, EnvironmentOpts;
+  Configuration, PackageLinks, PackageDefs, EnvironmentOpts, Laz_XMLCfg, CompilerOptions;
 
 const
   PackagesQty = 2;
@@ -96,16 +96,17 @@ procedure TPackagesManagerForm.FormCreate(Sender: TObject);
       end;
     end;
   end;
-var
-  n: Integer;
-  PackagePath: string;
 begin
   PackagesList := BuildPackagesList;
   UpdateForm(PackagesList);
   EnvironmentOptions := TEnvironmentOptions.Create;
+  GlobalBuildProperties := TGlobalBuildProperties.Create;
+  with GlobalBuildProperties do begin
+    AddStandardModes;
+  end;
   PkgLinks:=TPackageLinks.Create;
   with PkgLinks do begin
-    UpdateAll;
+    UpdateUserLinks;
     //DependencyOwnerGetPkgFilename:=@PkgLinksDependencyOwnerGetPkgFilename;
   end;
 end;
@@ -130,6 +131,7 @@ begin
   FreeAndNil(PackagesList);
   FreeAndNil(PkgLinks);
   FreeAndNil(EnvironmentOptions);
+  FreeAndNil(GlobalBuildProperties);
 end;
 
 procedure TPackagesManagerForm.FormShow(Sender: TObject);
@@ -143,6 +145,24 @@ begin
   end;
 end;
 
+function AddUserLink(const PkgFilename, PkgName: string): TPackageLink;
+var
+  NewPackage: TLazPackage;
+  XmlConfig: TXMLConfig;
+begin
+  NewPackage := TLazPackage.Create;
+  XmlConfig := TXMLConfig.Create(PkgFilename);
+  with NewPackage do begin
+    Filename := PkgFilename;
+    LoadFromXMLConfig(XmlConfig, 'Package/');
+  end;
+  with PkgLinks do begin
+    Result := AddUserLink(NewPackage);
+  end;
+  FreeAndNil(XmlConfig);
+  FreeAndNil(NewPackage);
+end;
+
 procedure TPackagesManagerForm.UpdateInstalledPackages(Sender: TObject);
 var
   n: Integer;
@@ -154,7 +174,10 @@ begin
       end else begin
         UninstallPackage(n);
       end;
-      PkgLinks.SaveUserLinks;
+      with PkgLinks do begin
+        UpdateUserLinks;
+        SaveUserLinks;
+      end;
     end;
   end else begin
   end;
@@ -208,7 +231,7 @@ begin
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
   PkgPath := PackagesList.Items[PkgIndex];
-  PkgLinks.AddUserLink(PkgPath^, PkgName);
+  AddUserLink(PkgPath^, PkgName);
 end;
 
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
