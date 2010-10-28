@@ -16,7 +16,6 @@ type
     CancelButton: TButton;
     ApplyButton: TButton;
     PackagesListCheckGroup: TCheckGroup;
-    PackageFiles: TXMLConfig;
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -103,11 +102,6 @@ var
 begin
   PackagesList := BuildPackagesList;
   UpdateForm(PackagesList);
-  with PackageFiles do begin
-    PackagePath := FileName;
-    PackagePath := GetEnvironmentVariable('HOME') + PackagePath;
-    FileName := PackagePath;
-  end;
   EnvironmentOptions := TEnvironmentOptions.Create;
   PkgLinks:=TPackageLinks.Create;
   with PkgLinks do begin
@@ -170,14 +164,13 @@ end;
 function TPackagesManagerForm.IndexOfPackage(PkgName: string): Integer;
 var
   n: Integer;
-  PkgXmlName: string;
+  PkgPath: PString;
 begin
   Result := -1;
-  with PackageFiles do begin
-    for n := 1 to GetValue('UserPkgLinks/Count', 0) do begin
-      PkgXmlName := GetValue('UserPkgLinks/Item' + IntToStr(n) + '/Name/Value', '');
-      //WriteLn('XmlPath = "', XmlPath, '"');
-      if PkgXmlName = PkgName then begin
+  with PackagesList do begin
+    for n := 0 to Count do begin
+      PkgPath := Items[n];
+      if ExtractFileNameOnly(PkgPath^) = PkgName then begin
         Exit(n)
       end;
     end;
@@ -186,18 +179,19 @@ end;
 
 function TPackagesManagerForm.PackageIsInstalled(PkgIndex: Integer): boolean;
 var
-  n: Integer;
   PkgName: string;
   PkgPath: PString;
   PkgXmlPath: string;
+  PkgLink: TPackageLink;
 begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
-  n := IndexOfPackage(PkgName);
-  if n >= 0 then with PackageFiles do begin
-    PkgPath := PackagesList.Items[PkgIndex];
-    PkgXmlPath := GetValue('UserPkgLinks/Item' + IntToStr(n) + '/Filename/Value', '');
-    Result := PkgXmlPath = PkgPath^;
+  with PkgLinks do begin
+    PkgLink := FindLinkWithPkgName(PkgName);
+  end;
+  if Assigned(PkgLink) then with PackagesList, PkgLink do begin
+    PkgPath := Items[PkgIndex];
+    Result := Filename = PkgPath^;
   end else begin
     Result := False;
   end;
@@ -214,16 +208,6 @@ begin
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
   PkgPath := PackagesList.Items[PkgIndex];
-  {with PackageFiles do begin
-    if n < 0 then begin
-      n := GetValue('UserPkgLinks/Count', 1) + 1;
-      SetValue('UserPkgLinks/Count', n);
-    end;
-    PkgXmlPath := 'UserPkgLinks/Item' + IntToStr(n);
-    SetValue(PkgXmlPath + '/Name/Value', PkgName);
-    SetValue(PkgXmlPath + '/Filename/Value', PkgPath^);
-    Flush;
-  end;}
   PkgLinks.AddUserLink(PkgPath^, PkgName);
 end;
 
@@ -237,10 +221,6 @@ begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
-  {if n >= 0 then with PackageFiles do begin
-    DeletePath('UserPkgLinks/Item' + IntToStr(n));
-    Flush;
-  end;}
   PkgLinks.RemoveLink(PkgLinks.FindLinkWithPkgName(PkgName), True);
 end;
 
