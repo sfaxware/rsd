@@ -7,11 +7,12 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, mainWindow, BlockProperties, PackagesManager;
+  Forms, mainWindow, BlockProperties, PackagesManager, Configuration;
 
 begin
   Application.Initialize;
   Application.CreateForm(TIdeMainWindow, IdeMainWindow);
+  Application.CreateForm(TSplashWindow, SplashWindow);
   Application.CreateForm(TBlockPropertiesDialog, BlockPropertiesDialog);
   Application.CreateForm(TPackagesManagerForm, PackagesManagerForm);
   Application.Run;
