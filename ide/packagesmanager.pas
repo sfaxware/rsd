@@ -62,13 +62,15 @@ procedure TPackagesManagerForm.FormCreate(Sender: TObject);
     SearchRec: TSearchRec;
     SearchPath, PackagePath: string;
   begin
-    SearchPath := AppCfg.Lib.Path + '*';
+    with AppCfg do begin
+      SearchPath := Prefix + Lib.Path + '*';
+    end;
     //WriteLn('AppCfg.Lib.Path = "', AppCfg.Lib.Path, '"');
     Result := TFPList.Create;
     if FindFirst(SearchPath, faDirectory, SearchRec) = 0 then with Result do begin
       repeat
-        with SearchRec do begin
-          PackagePath := AppCfg.Lib.Path + Name + PathDelim + 'rsd' + Name + '.lpk';
+        with SearchRec, AppCfg do begin
+          PackagePath := Prefix + Lib.Path + Name + PathDelim + 'rsd' + Name + '.lpk';
           //WriteLn('PackagePath = ', PackagePath);
           if(Attr and faDirectory) = faDirectory then begin
             if FileExists(PackagePath) then begin
@@ -205,12 +207,14 @@ var
   PkgLink: TPackageLink;
 begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
-  //WriteLn('PkgPath = "', PkgPath, '"');
+  //WriteLn('PkgName = "', PkgName, '"');
   with PkgLinks do begin
     PkgLink := FindLinkWithPkgName(PkgName);
   end;
   if Assigned(PkgLink) then with PackagesList, PkgLink do begin
     PkgPath := Items[PkgIndex];
+    //WriteLn('PkgPath = ', PkgPath^);
+    //WriteLn('Filename = ', Filename);
     Result := Filename = PkgPath^;
   end else begin
     Result := False;
