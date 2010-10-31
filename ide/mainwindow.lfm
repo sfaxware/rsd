@@ -9,7 +9,9 @@ object IdeMainWindow: TIdeMainWindow
   ClientWidth = 1036
   Font.Color = clDefault
   Menu = IdeMainMenu
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = ExitApplication
   LCLVersion = '0.9.28.2'
   Visible = True
   object TabControl: TTabControl
@@ -57,6 +59,7 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -820,7 +823,7 @@ object IdeMainWindow: TIdeMainWindow
           D485B1DA5A91B95D87BAFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3B54726C9CD35F8DC1
         }
-        OnClick = IdeFileExitMenuItemClick
+        OnClick = ExitApplication
       end
     end
     object IdeEditMenuItem: TMenuItem

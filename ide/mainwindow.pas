@@ -73,6 +73,7 @@ type
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure IdeViewLayoutMenuItemClick(Sender: TObject);
     procedure IdeViewSourceCodeMenuItemClick(Sender: TObject);
@@ -88,7 +89,7 @@ type
     procedure TabControlChange(Sender: TObject);
     procedure IdeEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure IdeEditGraphInsertBlockMenuItemClick(Sender: TObject);
-    procedure IdeFileExitMenuItemClick(Sender: TObject);
+    procedure ExitApplication(Sender: TObject);
   private
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
@@ -111,9 +112,14 @@ uses
 
 { TIdeMainWindow }
 
-procedure TIdeMainWindow.IdeFileExitMenuItemClick(Sender: TObject);
+procedure TIdeMainWindow.ExitApplication(Sender: TObject);
 begin
   Application.Terminate;
+end;
+
+procedure TIdeMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  CloseAction := caFree;
 end;
 
 procedure TIdeMainWindow.IdeViewLayoutMenuItemClick(Sender: TObject);
