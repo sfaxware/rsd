@@ -102,7 +102,7 @@ procedure TSplashWindow.UpdateConfiguration(Sender: TObject);
 begin
   with AppCfg, UserConfig do begin
     Exec.Name := ParamStr(0);
-    Prefix := ExtractFileDir(ExtractFileDir(Exec.Name));
+    Prefix := ExtractFilePath(ExtractFileDir(Exec.Name));
     Exec.Name := ExtractFileNameOnly(Exec.Name);
     Lib.Path += Exec.Name + PathDelim;
     ChDir(Prefix);
