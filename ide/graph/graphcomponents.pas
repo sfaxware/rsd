@@ -53,7 +53,8 @@ type
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
-    function DeviceDescription(Indent: string): string; virtual;
+    function DeviceDescription(Indent: string): string;
+    function DevicePropertiesDescription(Indent: string): string; virtual;
     function DeviceUnitName: string;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual;
     procedure MouseLeaved(Sender: TObject);
@@ -131,7 +132,7 @@ type
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
-    function DeviceDescription(Indent: string): string; override;
+    function DevicePropertiesDescription(Indent: string): string; override;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     function Save: boolean;
@@ -149,7 +150,7 @@ type
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
-    function DeviceDescription(Indent: string): string; override;
+    function DevicePropertiesDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
   TProbe = class(TBlock)
@@ -158,7 +159,7 @@ type
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
-    function DeviceDescription(Indent: string): string; override;
+    function DevicePropertiesDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
 
@@ -582,11 +583,17 @@ begin
 end;
 
 function TDevice.DeviceDescription(Indent: string): string;
+begin
+  Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
+  Result += DevicePropertiesDescription(Indent);
+  Result += Indent + 'end' + LineEnding;
+end;
+
+function TDevice.DevicePropertiesDescription(Indent: string): string;
 var
   i: Integer;
   PropValue: TDeviceProperty;
 begin
-  Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
   if(Indent <> '') and (Self is TBlock)then begin
     Result += Indent + '  Caption = ''' + Caption + '''' + LineEnding;
   end;
@@ -607,7 +614,6 @@ begin
               Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
               Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
-  Result += Indent + 'end' + LineEnding;
 end;
 
 function TDevice.DeviceUnitName: string;
@@ -1069,16 +1075,14 @@ begin
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
-function TBlock.DeviceDescription(Indent: string): string;
+function TBlock.DevicePropertiesDescription(Indent: string): string;
 var
   i: Integer;
 begin
   if Indent = '' then begin
-    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TDevice do begin
       Result += DeviceDescription(Indent + '  ');
     end;
-    Result += Indent + 'end' + LineEnding;
   end else begin
     Result := inherited;
   end;
@@ -1269,18 +1273,16 @@ begin
   end;
 end;
 
-function TSource.DeviceDescription(Indent: string): string;
+function TSource.DevicePropertiesDescription(Indent: string): string;
 var
   i: Integer;
 begin
   if Indent = '' then begin
-    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
       if Name <> 'Input' then begin
         Result += DeviceDescription(Indent + '  ');
       end;
     end;
-    Result += Indent + 'end' + LineEnding;
   end else begin
     Result := inherited;
   end;
@@ -1348,18 +1350,16 @@ begin
   end;
 end;
 
-function TProbe.DeviceDescription(Indent: string): string;
+function TProbe.DevicePropertiesDescription(Indent: string): string;
 var
   i: Integer;
 begin
   if Indent = '' then begin
-    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
       if Name <> 'Output' then begin
         Result += DeviceDescription(Indent + '  ');
       end;
     end;
-    Result += Indent + 'end' + LineEnding;
   end else with OriginalBounds do begin
     Result := inherited;
   end;
