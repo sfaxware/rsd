@@ -588,7 +588,7 @@ var
 begin
   Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
   if(Indent <> '') and (Self is TBlock)then begin
-    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding;
+    Result += Indent + '  Caption = ''' + Caption + '''' + LineEnding;
   end;
   with Devices[FDeviceId] do begin
     for i := Low(Properties) to High(Properties) do begin;
@@ -620,16 +620,11 @@ var
   i: Integer;
   PropValue: TDeviceProperty;
 begin
-  Caption := string(GetPropertyValue(ContextNode, 'DeviceName', DesignDescription));
   with Devices[FDeviceId] do begin
     for i := Low(Properties) to High(Properties) do begin;
       PropValue := GetPropertyValue(ContextNode, Properties[i].PropName, DesignDescription);
       SetProperty(i, PropValue);
     end;
-  end;
-  PropValue := GetPropertyValue(ContextNode, 'Color', DesignDescription);
-  if PropValue <> '' then begin
-    Canvas.Brush.Color := StrToInt(PropValue);
   end;
 end;
 
@@ -927,6 +922,7 @@ var
   R: TRect;
 begin
   Result := Load() and inherited;
+  Caption := GetPropertyValue(ContextNode, 'Caption', DesignDescription);
   with R do begin
     Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
     Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
@@ -934,6 +930,7 @@ begin
     Bottom := Top + StrToInt(GetPropertyValue(ContextNode, 'Height', DesignDescription));
     //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
   end;
+  Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
   OriginalBounds := R;
 end;
 
