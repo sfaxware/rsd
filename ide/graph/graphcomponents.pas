@@ -55,7 +55,7 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string; virtual;
     function DeviceUnitName: string;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual; abstract;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual;
     procedure MouseLeaved(Sender: TObject);
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property PropQty: Integer read GetPropQty;
@@ -339,6 +339,9 @@ begin
   Result := '';
   //WriteLn('GetPropertyValue: PropertyName = ', PropertyName);
   PropertyNode := Self.FindProperty(PropertyName, nil);
+  if not Assigned(PropertyNode) then begin
+    Exit('');
+  end;
   ValueNode := PropertyNode.Next;
   //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
   if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do begin
@@ -612,6 +615,24 @@ begin
   Result := Name;
 end;
 
+function TDevice.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+var
+  i: Integer;
+  PropValue: TDeviceProperty;
+begin
+  Caption := string(GetPropertyValue(ContextNode, 'DeviceName', DesignDescription));
+  with Devices[FDeviceId] do begin
+    for i := Low(Properties) to High(Properties) do begin;
+      PropValue := GetPropertyValue(ContextNode, Properties[i].PropName, DesignDescription);
+      SetProperty(i, PropValue);
+    end;
+  end;
+  PropValue := GetPropertyValue(ContextNode, 'Color', DesignDescription);
+  if PropValue <> '' then begin
+    Canvas.Brush.Color := StrToInt(PropValue);
+  end;
+end;
+
 procedure TDevice.MouseLeaved(Sender: TObject);
 begin
   PointedDevice := nil;
@@ -806,8 +827,7 @@ end;
 
 function TConnector.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
-  SetProperty('Depth', GetPropertyValue(ContextNode, 'Depth', DesignDescription));
-  Result := True;
+  Result := inherited;
 end;
 
 procedure TConnector.Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
@@ -906,7 +926,7 @@ function TBlock.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNo
 var
   R: TRect;
 begin
-  Result := Load();
+  Result := Load() and inherited;
   with R do begin
     Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
     Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
@@ -915,8 +935,6 @@ begin
     //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
   end;
   OriginalBounds := R;
-  Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
-  Caption := string(GetPropertyValue(ContextNode, 'DeviceName', DesignDescription));
 end;
 
 function TBlock.Load: boolean;
@@ -1273,9 +1291,7 @@ end;
 
 function TSource.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
-  Result := inherited Load(DesignDescription, ContextNode);
-  SetProperty('InitialSeed', GetPropertyValue(ContextNode, 'InitialSeed', DesignDescription));
-  SetProperty('Amplitude', GetPropertyValue(ContextNode, 'Amplitude', DesignDescription));
+  Result := inherited;
 end;
 
 constructor TProbe.Create(AOwner:TComponent);
@@ -1354,9 +1370,7 @@ end;
 
 function TProbe.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
-  Result := inherited Load(DesignDescription, ContextNode);
-  SetProperty('FileName', GetPropertyValue(ContextNode, 'FileName', DesignDescription));
-  SetProperty('SampleQty', GetPropertyValue(ContextNode, 'SampleQty', DesignDescription));
+  Result := inherited;
 end;
 
 initialization
