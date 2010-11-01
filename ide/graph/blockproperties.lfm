@@ -13,7 +13,7 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     Height = 268
     Top = 0
     Width = 530
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     AutoAdvance = aaDown
     AutoFillColumns = True
     ColCount = 3
@@ -44,10 +44,11 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     )
   end
   object ApplyButton: TButton
-    Left = 416
+    Left = 413
     Height = 33
     Top = 272
     Width = 105
+    Anchors = [akRight, akBottom]
     Caption = 'Apply'
     OnClick = ApplyButtonClick
     TabOrder = 1
@@ -57,6 +58,7 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     Height = 33
     Top = 272
     Width = 105
+    Anchors = [akLeft, akBottom]
     Caption = 'Cancel'
     OnClick = CancelButtonClick
     TabOrder = 2
