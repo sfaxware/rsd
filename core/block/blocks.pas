@@ -13,6 +13,7 @@ type
   TConnector = class(TCConnector);
   TBlock = class(TCBlock)
   private
+    FCaption: string;
     FColor: Cardinal;
     FTop: Cardinal;
     FLeft: Cardinal;
@@ -21,6 +22,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   published
+    property Caption: string read FCaption write FCaption;
     property Color: Cardinal read FColor write FColor;
     property Top: Cardinal read FTop write FTop;
     property Left: Cardinal read FLeft write FLeft;
