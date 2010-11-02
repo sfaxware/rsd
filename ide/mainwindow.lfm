@@ -4,7 +4,7 @@ object IdeMainWindow: TIdeMainWindow
   Top = 27
   Width = 1036
   ActiveControl = TabControl
-  Caption = 'D.T.S.L. IDE'
+  Caption = 'Rapid Simulators Designer IDE'
   ClientHeight = 814
   ClientWidth = 1036
   Font.Color = clDefault
@@ -59,7 +59,6 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -957,6 +956,10 @@ object IdeMainWindow: TIdeMainWindow
         Caption = 'Co&mpile project'
         GroupIndex = 1
         OnClick = CompileProject
+      end
+      object IdeOpenInLazarusMenuItem: TMenuItem
+        Caption = 'Open in &Lazarus'
+        OnClick = IdeOpenInLazarusMenuItemClick
       end
     end
     object IdeConfigurationMenuItem: TMenuItem

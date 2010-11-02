@@ -40,6 +40,7 @@ type
     IdeEditGraphDeleteBlockMenuItem: TMenuItem;
     DeleteConnectorMenuItem: TMenuItem;
     FileReadSourceMenuItem: TMenuItem;
+    IdeOpenInLazarusMenuItem: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
@@ -75,6 +76,7 @@ type
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure IdeOpenInLazarusMenuItemClick(Sender: TObject);
     procedure IdeViewLayoutMenuItemClick(Sender: TObject);
     procedure IdeViewSourceCodeMenuItemClick(Sender: TObject);
     procedure NewProject(Sender: TObject);
@@ -277,6 +279,26 @@ begin
     InitialDir := User.Home.Path;
   end;
   NewProject(Sender);
+end;
+
+procedure TIdeMainWindow.IdeOpenInLazarusMenuItemClick(Sender: TObject);
+begin
+  SaveProject(Sender);
+  with BuilderProcess do begin
+    CommandLine := 'lazarus-ide ' + Project.FileName;
+    try
+      Execute;
+    except
+      ShowMessage('Could not find Lazarus builder, please ensure "lazbuild" is in your ${PATH}');
+      Exit;
+    end;
+    case ExitStatus of
+      0: ShowMessage('Design compiled successfully');
+      2: ShowMessage('Design failed to compile, please check compiler error message');
+    else
+      ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
+    end;
+  end;
 end;
 
 procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
