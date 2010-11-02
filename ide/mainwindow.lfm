@@ -1115,9 +1115,9 @@ object IdeMainWindow: TIdeMainWindow
     ShortCut = 16416
     left = 64
   end
-  object BuilderProcess: TProcess
+  object BuilderProcess: TAsyncProcess
     Active = False
-    Options = [poWaitOnExit]
+    Options = []
     Priority = ppNormal
     StartupOptions = []
     ShowWindow = swoNone
@@ -1128,6 +1128,12 @@ object IdeMainWindow: TIdeMainWindow
     WindowTop = 0
     WindowWidth = 0
     FillAttribute = 0
+    top = 128
+  end
+  object IdleTimer1: TIdleTimer
+    Enabled = False
+    OnTimer = BuilderProcessTerminate
+    left = 32
     top = 128
   end
 end
