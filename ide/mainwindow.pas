@@ -44,6 +44,9 @@ type
     FileReadSourceMenuItem: TMenuItem;
     IdeOpenInLazarusMenuItem: TMenuItem;
     IdleTimer1: TIdleTimer;
+    IdeHelpMenuItem: TMenuItem;
+    IdeHelpLocalHelpMenuItem: TMenuItem;
+    AboutMenuItem: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
@@ -68,6 +71,7 @@ type
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
     Project: TXMLConfig;
+    procedure AboutMenuItemClick(Sender: TObject);
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
     procedure BuilderProcessTerminate(Sender: TObject);
@@ -79,6 +83,7 @@ type
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure IdeHelpLocalHelpMenuItemClick(Sender: TObject);
     procedure IdeOpenInLazarusMenuItemClick(Sender: TObject);
     procedure IdeViewLayoutMenuItemClick(Sender: TObject);
     procedure IdeViewSourceCodeMenuItemClick(Sender: TObject);
@@ -101,7 +106,7 @@ type
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
     procedure AddNewBlock(ADeviceType: string);
     procedure AddNewConnector(ADeviceType: string);
-    procedure ExecuteProcess(ExecName: string);
+    procedure RunCompiler(ExecName: string);
     procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure SetupChildrenEvents(Sender: TObject);
@@ -116,6 +121,12 @@ implementation
 
 uses
   StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockProperties, PackagesManager;
+
+resourcestring
+  AppTitle = 'Rapid Simulator Designer (RSD)';
+  AppAuthor = 'Mazen NEIFER';
+  AppVersion = '0.0.1';
+  AppAboutMessage = '%s' + LineEnding + 'Copyright (c) 2010 %s' + LineEnding + 'Version %s';
 
 { TIdeMainWindow }
 
@@ -284,12 +295,28 @@ begin
   NewProject(Sender);
 end;
 
+procedure TIdeMainWindow.IdeHelpLocalHelpMenuItemClick(Sender: TObject);
+var
+  HelpPath: string;
+  HelpBrowser: string;
+begin
+  HelpPath := ExpandFileName(AppCfg.Lib.Path + '../../share/' + AppCfg.Exec.Name + '/index.html');
+  HelpBrowser := ExeSearch('x-www-browser', GetEnvironmentVariable('PATH'));
+  //WriteLn(HelpBrowser);
+  ExecuteProcess(HelpBrowser, HelpPath);
+end;
+
 procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
     AddNewPort(TInputPort, '');
   end;
+end;
+
+procedure TIdeMainWindow.AboutMenuItemClick(Sender: TObject);
+begin
+  ShowMessage(Format(AppAboutMessage, [AppTitle, AppAuthor, AppVersion]));
 end;
 
 procedure TIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
@@ -301,15 +328,15 @@ end;
 
 procedure TIdeMainWindow.CompileProject(Sender: TObject);
 begin
-  ExecuteProcess('lazbuild');
+  RunCompiler('lazbuild');
 end;
 
 procedure TIdeMainWindow.IdeOpenInLazarusMenuItemClick(Sender: TObject);
 begin
-  ExecuteProcess('lazarus-ide');
+  RunCompiler('lazarus-ide');
 end;
 
-procedure TIdeMainWindow.ExecuteProcess(ExecName: string);
+procedure TIdeMainWindow.RunCompiler(ExecName: string);
 begin
   SaveProject(Self);
   with BuilderProcess do begin
