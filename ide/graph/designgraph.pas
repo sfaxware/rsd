@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
-  TDesign = class(TScrollBox, TIGraphDevice)
+  TDesign = class(TBlock)
   private
     FMagnification: Real;
     FOnChildrenCreate: TNotifyEvent;
@@ -18,7 +18,6 @@ type
     procedure HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
-    CodeBuffer: array[TCodeType] of TCodeBuffer;
     SimCodeBuffer: TCodeBuffer;
     PointedDevice : TDevice;
     SelectedBlock:TBlock;
@@ -42,7 +41,6 @@ type
     procedure SelectBlock(Sender: TObject);
     property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   end;
-  TScrollBox = class(TDesign);
 
 implementation
 uses
@@ -52,9 +50,14 @@ uses
 constructor TDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  OnPaint := nil;
+  Name := 'Design';
   //WriteLn('Created new TDesign class instance');
-  OnMouseWheel := @HandleMouseWheele;
-  OnMouseMove := @HandleMouseMove;
+  Parent := AOwner as TScrollBox;
+  with Parent do begin
+    OnMouseWheel := @HandleMouseWheele;
+    OnMouseMove := @HandleMouseMove;
+  end;
   FMagnification := 1;
 end;
 
@@ -83,7 +86,7 @@ begin
     SelectedOutputPort := nil;
 end;
 
-function TDesign.AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string):TBlock;
+function TDesign.AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock;
 var
   R: TRect;
   w, h: Integer;
@@ -101,7 +104,7 @@ begin
     end;
     with Result do begin
       OriginalBounds := R;
-      Parent := Self;
+      Parent := Self.Parent;
     end;
   end;
   with Result do begin
@@ -126,7 +129,7 @@ function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;
 begin
   Result := CreateConnector(ADeviceName, ADeviceType, Self);
   with Result do begin
-    Parent := Self;
+    Parent := Self.Parent;
     Connect(SelectedOutputPort, SelectedInputPort);
     OnMouseEnter := @HandleMouseEnter;
     OnMouseLeave := @HandleMouseLeave;
@@ -231,20 +234,22 @@ begin
       dy := y div dm;
     end;
     m := FMagnification + 1 / dm;
-    with HorzScrollBar do begin
-      Range := Round(Width * m);
-    end;
-    with VertScrollBar do begin
-      Range := Round(Height * m);
-    end;
-    for i := 0 to ControlCount - 1 do begin
-      Control := Controls[i];
-      if Control is TBlock then with Control as TMagnifier do begin
-        Magnify(m);
+    with Parent as TScrollBox do begin
+      with HorzScrollBar do begin
+        Range := Round(Width * m);
       end;
+      with VertScrollBar do begin
+        Range := Round(Height * m);
+      end;
+      for i := 0 to ControlCount - 1 do begin
+        Control := Controls[i];
+        if Control is TBlock then with Control as TMagnifier do begin
+          Magnify(m);
+        end;
+      end;
+      FMagnification := m;
+      ScrollBy(dx, dy);
     end;
-    FMagnification := m;
-    ScrollBy(dx, dy);
   end;
 end;
 
@@ -261,7 +266,7 @@ end;
 function TDesign.Load: Boolean;
 var
   DesignDescription: TLFMTree;
-  BlockDescription: TLFMObjectNode;
+  DeviceDescriptionNode: TLFMObjectNode;
   PortName: string;
   BlockName: string;
   p: Integer;
@@ -296,11 +301,11 @@ begin
     end;
   end;
   //WriteLn('TDesign.Load : LFM created');
-  BlockDescription := FindObjectProperty(nil, DesignDescription);
-  while Assigned(BlockDescription) do begin
-    //WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
-    if BlockDescription.TypeName = 'TConnector' then begin
-      PortName := GetPropertyValue(BlockDescription, 'OutputPort', DesignDescription);
+  DeviceDescriptionNode := FindObjectProperty(nil, DesignDescription);
+  while Assigned(DeviceDescriptionNode) do begin
+    //WriteLn('BlockDescription.TypeName = ', DeviceDescriptionNode.TypeName);
+    if DeviceDescriptionNode.TypeName = 'TConnector' then begin
+      PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       //WriteLn('BlockName = ', BlockName);
@@ -311,7 +316,7 @@ begin
       Device := Device.FindComponent(PortName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedOutputPort := Device as TOutputPort;
-      PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
+      PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
@@ -321,14 +326,14 @@ begin
       Device := Device.FindComponent(PortName) as TDevice;
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedInputPort := Device as TInputPort;
-      Device := AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
-      Device.Load(DesignDescription, BlockDescription);
+      Device := AddNewConnector(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName);
+      Device.Load(DesignDescription, DeviceDescriptionNode);
     end else begin
-      SelectBlock(AddNewBlock(BlockDescription.Name, BlockDescription.TypeName, ''));
-      SelectedBlock.Load(DesignDescription, BlockDescription);
+      SelectBlock(AddNewBlock(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, ''));
+      SelectedBlock.Load(DesignDescription, DeviceDescriptionNode);
       //WriteLn('++++++++++++++');
     end;
-    BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);
+    DeviceDescriptionNode := FindObjectProperty(DeviceDescriptionNode, DesignDescription);
   end;
 end;
 
