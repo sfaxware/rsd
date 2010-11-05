@@ -27,6 +27,11 @@ type
   end;
   TDevicePropertyType = TLFMValueType;
   TDeviceProperty = string;
+  TDevicePropertyInfo = record
+    PropName: string;
+    PropType: TDevicePropertyType;
+    DefaultValue: TDeviceProperty;
+  end;
   TDevice = class(TMagnifier, TIGraphDevice)
   private
     FOnCreate: TNotifyEvent;
@@ -49,6 +54,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
+    class procedure RegisterDevice(DeviceType: string; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
     function DeviceAncestorUnitName: string;
     function DeviceIdentifier: string;
     function DeviceType: string;
@@ -175,17 +181,13 @@ function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TC
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): TDeviceProperty;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
+function DeviceProperty(const PropName: string; PropType: TDevicePropertyType; DefaultValue: TDeviceProperty): TDevicePropertyInfo;
 
 implementation
 uses
   DesignGraph, CodeToolManager, CodeWriter, Configuration;
 
 type
-  TDevicePropertyInfo = record
-    PropName: string;
-    PropType: TDevicePropertyType;
-    DefaultValue: TDeviceProperty;
-  end;
   TDeviceInfo = record
     TypeName: string;
     TypeClass: TDeviceClass;
@@ -204,25 +206,6 @@ begin
   Result.PropName := PropName;
   Result.PropType := PropType;
   Result.DefaultValue := DefaultValue;
-end;
-
-procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
-var
-  l: Integer;
-begin
-  l := Length(Devices);
-  SetLength(Devices, l + 1);
-  with Devices[l] do begin
-    TypeName := DeviceType;
-    TypeClass := DeviceClass;
-    UnitName := DeviceUnitName;
-    l := Length(DeviceProperties);
-    SetLength(Properties, l);
-    while l > 0 do begin
-      l -= 1;
-      Properties[l] := DeviceProperties[l];
-    end;
-  end;
 end;
 
 function GetDeviceId(DeviceType: string): Integer;
@@ -453,6 +436,25 @@ begin
   end;
   if DeviceAncestorType <> '' then begin
     SetAncestorType(DeviceAncestorType);
+  end;
+end;
+
+class procedure TDevice.RegisterDevice(DeviceType: string; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
+var
+  l: Integer;
+begin
+  l := Length(Devices);
+  SetLength(Devices, l + 1);
+  with Devices[l] do begin
+    TypeName := DeviceType;
+    TypeClass := TDeviceClass(ClassType);
+    UnitName := DeviceUnitName;
+    l := Length(DeviceProperties);
+    SetLength(Properties, l);
+    while l > 0 do begin
+      l -= 1;
+      Properties[l] := DeviceProperties[l];
+    end;
   end;
 end;
 
@@ -1400,11 +1402,11 @@ begin
 end;
 
 initialization
-  RegisterDevice('TInputPort', TInputPort, 'Blocks', []);
-  RegisterDevice('TOutputPort', TOutputPort, 'Blocks', []);
-  RegisterDevice('TConnector', TConnector, 'Blocks', [DeviceProperty('OutputPort', lfmvSymbol, ''), DeviceProperty('InputPort', lfmvSymbol, ''), DeviceProperty('Depth', lfmvInteger, '127')]);
-  RegisterDevice('TBlock', TBlock, 'Blocks', []);
-  RegisterDevice('TRandomSource', TSource, 'Sources', [DeviceProperty('InitialSeed', lfmvInteger, '1234'), DeviceProperty('Amplitude', lfmvInteger, '255')]);
-  RegisterDevice('TFileReadSource', TSource, 'Sources', [DeviceProperty('FileName', lfmvString, '')]);
-  RegisterDevice('TFileDumpProbe', TProbe, 'Probes', [DeviceProperty('FileName', lfmvString, ''), DeviceProperty('SampleQty', lfmvInteger, IntToStr(MaxInt))]);
+  TInputPort.RegisterDevice('TInputPort', 'Blocks', []);
+  TOutputPort.RegisterDevice('TOutputPort', 'Blocks', []);
+  TConnector.RegisterDevice('TConnector', 'Blocks', [DeviceProperty('OutputPort', lfmvSymbol, ''), DeviceProperty('InputPort', lfmvSymbol, ''), DeviceProperty('Depth', lfmvInteger, '127')]);
+  TBlock.RegisterDevice('TBlock', 'Blocks', []);
+  TSource.RegisterDevice('TRandomSource', 'Sources', [DeviceProperty('InitialSeed', lfmvInteger, '1234'), DeviceProperty('Amplitude', lfmvInteger, '255')]);
+  TSource.RegisterDevice('TFileReadSource', 'Sources', [DeviceProperty('FileName', lfmvString, '')]);
+  TProbe.RegisterDevice('TFileDumpProbe', 'Probes', [DeviceProperty('FileName', lfmvString, ''), DeviceProperty('SampleQty', lfmvInteger, IntToStr(MaxInt))]);
 end.
