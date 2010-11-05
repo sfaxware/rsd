@@ -123,6 +123,9 @@ type
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   protected
     FSelected: Boolean;
+    function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual; abstract;
+    procedure HandleMouseEnter(Sender: TObject); virtual; abstract;
+    procedure HandleMouseLeave(Sender: TObject); virtual; abstract;
     procedure SetSeleted(AValue: Boolean);
     procedure DoPaint(Sender: TObject); override;
     procedure UpdatePortsBounds(PortType: TPortType);
@@ -131,6 +134,7 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
+    function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
     function DevicePropertiesDescription(Indent: string): string; override;
     function Load: boolean;
@@ -935,11 +939,15 @@ var
   DesignDescription: TLFMTree;
   DeviceDescriptionNode: TLFMObjectNode;
   PortName: string;
-  //BlockName: string;
+  BlockName: string;
   p: Integer;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
+  Device: TDevice;
   Port: TPort;
+  InputPort: TInputPort;
+  OutputPort: TOutputPort;
+  Block: TBlock;
 begin
   Result := true;
   codeFile[ctSource] := SourceFileName(Name);
@@ -953,7 +961,6 @@ begin
     end;
   end;
   if not Result then begin
-    WriteLn('Exiting');
     Exit(False);
   end;
   with CodeToolBoss do begin
@@ -980,27 +987,33 @@ begin
     end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
-      //BlockName := Copy(PortName, 1, p - 1);
+      BlockName := Copy(PortName, 1, p - 1);
+      //WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('OutputPortName = ', PortName);
+      Device := FindComponent(BlockName) as TDevice;
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      Device := Device.FindComponent(PortName) as TDevice;
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      OutputPort := Device as TOutputPort;
       PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
-      //BlockName := Copy(PortName, 1, p - 1);
+      BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('InputPortName = ', PortName);
+      Device := FindComponent(BlockName) as TDevice;
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      Device := Device.FindComponent(PortName) as TDevice;
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      InputPort := Device as TInputPort;
+      Device := AddNewConnector(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, OutputPort, InputPort);
+      Device.Load(DesignDescription, DeviceDescriptionNode);
     end else begin
-      {if Assigned(SelectedBlock) then
-        SelectedBlock.Selected := False;
-      SelectedBlock := TBlock.Create(Self);
-      with SelectedBlock do begin
-        Parent := Self;
-        Name := BlockDescription.Name;
-        Load(DesignDescription, BlockDescription);
-        OnClick := @SelectBlock;
-        OnDblClick := Self.OnDblClick;
-        PopupMenu := Self.PopupMenu;
-      end;}
-      WriteLn('++++++++++++++');
+      Block := AddNewSubBlock(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, '');
+      with Block do begin
+        Load(DesignDescription, DeviceDescriptionNode);
+      end;
+      //WriteLn('++++++++++++++');
     end;
     if Assigned(Port) then with Port do begin
       Parent := Self.Parent;
@@ -1044,6 +1057,21 @@ begin
   inherited Magnify(m);
   UpdatePortsBounds(TInputPort);
   UpdatePortsBounds(TOutputPort);
+end;
+
+function TBlock.AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
+begin
+  Result := CreateConnector(ADeviceName, ADeviceType, Self);
+  with Result do begin
+    Parent := Self.Parent;
+    Connect(AOutputPort, AInputPort);
+  end;
+  if Assigned(FOnChildrenCreate) then begin
+    FOnChildrenCreate(Result);
+  end;
+  if not Assigned(CodeBuffer[ctSource]) then begin
+    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
+  end;
 end;
 
 function TBlock.AddNewPort(PortType: TPortType; PortName: string): TPort;
