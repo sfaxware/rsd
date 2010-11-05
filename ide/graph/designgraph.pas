@@ -29,10 +29,6 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
-    function DeviceAncestorUnitName: string;
-    function DeviceIdentifier: string;
-    function DeviceType: string;
-    function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
     function IsSelected: Boolean; inline;
@@ -41,6 +37,9 @@ type
     procedure DestroyBlock(var Block: TBlock);
     procedure SelectBlock(Sender: TObject);
     procedure SetSelected(ShowDesign: Boolean);
+  end;
+  TTop = class(TDesign)
+
   end;
 
 implementation
@@ -143,26 +142,6 @@ begin
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
   end;
-end;
-
-function TDesign.DeviceAncestorUnitName: string;
-begin
-  Result := 'Designs';
-end;
-
-function TDesign.DeviceIdentifier: string;
-begin
-  Result := Name;
-end;
-
-function TDesign.DeviceType: string;
-begin
-  Result := 'TCustomDesign';
-end;
-
-function TDesign.DeviceAncestorType: string;
-begin
-  Result := 'TDesign';
 end;
 
 function TDesign.DeviceDescription(Indent: string): string;
@@ -283,7 +262,7 @@ begin
       SelectedDesign := nil;
     end;
   end;
-  for i := 0 to ComponentCount do with Components[i] do begin
+  for i := 0 to ComponentCount - 1 do with Components[i] do begin
     Visible := ShowDesign;
   end;
 end;
@@ -316,11 +295,7 @@ begin
   Result := Result and SimCodeBuffer.Save;
 end;
 
-{procedure Register;
-begin
-  RegisterComponents('GraphDesign', [TDesign]);
-end;
-
 initialization
-  RegisterClass(TDesign);}
+  TDesign.RegisterDevice('TDesign', 'Designs', []);
+  TTop.RegisterDevice('TTop', 'Designs', []);
 end.
