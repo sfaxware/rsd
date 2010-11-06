@@ -101,7 +101,7 @@ var
   R: TRect;
   w, h: Integer;
 begin
-  Result := CreateBlock(ADeviceName, ADeviceType, ADeviceAncestorType, Self);
+  CreateDevice(Result, ADeviceName, ADeviceType, ADeviceAncestorType, Self);
   if ADeviceName = '' then begin
     with Result do begin
       R := OriginalBounds;

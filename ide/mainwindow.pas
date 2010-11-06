@@ -290,7 +290,7 @@ begin
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
-  Design := TTop.Create(DesignLayout);
+  CreateDevice(Design , 'Design', 'TCustomDesign', 'TDesign', DesignLayout);
   with Design do begin
     OnChildrenCreate := @SetupChildrenEvents;
   end;

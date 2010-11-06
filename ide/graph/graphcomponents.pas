@@ -174,7 +174,6 @@ type
   end;
 
 function CreateDevice(out Device: TDevice; DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): Boolean;
-function CreateBlock(DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): TBlock;
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
 function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TOutputPort;
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
@@ -290,11 +289,6 @@ begin
     Device := nil;
   end;
   Result := Assigned(Device);
-end;
-
-function CreateBlock(DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): TBlock;
-begin
-  CreateDevice(Result, DeviceName, DeviceType, DeviceAncestorType, AOwner);
 end;
 
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
