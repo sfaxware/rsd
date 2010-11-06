@@ -24,6 +24,7 @@ type
     SelectedBlock:TBlock;
     SelectedInputPort: TInputPort;
     SelectedOutputPort: TOutputPort;
+    class function GetViewed: TDesign; inline;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
@@ -43,13 +44,19 @@ type
   end;
 
 implementation
+
 uses
   Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
   Magnifier, Configuration;
 
 var
   SelectedDesign: TDesign = nil;
-                        
+
+class function TDesign.GetViewed: TDesign;
+begin
+  Result := SelectedDesign;
+end;
+
 constructor TDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -163,7 +170,7 @@ begin
   Result := 'Designs';
 end;
 
-function TDesign.IsSelected: Boolean; inline;
+function TDesign.IsSelected: Boolean;
 begin
   Result := SelectedDesign = Self;
 end;

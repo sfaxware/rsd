@@ -93,6 +93,7 @@ type
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
     procedure SetBlockProperties(Sender: TObject);
+    procedure ViewDesign(Sender: TObject);
     procedure ViewFile(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
     procedure SelectBlockName(Sender: TObject);
@@ -103,7 +104,7 @@ type
     procedure IdeEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure ExitApplication(Sender: TObject);
   private
-    Design: TDesign;
+    FTopDesign: TDesign;
     FSavedWindowState: TWindowState;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
@@ -168,7 +169,7 @@ begin
   with Project do begin
     Filename := '';
   end;
-  Design.Cleanup;
+  FTopDesign.Cleanup;
 end;
 
 procedure TIdeMainWindow.LoadProject(Sender: TObject);
@@ -186,7 +187,7 @@ begin
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
     BuildDir := GetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', 'build');
   end;
-  with Design do begin
+  with FTopDesign do begin
     Cleanup;
     Load;
   end;
@@ -246,14 +247,14 @@ begin
      EditorCodeBuffer.Source := Text;
      MarkTextAsSaved;
   end;
-  Design.Save;
+  FTopDesign.Save;
 end;
 
 procedure TIdeMainWindow.SetBlockProperties(Sender: TObject);
 begin
   with BlockPropertiesDialog do begin
-    if Design.PointedDevice is TBlock then begin
-      Device := Design.PointedDevice as TBlock;
+    if TDesign.GetViewed.PointedDevice is TBlock then begin
+      Device := TDesign.GetViewed.PointedDevice as TBlock;
       Visible := True;
     end;
   end;
@@ -266,7 +267,7 @@ end;
 
 procedure TIdeMainWindow.SelectBlockName(Sender: TObject);
 begin
-  with Design.PointedDevice do begin
+  with TDesign.GetViewed.PointedDevice do begin
     Caption := InputBox('Change block name', 'Please type the new block name', Caption);
     Invalidate;
   end;
@@ -276,7 +277,7 @@ procedure TIdeMainWindow.SetBlockColor(Sender: TObject);
 begin
   if Sender is TColorDialog then with Sender as TColorDialog do begin
     //WriteLn('Change Color from ', hexStr(DesignLayout.PointedDevice.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
-    Design.PointedDevice.Canvas.Brush.Color := Color;
+    TDesign.GetViewed.PointedDevice.Canvas.Brush.Color := Color;
     Invalidate;
   end;
 end;
@@ -292,8 +293,8 @@ begin
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
-  CreateDevice(Design , 'Design', 'TCustomDesign', 'TDesign', DesignLayout);
-  with Design do begin
+  CreateDevice(FTopDesign , 'Design', 'TCustomDesign', 'TDesign', DesignLayout);
+  with FTopDesign do begin
     OnChildrenCreate := @SetupChildrenEvents;
   end;
   NewProject(Sender);
@@ -313,7 +314,7 @@ end;
 procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
-  if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
+  if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
     AddNewPort(TInputPort, '');
   end;
 end;
@@ -325,7 +326,7 @@ end;
 
 procedure TIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
-  if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
+  if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
     AddNewPort(TOutputPort, '');
   end;
 end;
@@ -392,7 +393,7 @@ end;
 
 procedure TIdeMainWindow.DeleteConnector(Sender: TObject);
 begin
-  with Design do begin
+  with TDesign.GetViewed do begin
     if Assigned(PointedDevice) and (PointedDevice is TConnector) then  begin
       DeleteConnector(TConnector(PointedDevice));
     end;
@@ -457,11 +458,11 @@ procedure TIdeMainWindow.AddNewBlock(ADeviceType: string);
 var
   SameBuffer: Boolean;
 begin
-  SameBuffer := (EditorCodeBuffer = Design.CodeBuffer[ctSource]) and Assigned(EditorCodeBuffer);
+  SameBuffer := (EditorCodeBuffer = TDesign.GetViewed.CodeBuffer[ctSource]) and Assigned(EditorCodeBuffer);
   if SameBuffer and SynEdit1.Modified then begin
     EditorCodeBuffer.Source := SynEdit1.Text;
   end;
-  with Design do begin
+  with TDesign.GetViewed do begin
     SelectBlock(AddNewBlock('', '', ADeviceType));
   end;
 
@@ -472,14 +473,14 @@ end;
 
 procedure TIdeMainWindow.AddNewConnector(ADeviceType: string);
 begin
-  Design.AddNewConnector('', ADeviceType);
+  TDesign.GetViewed.AddNewConnector('', ADeviceType);
 end;
 
 procedure TIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TPort.HandleMouseDownEvents');
   case Button of
-    mbLeft:with Design do begin
+    mbLeft: with TDesign.GetViewed do begin
       if Sender is TOutputPort then
        SelectedOutputPort := Sender as TOutputPort
       else
@@ -492,7 +493,7 @@ procedure TIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButt
 begin
   //WriteLn('TPort.HandleMouseUpEvents');
   case Button of
-    mbLeft:with Design do begin
+    mbLeft: with TDesign.GetViewed do begin
       if (Sender is TInputPort) and (Assigned(SelectedOutputPort)) then begin
         SelectedInputPort := Sender as TInputPort;
         //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
@@ -507,7 +508,11 @@ end;
 procedure TIdeMainWindow.SetupChildrenEvents(Sender: TObject);
 begin
   if Sender is TBlock then with Sender as TBlock do begin
-    OnDblClick := @ViewFile;
+    if Sender is TBlock then with Sender as TBlock do begin
+      OnDblClick := @ViewDesign;
+    end else begin
+      OnDblClick := @ViewFile;
+    end;
     PopupMenu := BlockPopupMenu;
     OnChildrenCreate := @SetupChildrenEvents;
     if Sender is TSource then with Sender as TSource do begin
@@ -530,6 +535,13 @@ begin
   inherited Destroy;
 end;
 
+procedure TIdeMainWindow.ViewDesign(Sender: TObject);
+begin
+  with TDesign.GetViewed do begin
+    SetViewed(True);
+  end;
+end;
+
 procedure TIdeMainWindow.ViewFile(Sender: TObject);
 var
   CodeFileName: string;
@@ -539,7 +551,7 @@ var
   DeviceName: string;
 begin
   if Sender = DesignLayout then begin
-    Sender := Design;
+    Sender := TDesign.GetViewed;
   end;
   if Sender is TTop then with Sender as TDesign do begin
     GraphDevice := Sender as TDevice;
@@ -572,9 +584,9 @@ end;
 
 procedure TIdeMainWindow.IdeEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  if Assigned(Design.SelectedBlock) then begin
+  if Assigned(TDesign.GetViewed.SelectedBlock) then begin
     //WriteLn('Removing block');
-    Design.DestroyBlock(Design.SelectedBlock);
+    TDesign.GetViewed.DestroyBlock(TDesign.GetViewed.SelectedBlock);
   end;
 end;
 
