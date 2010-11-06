@@ -40,7 +40,7 @@ type
     procedure SetViewed(ShowDesign: Boolean);
   end;
   TTop = class(TDesign)
-
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
@@ -63,6 +63,10 @@ begin
   Name := 'Design';
   //WriteLn('Created new TDesign class instance');
   FMagnification := 1;
+  with Parent do begin
+    OnMouseMove := @HandleMouseMove;
+    OnMouseWheel := @HandleMouseWheele;
+  end;
   SetViewed(not Assigned(SelectedDesign));
   //WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
 end;
@@ -153,7 +157,7 @@ var
   Component: TComponent;
   i: Integer;
 begin
-  Result := Indent + 'object ' + Name + 'Simulator: TCustomDesign' + LineEnding;
+  Result := Indent + 'object ' + Name + 'Simulator: ' + DeviceType + LineEnding;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TConnector then with Component as TConnector do begin
@@ -258,6 +262,7 @@ end;
 procedure TDesign.SetViewed(ShowDesign: Boolean);
 var
   i: Integer;
+  Component: TComponent;
 begin
   //WriteLn('TDesign.SetViewed(ShowDesign = ', ShowDesign, ')');
   if Assigned(SelectedDesign) then begin
@@ -267,16 +272,14 @@ begin
       SelectedDesign := nil;
     end;
   end;
-  for i := 0 to ComponentCount - 1 do with Components[i] do begin
-    Visible := ShowDesign;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TControl then with Component as TControl do begin
+      Visible := ShowDesign;
+    end;
   end;
   if ShowDesign then begin
     SelectedDesign := Self;
-    with Parent do begin
-      OnMouseMove := @HandleMouseMove;
-      OnMouseWheel := @HandleMouseWheele;
-    end;
-    Visible := False;
   end;
 end;
 
@@ -306,6 +309,12 @@ begin
   end;
   SimCodeBuffer := GetCodeBuffer(cttSimulator, Self);
   Result := Result and SimCodeBuffer.Save;
+end;
+
+constructor TTop.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Visible := False;
 end;
 
 initialization
