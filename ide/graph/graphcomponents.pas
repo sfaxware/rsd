@@ -1015,7 +1015,6 @@ begin
     if Assigned(Port) then with Port do begin
       Parent := Self.Parent;
       Load(DesignDescription, DeviceDescriptionNode);
-      OnDblClick := Self.OnDblClick;
       Port := nil;
     end;
     DeviceDescriptionNode := FindObjectProperty(DeviceDescriptionNode, DesignDescription);
