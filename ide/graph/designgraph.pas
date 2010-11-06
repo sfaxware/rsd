@@ -36,7 +36,7 @@ type
     procedure DeleteConnector(var Connector: TConnector);
     procedure DestroyBlock(var Block: TBlock);
     procedure SelectBlock(Sender: TObject);
-    procedure SetSelected(ShowDesign: Boolean);
+    procedure SetViewed(ShowDesign: Boolean);
   end;
   TTop = class(TDesign)
 
@@ -56,18 +56,18 @@ begin
   OnPaint := nil;
   Name := 'Design';
   //WriteLn('Created new TDesign class instance');
-  Parent := AOwner as TScrollBox;
-  with Parent do begin
-    OnMouseWheel := @HandleMouseWheele;
-    OnMouseMove := @HandleMouseMove;
+  if Aowner is TScrollBox then begin
+    Parent := AOwner as TScrollBox;
+  end else with AOwner as TDesign do begin
+    Self.Parent := Parent;
   end;
   FMagnification := 1;
-  SetSelected(not Assigned(SelectedDesign));
+  SetViewed(not Assigned(SelectedDesign));
 end;
 
 destructor TDesign.Destroy;
 begin
-  SetSelected(False);
+  SetViewed(False);
   inherited Destroy;
 end;
 
@@ -103,16 +103,16 @@ var
 begin
   Result := CreateBlock(ADeviceName, ADeviceType, ADeviceAncestorType, Self);
   if ADeviceName = '' then begin
-    R := Result.OriginalBounds;
-    with R do begin
-      w := Right - Left;
-      h := Bottom - Top;
-      Left := FMousePos.X;
-      Top := FMousePos.Y;
-      Right := Left + w;
-      Bottom := Top + h;
-    end;
     with Result do begin
+      R := OriginalBounds;
+      with R do begin
+        w := Right - Left;
+        h := Bottom - Top;
+        Left := FMousePos.X;
+        Top := FMousePos.Y;
+        Right := Left + w;
+        Bottom := Top + h;
+      end;
       OriginalBounds := R;
       Parent := Self.Parent;
     end;
@@ -130,8 +130,10 @@ begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
-  CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
-  CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
+  with CodeToolBoss do begin
+    AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
+    AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
+  end;
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
@@ -196,9 +198,10 @@ end;
 
 procedure TDesign.HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
-  if Sender = Self then begin
+  if Sender = Parent then begin
     FMousePos.x := X;
     FMousePos.y := Y;
+    //WriteLn('FMousePos.X = ', FMousePos.X, ', FMousePos.Y = ', FMousePos.Y);
   end;
 end;
 
@@ -250,13 +253,13 @@ begin
   end;
 end;
 
-procedure TDesign.SetSelected(ShowDesign: Boolean);
+procedure TDesign.SetViewed(ShowDesign: Boolean);
 var
   i: Integer;
 begin
   if Assigned(SelectedDesign) then begin
     if ShowDesign then begin
-      SelectedDesign.SetSelected(False);
+      SelectedDesign.SetViewed(False);
       SelectedDesign := Self;
     end else if IsSelected then begin
       SelectedDesign := nil;
@@ -264,6 +267,13 @@ begin
   end;
   for i := 0 to ComponentCount - 1 do with Components[i] do begin
     Visible := ShowDesign;
+  end;
+  if ShowDesign then begin
+    with Parent do begin
+      OnMouseMove := @HandleMouseMove;
+      OnMouseWheel := @HandleMouseWheele;
+    end;
+    Visible := False;
   end;
 end;
 
