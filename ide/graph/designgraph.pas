@@ -19,6 +19,7 @@ type
     function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; override;
     procedure HandleMouseEnter(Sender: TObject); override;
     procedure HandleMouseLeave(Sender: TObject); override;
+    procedure SetControlsVisibility(Visibility: Boolean); override;
   public
     SimCodeBuffer: TCodeBuffer;
     PointedDevice : TDevice;
@@ -311,6 +312,29 @@ begin
   end;
   SimCodeBuffer := GetCodeBuffer(cttSimulator, Self);
   Result := Result and SimCodeBuffer.Save;
+end;
+
+procedure TDesign.SetControlsVisibility(Visibility: Boolean);
+var
+  i: Integer;
+  j: Integer;
+  Component: TComponent;
+begin
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TControl then with Component as TControl do begin
+      Visible := Visibility;
+      if Component is TDesign then begin
+        for j := 0 to ComponentCount - 1 do begin
+          if Component.Components[j] is TPort then begin
+            TControl(Component.Components[j]).Visible := Visible;
+          end;
+        end;
+      end else if Component is TBlock then with Component as TBlock do begin
+        SetControlsVisibility(Visibility);
+      end;
+    end;
+  end;
 end;
 
 constructor TTop.Create(AOwner: TComponent);
