@@ -177,11 +177,18 @@ begin
   with Project do begin
     Filename := '';
   end;
-  FTopDesign.Cleanup;
+  if Assigned(FTopDesign) then begin
+    FreeAndNil(FTopDesign);
+  end;
+  CreateDevice(FTopDesign , 'Design', 'TTopDesign', 'TDesign', DesignLayout);
+  with FTopDesign do begin
+    OnChildrenCreate := @SetupChildrenEvents;
+  end;
 end;
 
 procedure TIdeMainWindow.LoadProject(Sender: TObject);
 begin
+  NewProject(Sender);
   with Project, ProjectSettings do begin
     if OpenDialog1.Execute then
       FileName := OpenDialog1.FileName
@@ -196,7 +203,6 @@ begin
     BuildDir := GetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', 'build');
   end;
   with FTopDesign do begin
-    Cleanup;
     Load;
   end;
   ViewFile(DesignLayout);
@@ -300,10 +306,6 @@ begin
   end;
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
-  end;
-  CreateDevice(FTopDesign , 'Design', 'TCustomDesign', 'TTop', DesignLayout);
-  with FTopDesign do begin
-    OnChildrenCreate := @SetupChildrenEvents;
   end;
   NewProject(Sender);
 end;
@@ -561,7 +563,7 @@ begin
   if Sender = DesignLayout then begin
     Sender := TDesign.GetViewed;
   end;
-  if Sender is TTop then with Sender as TDesign do begin
+  if Sender = FTopDesign then with Sender as TDesign do begin
     GraphDevice := Sender as TDevice;
     CodeTemplate := cttDesign;
   end else if Sender is TBlock then begin
