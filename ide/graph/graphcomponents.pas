@@ -245,6 +245,7 @@ var
   DeviceClass: TDeviceClass;
   CodeFile: string;
   ACodeBuffer: TCodeBuffer;
+  HintMessage: string;
 begin
   //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
   if DeviceAncestorType = '' then begin
@@ -290,6 +291,14 @@ begin
     Device := nil;
   end;
   Result := Assigned(Device);
+  if Result then with Device do begin
+    HintMessage := DeviceName + ' is ' + DeviceType;
+    if DeviceName <> DeviceAncestorType then begin
+      HintMessage += LineEnding + ' which is ' + DeviceAncestorType;
+    end;
+    Hint := HintMessage;
+    ShowHint := Device is TBlock;
+  end;
 end;
 
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
