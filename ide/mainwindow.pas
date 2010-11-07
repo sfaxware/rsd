@@ -48,6 +48,8 @@ type
     IdeHelpLocalHelpMenuItem: TMenuItem;
     AboutMenuItem: TMenuItem;
     AddSubDesignMenuItem: TMenuItem;
+    MenuItem1: TMenuItem;
+    IdeViewTopLayoutMenuItem: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
@@ -89,6 +91,7 @@ type
     procedure IdeOpenInLazarusMenuItemClick(Sender: TObject);
     procedure IdeViewLayoutMenuItemClick(Sender: TObject);
     procedure IdeViewSourceCodeMenuItemClick(Sender: TObject);
+    procedure IdeViewTopLayoutMenuItemClick(Sender: TObject);
     procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
@@ -152,6 +155,11 @@ end;
 procedure TIdeMainWindow.IdeViewSourceCodeMenuItemClick(Sender: TObject);
 begin
   TabControl.TabIndex := 1;
+end;
+
+procedure TIdeMainWindow.IdeViewTopLayoutMenuItemClick(Sender: TObject);
+begin
+  ViewDesign(FTopDesign);
 end;
 
 procedure TIdeMainWindow.NewProject(Sender: TObject);

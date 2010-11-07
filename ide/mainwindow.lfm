@@ -59,6 +59,7 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -948,6 +949,13 @@ object IdeMainWindow: TIdeMainWindow
         GroupIndex = 1
         RadioItem = True
         OnClick = IdeViewSourceCodeMenuItemClick
+      end
+      object MenuItem1: TMenuItem
+        Caption = '-'
+      end
+      object IdeViewTopLayoutMenuItem: TMenuItem
+        Caption = 'Top layout'
+        OnClick = IdeViewTopLayoutMenuItemClick
       end
     end
     object IdeCompileMenuItem: TMenuItem
