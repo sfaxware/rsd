@@ -12,6 +12,7 @@ type
   private
     FMagnification: Real;
     FMousePos: TPoint;
+    FOriginalBound: TRect;
     procedure HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   protected
@@ -47,7 +48,7 @@ implementation
 
 uses
   Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
-  Magnifier, Configuration;
+  Magnifier, Configuration, Types;
 
 var
   SelectedDesign: TDesign = nil;
@@ -263,6 +264,8 @@ begin
 end;
 
 procedure TDesign.SetViewed(ShowDesign: Boolean);
+var
+  R: TRect;
 begin
   //WriteLn(Name, '.SetViewed(ShowDesign = ', ShowDesign, ')');
   if ShowDesign then begin
@@ -271,8 +274,13 @@ begin
     end;
     SelectedDesign := Self;
     Visible := False;
+    FOriginalBound := OriginalBounds;
+    R := Parent.BoundsRect;
+    InflateRect(R, -2 * DefaultPortWidth, -2 * DefaultPortHeight);
+    OriginalBounds := R;
   end else if IsSelected then begin
     SelectedDesign := nil;
+    OriginalBounds := FOriginalBound;
   end;
   SetControlsVisibility(ShowDesign);
 end;
