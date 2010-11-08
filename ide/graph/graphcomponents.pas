@@ -624,10 +624,10 @@ var
   i: Integer;
   PropValue: TDeviceProperty;
 begin
-  Result := False;
+  Result := True;
   with Devices[FDeviceId] do begin
-    for i := Low(Properties) to High(Properties) do begin;
-      PropValue := GetPropertyValue(ContextNode, Properties[i].PropName, DesignDescription);
+    for i := Low(Properties) to High(Properties) do with Properties[i] do begin;
+      PropValue := GetPropertyValue(ContextNode, PropName, DesignDescription);
       Result := Result and SetProperty(i, PropValue);
     end;
   end;
