@@ -67,7 +67,7 @@ begin
       LineEnding +
       'initialization' + LineEnding +
       '  {$R *.lfm}' + LineEnding +
-      '  RegisterClass(T' + Owner.DeviceIdentifier + ');' + LineEnding +
+      '  RegisterClass(' + Owner.DeviceType + ');' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
       LineEnding +
