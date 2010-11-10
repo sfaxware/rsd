@@ -1084,21 +1084,13 @@ end;
 function TBlock.AddNewPort(PortType: TPortType; PortName: string): TPort;
 begin
   Result := PortType.Create(Self);
-  if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
-  end;
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
   end;
-  CodeBuffer[ctSource].LockAutoDiskRevert;
-  with CodeToolBoss, Result do begin
-    if PortName <> '' then begin
-      Name := PortName;
-    end;
-    AddUnitToMainUsesSection(CodeBuffer[ctSource], DeviceAncestorUnitName, '');
-    AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
+  if PortName <> '' then with Result do begin
+    Name := PortName;
   end;
-  CodeBuffer[ctSource].UnlockAutoDiskRevert;
+  InsertDevice(Result, Self);
 end;
 
 function TBlock.DeviceCodeTemplateType: TCodeTemplateType;
