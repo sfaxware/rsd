@@ -247,6 +247,7 @@ var
   HintMessage: string;
 begin
   //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+  IncrementDeviceQty;
   GuessNewDeviceNameAndType(DeviceName, DeviceType, DeviceAncestorType);
   //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
   DeviceId := GetDeviceId(DeviceType);
@@ -395,7 +396,6 @@ begin
       Self.FOnCreate := FOnCreate;
     end;
   end;
-  Name := GetNewDeviceRandomName(Self);
   OnPaint := @DoPaint;
 end;
 
@@ -1034,8 +1034,16 @@ begin
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
   end;
-  if PortName <> '' then with Result do begin
-    Name := PortName;
+  with Result do begin
+    if PortName <> '' then begin
+      Name := PortName;
+    end else if ClassName = 'TInputPort' then begin
+      Name := 'InputPort' + IntToStr(InputComponentCount);
+    end else if ClassName = 'TOutputPort' then begin
+      Name := 'OutputPort' + IntToStr(OutputComponentCount);
+    end else begin
+      raise Exception.Create('Invalid port type "' + ClassName + '"');
+    end;
   end;
   InsertDevice(Result, Self);
 end;
