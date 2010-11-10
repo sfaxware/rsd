@@ -61,7 +61,7 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
     function DevicePropertiesDescription(Indent: string): string; virtual;
-    function DeviceUnitName: string;
+    function DeviceUnitName: string; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual;
     procedure MouseLeaved(Sender: TObject);
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
@@ -144,6 +144,7 @@ type
     function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
     function DevicePropertiesDescription(Indent: string): string; override;
+    function DeviceUnitName: string; override;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     function Save: boolean;
@@ -616,7 +617,7 @@ end;
 
 function TDevice.DeviceUnitName: string;
 begin
-  Result := Name;
+  Result := Devices[FDeviceId].UnitName;
 end;
 
 function TDevice.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
@@ -1096,6 +1097,11 @@ begin
     AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
   end;
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
+end;
+
+function TBlock.DeviceUnitName: string;
+begin
+  Result := Copy(FDeviceType, 2, Length(FDeviceType) - 1);
 end;
 
 function TBlock.DevicePropertiesDescription(Indent: string): string;
