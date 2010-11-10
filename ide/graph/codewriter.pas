@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
 
+function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
@@ -15,6 +16,21 @@ implementation
 
 uses
   CodeToolManager, Configuration;
+
+function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
+begin
+  with Block do begin
+    if not Assigned(CodeBuffer[ctSource]) then begin
+      CodeBuffer[ctSource] := GetCodeBuffer(Block.DeviceCodeTemplateType, Block);
+    end;
+    CodeBuffer[ctSource].LockAutoDiskRevert;
+    with CodeToolBoss do begin
+      AddUnitToMainUsesSection(CodeBuffer[ctSource], Device.DeviceUnitName, '');
+      AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Device.DeviceIdentifier, Device.DeviceType);
+    end;
+    CodeBuffer[ctSource].UnlockAutoDiskRevert;
+  end;
+end;
 
 procedure WriteSimulatorSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
 begin
