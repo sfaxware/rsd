@@ -427,6 +427,7 @@ begin
       Self.FOnCreate := FOnCreate;
     end;
   end;
+  Name := GetNewDeviceRandomName(Self);
   OnPaint := @DoPaint;
 end;
 
@@ -704,7 +705,6 @@ end;
 constructor TInputPort.Create(AOwner: TComponent);
 begin
   Inherited Create(AOwner);
-  Name := 'Port';
   FDeviceType := 'TInputPort';
   SetAncestorType('TInputPort');
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
@@ -757,7 +757,6 @@ end;
 constructor TOutputPort.Create(AOwner: TComponent);
 begin
   Inherited Create(AOwner);
-  Name := 'Port';
   FDeviceType := 'TOutputPort';
   SetAncestorType('TOutputPort');
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
@@ -810,7 +809,6 @@ end;
 constructor TConnector.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Name := 'Connector';
   FDeviceType := 'T' + Name;
   SetAncestorType('TConnector');
 end;
@@ -894,10 +892,9 @@ var
   R: TRect;
 begin
   inherited Create(AOwner);
-  Name := 'Block';
   FDeviceType := 'T' + Name;
   SetAncestorType('TBlock');
-  Caption := 'Block ' + IntToStr(Owner.ComponentCount);
+  Caption := GetDeviceRandomCaption('Block ');
   FInputComponentCount := 0;
   FOutputComponentCount := 0;
   with R do begin
@@ -1316,7 +1313,7 @@ var
 begin
   Result := nil;
   if PortName = '' then begin
-    PortName := 'Output';
+    PortName := GetDeviceRandomName('Output');
   end;
   c := FindComponent(PortName);
   if Assigned(c) and (c is TOutputPort) then begin
@@ -1388,7 +1385,7 @@ var
 begin
   Result := nil;
   if PortName = '' then begin
-    PortName := 'Input';
+    PortName := GetDeviceRandomName('Input');
   end;
   c := FindComponent(PortName);
   if Assigned(c) and (c is TInputPort) then begin
