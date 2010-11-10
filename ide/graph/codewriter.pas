@@ -10,7 +10,7 @@ uses
 function GetDeviceRandomCaption(AName: string): string;
 function GetDeviceRandomName(AName: string): string;
 function GetDeviceQty: Cardinal;
-function NewDeviceRandomName(AName: string): string;
+function GetNewDeviceRandomName(Device: TDevice): string;
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
@@ -40,10 +40,13 @@ begin
   Result := DeviceQty;
 end;
 
-function NewDeviceRandomName(AName: string): string;
+function GetNewDeviceRandomName(Device: TDevice): string;
+var
+  ClassName: string;
 begin
-  Result := GetDeviceRandomName(AName);
   DeviceQty +=  1;
+  ClassName := Device.ClassName;
+  Result := GetDeviceRandomName(Copy(ClassName, 2, Length(ClassName)));
 end;
 
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
