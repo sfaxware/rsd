@@ -32,6 +32,7 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
+    function DeviceCodeTemplate: TCodeTemplateType; override;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
     function IsSelected: Boolean; inline;
@@ -148,6 +149,11 @@ begin
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
   end;
+end;
+
+function TDesign.DeviceCodeTemplate: TCodeTemplateType;
+begin
+  Result := cttDesign;
 end;
 
 function TDesign.DeviceDescription(Indent: string): string;

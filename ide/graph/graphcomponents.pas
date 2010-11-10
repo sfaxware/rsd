@@ -56,6 +56,7 @@ type
     constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
     class procedure RegisterDevice(DeviceType: string; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
     function DeviceAncestorUnitName: string;
+    function DeviceCodeTemplate: TCodeTemplateType; virtual; abstract;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
@@ -143,6 +144,7 @@ type
     destructor Destroy; override;
     function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
+    function DeviceCodeTemplate: TCodeTemplateType; override;
     function DevicePropertiesDescription(Indent: string): string; override;
     function DeviceUnitName: string; override;
     function Load: boolean;
@@ -1099,9 +1101,9 @@ begin
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
-function TBlock.DeviceUnitName: string;
+function TBlock.DeviceCodeTemplate: TCodeTemplateType;
 begin
-  Result := Copy(FDeviceType, 2, Length(FDeviceType) - 1);
+  Result := cttBlock;
 end;
 
 function TBlock.DevicePropertiesDescription(Indent: string): string;
@@ -1122,6 +1124,11 @@ begin
               Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
               Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
+end;
+
+function TBlock.DeviceUnitName: string;
+begin
+  Result := Copy(FDeviceType, 2, Length(FDeviceType) - 1);
 end;
 
 procedure TBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
