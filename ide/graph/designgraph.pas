@@ -32,7 +32,7 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
-    function DeviceCodeTemplate: TCodeTemplateType; override;
+    function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
     function IsSelected: Boolean; inline;
@@ -151,7 +151,7 @@ begin
   end;
 end;
 
-function TDesign.DeviceCodeTemplate: TCodeTemplateType;
+function TDesign.DeviceCodeTemplateType: TCodeTemplateType;
 begin
   Result := cttDesign;
 end;

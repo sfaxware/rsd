@@ -56,7 +56,7 @@ type
     constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
     class procedure RegisterDevice(DeviceType: string; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
     function DeviceAncestorUnitName: string;
-    function DeviceCodeTemplate: TCodeTemplateType; virtual; abstract;
+    function DeviceCodeTemplateType: TCodeTemplateType; virtual; abstract;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
@@ -144,7 +144,7 @@ type
     destructor Destroy; override;
     function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
-    function DeviceCodeTemplate: TCodeTemplateType; override;
+    function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DevicePropertiesDescription(Indent: string): string; override;
     function DeviceUnitName: string; override;
     function Load: boolean;
@@ -1101,7 +1101,7 @@ begin
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
-function TBlock.DeviceCodeTemplate: TCodeTemplateType;
+function TBlock.DeviceCodeTemplateType: TCodeTemplateType;
 begin
   Result := cttBlock;
 end;
