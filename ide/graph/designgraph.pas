@@ -62,10 +62,6 @@ begin
   Name := 'Design';
   //WriteLn('Created new TDesign class instance');
   FMagnification := 1;
-  with Parent do begin
-    OnMouseMove := @HandleMouseMove;
-    OnMouseWheel := @HandleMouseWheele;
-  end;
   SetViewed(not Assigned(SelectedDesign));
   //WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
 end;
@@ -273,7 +269,11 @@ begin
     SelectedDesign := Self;
     Visible := False;
     FOriginalBound := OriginalBounds;
-    R := Parent.BoundsRect;
+    with Parent do begin
+      OnMouseMove := @HandleMouseMove;
+      OnMouseWheel := @HandleMouseWheele;
+      R := BoundsRect;
+    end;
     InflateRect(R, -2 * DefaultPortWidth, -2 * DefaultPortHeight);
     OriginalBounds := R;
   end else if IsSelected then begin
