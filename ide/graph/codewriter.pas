@@ -7,15 +7,44 @@ interface
 uses
   Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
 
+function GetDeviceRandomCaption(AName: string): string;
+function GetDeviceRandomName(AName: string): string;
+function GetDeviceQty: Cardinal;
+function NewDeviceRandomName(AName: string): string;
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
+procedure ResetDeviceQty;
 
 implementation
 
 uses
   CodeToolManager, Configuration;
+
+var
+  DeviceQty: Cardinal = 0;
+
+function GetDeviceRandomCaption(AName: string): string;
+begin
+  Result := AName + IntToStr(DeviceQty);
+end;
+
+function GetDeviceRandomName(AName: string): string;
+begin
+  Result := AName + IntToStr(DeviceQty);
+end;
+
+function GetDeviceQty: Cardinal;
+begin
+  Result := DeviceQty;
+end;
+
+function NewDeviceRandomName(AName: string): string;
+begin
+  Result := GetDeviceRandomName(AName);
+  DeviceQty +=  1;
+end;
 
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 begin
@@ -178,6 +207,11 @@ begin
     end;
   end;
   Result.Y := l;
+end;
+
+procedure ResetDeviceQty;
+begin
+  DeviceQty := 0;
 end;
 
 end.
