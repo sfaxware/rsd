@@ -198,6 +198,7 @@ type
 
 const
   DevicePropertyType: array[TDevicePropertyType] of string = ('', 'Integer', 'Real', 'String', 'Symbol', 'Set', 'List', 'Collection', 'Binary');
+
 var
   Devices: array of TDeviceInfo;
   PointedDevice: TDevice;
@@ -244,42 +245,10 @@ function CreateDevice(out Device: TDevice; DeviceName, DeviceType, DeviceAncesto
 var
   DeviceId: Integer;
   DeviceClass: TDeviceClass;
-  CodeFile: string;
-  ACodeBuffer: TCodeBuffer;
   HintMessage: string;
 begin
   //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
-  if DeviceAncestorType = '' then begin
-    if DeviceType = '' then begin
-      Device := nil;
-    end else begin
-    end;
-  end else begin
-    if DeviceName = '' then begin
-      if Pos('T', DeviceAncestorType) = 1 then begin
-        DeviceName := Copy(DeviceAncestorType, 2, Length(DeviceAncestorType));
-      end else begin
-        DeviceName := 'A' + DeviceAncestorType;
-      end;
-      DeviceName += IntToStr(AOwner.ComponentCount + 1);
-      if DeviceType = '' then begin
-        DeviceType := 'T' + DeviceName;
-      end;
-    end else begin
-      if DeviceType = '' then begin
-        DeviceType := 'T' + DeviceName;
-      end else begin
-      end;
-    end;
-  end;
-  if DeviceAncestorType = '' then begin
-    CodeFile := SourceFileName(DeviceName);
-    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-    if Assigned(ACodeBuffer) then begin
-      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
-    end;
-  end;
+  GuessNewDeviceNameAndType(DeviceName, DeviceType, DeviceAncestorType);
   //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
   DeviceId := GetDeviceId(DeviceType);
   if DeviceId < 0 then begin
@@ -644,7 +613,7 @@ end;
 
 constructor TPort.Create(AOwner: TComponent);
 begin
-  Inherited Create(AOwner);
+  inherited Create(AOwner);
   UpdateBounds(-1, -1);
   OnMouseEnter := @HandleMouseEnterLeaveEvents;
   OnMouseLeave := @HandleMouseEnterLeaveEvents;
