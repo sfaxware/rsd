@@ -789,7 +789,7 @@ end;
 
 Procedure TConnector.DoPaint(Sender: TObject);
 begin
-  //WriteLn('TConnector.Paint Self=', Left,', ', Top,', ', Width,', ', Height);
+  //WriteLn('TConnector.Paint Self = ', Name, '(', Left,', ', Top,', ', Width,', ', Height, ')');
   if Length(FPoints) > 0 then with Canvas do begin
     {if FSelected then begin
       Color := clBlack;

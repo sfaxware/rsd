@@ -322,12 +322,14 @@ begin
     Component := Components[i];
     if Component is TControl then with Component as TControl do begin
       Visible := Visibility;
-      if Component is TDesign then begin
+      if Component is TDesign then with Component as TDesign do begin
         for j := 0 to ComponentCount - 1 do begin
-          if Component.Components[j] is TPort then begin
-            TControl(Component.Components[j]).Visible := Visible;
+          if Components[j] is TPort then begin
+            TPort(Components[j]).Visible := Visible;
           end;
         end;
+        UpdatePortsBounds(TInputPort);
+        UpdatePortsBounds(TOutputPort);
       end else if Component is TBlock then with Component as TBlock do begin
         SetControlsVisibility(Visibility);
       end;
