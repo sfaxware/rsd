@@ -2282,7 +2282,7 @@ endif
 debsetup:
 	$(COPYTREE) ${DEBDIR} $(DEBSRCDIR)/debian
 ifdef SNAPSHOT
-	sed s+${DEBPACKAGEVERSION}+${DEBPACKAGEVERSION}-${BUILDDATE}+ $(DEBSRCDIR)/debian/changelog > $(DEBSRCDIR)/debian/changelog.tmp
+	sed -e "s/${DEBPACKAGEVERSION}/${DEBPACKAGEVERSION}-${BUILDDATE}/" $(DEBSRCDIR)/debian/changelog > $(DEBSRCDIR)/debian/changelog.tmp
 	${MOVE} $(DEBSRCDIR)/debian/changelog.tmp $(DEBSRCDIR)/debian/changelog
 endif
 	chmod 755 $(DEBSRCDIR)/debian/rules
