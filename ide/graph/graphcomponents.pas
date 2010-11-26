@@ -396,6 +396,7 @@ begin
       Self.FOnCreate := FOnCreate;
     end;
   end;
+  Name := GetNewDeviceRandomName(Self);
   OnPaint := @DoPaint;
 end;
 
