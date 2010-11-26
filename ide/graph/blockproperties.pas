@@ -6,7 +6,7 @@ interface
 
 uses
   Buttons, Classes, Grids, SysUtils, FileUtil, LResources, Forms,
-  Controls, Graphics, Dialogs, GraphComponents;
+  Controls, Graphics, Dialogs, GraphComponents, StdCtrls;
 
 type
   { TBlockPropertiesDialog }
