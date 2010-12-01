@@ -67,7 +67,7 @@ begin
   //WriteLn('Created new TDesign class instance');
   FMagnification := 1;
   SetViewed(not Assigned(SelectedDesign));
-  //WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
+  WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
 end;
 
 destructor TDesign.Destroy;
@@ -323,9 +323,10 @@ begin
     if Component is TControl then with Component as TControl do begin
       Visible := Visibility;
       if Component is TDesign then with Component as TDesign do begin
+        SetControlsVisibility(IsSelected);
         for j := 0 to ComponentCount - 1 do begin
           if Components[j] is TPort then begin
-            TPort(Components[j]).Visible := Visible;
+            TPort(Components[j]).Visible := Visibility;
           end;
         end;
         UpdatePortsBounds(TInputPort);
