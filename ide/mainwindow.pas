@@ -558,9 +558,8 @@ begin
   end else if Sender is TConnector then with Sender as TConnector do begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;
-  end else if Sender is TInputPort then with Sender as TInputPort do begin
+  end else if Sender is TPort then with Sender as TPort do begin
     OnMouseUp := @HandleMouseUpEvents;
-  end else if Sender is TOutputPort then with Sender as TOutputPort do begin
     OnMouseDown := @HandleMouseDownEvents;
   end;
 end;
