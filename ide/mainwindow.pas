@@ -50,7 +50,9 @@ type
     AddSubDesignMenuItem: TMenuItem;
     MenuItem1: TMenuItem;
     IdeViewTopLayoutMenuItem: TMenuItem;
-    ShowParentDesignMenuItem: TMenuItem;
+    ShowTopLayoutMenuItem: TMenuItem;
+    IdeViewUpperLayoutMenuItem: TMenuItem;
+    ShowUpperLayoutMenuItem: TMenuItem;
     MenuItem3: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
@@ -84,7 +86,7 @@ type
     procedure CompileProject(Sender: TObject);
     procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
-    procedure DesignPopupMenuPopup(Sender: TObject);
+    procedure DesignLayoutClick(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
@@ -94,12 +96,12 @@ type
     procedure IdeOpenInLazarusMenuItemClick(Sender: TObject);
     procedure IdeViewLayoutMenuItemClick(Sender: TObject);
     procedure IdeViewSourceCodeMenuItemClick(Sender: TObject);
-    procedure IdeViewTopLayoutMenuItemClick(Sender: TObject);
+    procedure ShowTopLayout(Sender: TObject);
     procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
     procedure SetBlockProperties(Sender: TObject);
-    procedure ShowParentDesign(Sender: TObject);
+    procedure ShowUpperLayout(Sender: TObject);
     procedure ViewDesign(Sender: TObject);
     procedure ViewFile(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
@@ -162,7 +164,7 @@ begin
   TabControl.TabIndex := 1;
 end;
 
-procedure TIdeMainWindow.IdeViewTopLayoutMenuItemClick(Sender: TObject);
+procedure TIdeMainWindow.ShowTopLayout(Sender: TObject);
 begin
   ViewDesign(FTopDesign);
 end;
@@ -210,6 +212,7 @@ begin
   ViewFile(DesignLayout);
   TabControl.TabIndex := 0;
   ViewDesign(FTopDesign);
+  DesignLayout.SetFocus;
 end;
 
 procedure TIdeMainWindow.LoadProject(Sender: TObject);
@@ -284,7 +287,7 @@ begin
   end;
 end;
 
-procedure TIdeMainWindow.ShowParentDesign(Sender: TObject);
+procedure TIdeMainWindow.ShowUpperLayout(Sender: TObject);
 begin
   ViewDesign(TDesign.GetViewed.Owner);
 end;
@@ -425,9 +428,11 @@ begin
   end;
 end;
 
-procedure TIdeMainWindow.DesignPopupMenuPopup(Sender: TObject);
+procedure TIdeMainWindow.DesignLayoutClick(Sender: TObject);
 begin
-  ShowParentDesignMenuItem.Enabled := TDesign.GetViewed <> FTopDesign;
+  if Sender is TWinControl then with Sender as TWinControl do begin
+    SetFocus;
+  end;
 end;
 
 procedure TIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
@@ -570,6 +575,10 @@ begin
   with Sender as TDesign do begin
     SetViewed(True);
   end;
+  ShowUpperLayoutMenuItem.Enabled := Sender <> FTopDesign;
+  ShowTopLayoutMenuItem.Enabled := Sender <> FTopDesign;
+  IdeViewUpperLayoutMenuItem.Enabled := Sender <> FTopDesign;
+  IdeViewTopLayoutMenuItem.Enabled := Sender <> FTopDesign;
 end;
 
 procedure TIdeMainWindow.ViewFile(Sender: TObject);
@@ -608,7 +617,6 @@ begin
     end;
     TabControl.TabIndex := 1;
     EnsureCursorPosVisible;
-    SetFocus;
   end;
 end;
 

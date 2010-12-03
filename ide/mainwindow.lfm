@@ -3,7 +3,7 @@ object IdeMainWindow: TIdeMainWindow
   Height = 841
   Top = 27
   Width = 1036
-  ActiveControl = TabControl
+  ActiveControl = DesignLayout
   Caption = 'Rapid Simulators Designer IDE'
   ClientHeight = 814
   ClientWidth = 1036
@@ -31,7 +31,6 @@ object IdeMainWindow: TIdeMainWindow
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
-    DockSite = True
     Font.Color = clDefault
     Font.Height = 12
     Font.Name = 'Arial 12'
@@ -656,6 +655,7 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       PopupMenu = DesignPopupMenu
       TabOrder = 2
+      OnClick = DesignLayoutClick
       OnDblClick = ViewFile
     end
   end
@@ -953,9 +953,15 @@ object IdeMainWindow: TIdeMainWindow
       object MenuItem1: TMenuItem
         Caption = '-'
       end
+      object IdeViewUpperLayoutMenuItem: TMenuItem
+        Caption = 'Upper layout'
+        ShortCut = 16417
+        OnClick = ShowUpperLayout
+      end
       object IdeViewTopLayoutMenuItem: TMenuItem
         Caption = 'Top layout'
-        OnClick = IdeViewTopLayoutMenuItemClick
+        ShortCut = 16420
+        OnClick = ShowTopLayout
       end
     end
     object IdeCompileMenuItem: TMenuItem
@@ -1046,16 +1052,21 @@ object IdeMainWindow: TIdeMainWindow
     top = 72
   end
   object DesignPopupMenu: TPopupMenu
-    OnPopup = DesignPopupMenuPopup
     left = 96
     top = 72
-    object ShowParentDesignMenuItem: TMenuItem
-      Caption = 'Parent design'
-      ShortCut = 16422
-      OnClick = ShowParentDesign
+    object ShowUpperLayoutMenuItem: TMenuItem
+      Caption = 'Upper layout'
+      ShortCut = 16417
+      OnClick = ShowUpperLayout
+    end
+    object ShowTopLayoutMenuItem: TMenuItem
+      Caption = 'Top layout'
+      ShortCut = 16420
+      OnClick = ShowTopLayout
     end
     object MenuItem3: TMenuItem
       Caption = '-'
+      OnClick = ShowTopLayout
     end
     object AddBlockMenuItem: TMenuItem
       Caption = 'Add block'
