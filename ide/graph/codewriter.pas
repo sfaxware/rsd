@@ -215,8 +215,29 @@ var
   ACodeBuffer: TCodeBuffer;
 begin
   if DeviceAncestorType = '' then begin
-    if DeviceType = '' then begin
+    if DeviceName = '' then begin
+      if DeviceType = '' then begin
+        DeviceType := 'TDevice';
+      end;
+      if Pos('T', DeviceType) = 1 then begin
+        DeviceName := Copy(DeviceType, 2, Length(DeviceType));
+      end else begin
+        DeviceName := 'A' + DeviceType;
+      end;
+      DeviceName := GetDeviceRandomName(DeviceName);
     end else begin
+      if DeviceType = '' then begin
+        DeviceType := 'T' + DeviceName;
+      end;
+    end;
+    CodeFile := SourceFileName(DeviceName);
+    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+    if Assigned(ACodeBuffer) then begin
+      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+    end;
+    if DeviceAncestorType = '' then begin
+      DeviceAncestorType := DeviceType;
     end;
   end else begin
     if DeviceName = '' then begin
@@ -234,14 +255,6 @@ begin
         DeviceType := 'T' + DeviceName;
       end else begin
       end;
-    end;
-  end;
-  if DeviceAncestorType = '' then begin
-    CodeFile := SourceFileName(DeviceName);
-    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-    if Assigned(ACodeBuffer) then begin
-      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
     end;
   end;
 end;
