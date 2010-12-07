@@ -140,7 +140,7 @@ type
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
     function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
-    function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
+    function AddNewPort(ADeviceName, ADeviceType: string): TPort; virtual;
     function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DevicePropertiesDescription(Indent: string): string; override;
     function DeviceUnitName: string; override;
@@ -160,7 +160,7 @@ type
     procedure DoPaint(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent);override;
-    function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
+    function AddNewPort(ADeviceName, ADeviceType: string): TPort; override;
     function DevicePropertiesDescription(Indent: string): string; override;
   end;
   TProbe = class(TBlock)
@@ -168,7 +168,7 @@ type
     procedure DoPaint(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent);override;
-    function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
+    function AddNewPort(ADeviceName, ADeviceType: string): TPort; override;
     function DevicePropertiesDescription(Indent: string): string; override;
   end;
 
@@ -909,9 +909,9 @@ begin
   while Assigned(DeviceDescriptionNode) do begin
     //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
     if DeviceDescriptionNode.TypeName = 'TOutputPort' then begin
-      Port := AddNewPort(TOutputPort, DeviceDescriptionNode.Name);
+      Port := AddNewPort(DeviceDescriptionNode.Name, 'TOutputPort');
     end else if DeviceDescriptionNode.TypeName = 'TInputPort' then begin
-      Port := AddNewPort(TInputPort, DeviceDescriptionNode.Name);
+      Port := AddNewPort(DeviceDescriptionNode.Name, 'TInputPort');
     end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
@@ -1001,24 +1001,14 @@ begin
   end;
 end;
 
-function TBlock.AddNewPort(PortType: TPortType; PortName: string): TPort;
+function TBlock.AddNewPort(ADeviceName, ADeviceType: string): TPort;
 begin
-  Result := PortType.Create(Self);
-  if Assigned(FOnChildrenCreate) then begin
-    FOnChildrenCreate(Result);
-  end;
-  with Result do begin
-    if PortName <> '' then begin
-      Name := PortName;
-    end else if ClassName = 'TInputPort' then begin
-      Name := 'InputPort' + IntToStr(InputComponentCount);
-    end else if ClassName = 'TOutputPort' then begin
-      Name := 'OutputPort' + IntToStr(OutputComponentCount);
-    end else begin
-      raise Exception.Create('Invalid port type "' + ClassName + '"');
+  if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+    if Assigned(FOnChildrenCreate) then begin
+      FOnChildrenCreate(Result);
     end;
+    InsertDevice(Result, Self);
   end;
-  InsertDevice(Result, Self);
 end;
 
 function TBlock.DeviceCodeTemplateType: TCodeTemplateType;
@@ -1202,7 +1192,7 @@ end;
 constructor TSource.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort(TInputPort, '');
+  AddNewPort('', 'TInputPort');
 end;
 
 procedure TSource.DoPaint(Sender: TObject);
@@ -1238,21 +1228,20 @@ begin
   end;
 end;
 
-function TSource.AddNewPort(PortType: TPortType; PortName: string): TPort;
+function TSource.AddNewPort(ADeviceName, ADeviceType: string): TPort;
 var
   c: TComponent;
 begin
   Result := nil;
-  if PortName = '' then begin
-    PortName := GetDeviceRandomName('Output');
+  if ADeviceName = '' then begin
+    ADeviceName := 'Output';
   end;
-  c := FindComponent(PortName);
+  c := FindComponent(ADeviceName);
   if Assigned(c) and (c is TOutputPort) then begin
     Result := c as TOutputPort;
   end;
   if not Assigned(Result) then begin
-    Result := TOutputPort.Create(Self);
-    Result.Name := PortName;
+    Result := inherited AddNewPort(ADeviceName, ADeviceType);
   end;
 end;
 
@@ -1274,7 +1263,7 @@ end;
 constructor TProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort(TOutputPort, '');
+  AddNewPort('', 'TOutputPort');
 end;
 
 procedure TProbe.DoPaint(Sender: TObject);
@@ -1310,21 +1299,20 @@ begin
   end;
 end;
 
-function TProbe.AddNewPort(PortType: TPortType; PortName: string): TPort;
+function TProbe.AddNewPort(ADeviceName, ADeviceType: string): TPort;
 var
   c: TComponent;
 begin
   Result := nil;
-  if PortName = '' then begin
-    PortName := GetDeviceRandomName('Input');
+  if ADeviceName = '' then begin
+    ADeviceName := 'Input';
   end;
-  c := FindComponent(PortName);
+  c := FindComponent(ADeviceName);
   if Assigned(c) and (c is TInputPort) then begin
     Result := c as TInputPort;
   end;
   if not Assigned(Result) then begin
-    Result := TInputPort.Create(Self);
-    Result.Name := PortName;
+    Result := inherited AddNewPort(ADeviceName, ADeviceType);
   end;
 end;
 
