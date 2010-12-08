@@ -340,9 +340,13 @@ begin
 end;
 
 procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
+var
+  PointedDevice: TDevice;
 begin
-  //WriteLn('Sender.ClassName = ', Sender.ClassName);
-  if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
+  PointedDevice := TDesign.GetViewed.PointedDevice;
+  if PointedDevice is TDesign then with PointedDevice as TDesign do begin
+    AddNewPort('', 'TInputPortRef');
+  end else if PointedDevice is TBlock then with PointedDevice as TBlock do begin
     AddNewPort('', 'TInputPort');
   end;
 end;
@@ -353,8 +357,13 @@ begin
 end;
 
 procedure TIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
+var
+  PointedDevice: TDevice;
 begin
-  if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
+  PointedDevice := TDesign.GetViewed.PointedDevice;
+  if PointedDevice is TDesign then with PointedDevice as TDesign do begin
+    AddNewPort('', 'TOutputPortRef');
+  end else if PointedDevice is TBlock then with PointedDevice as TBlock do begin
     AddNewPort('', 'TOutputPort');
   end;
 end;

@@ -8,6 +8,14 @@ uses
   Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
+  TInputPortRef = class(TInputPort)
+  private
+    FInternalConnector: TConnector;
+  end;
+  TOutputPortRef = class(TOutputPort)
+  private
+    FInternalConnector: TConnector;
+  end;
   TDesign = class(TBlock)
   private
     FMagnification: Real;
@@ -339,6 +347,8 @@ begin
 end;
 
 initialization
+  TInputPort.RegisterDevice('TInputPortRef', 'Designs', []);
+  TOutputPort.RegisterDevice('TOutputPortRef', 'Designs', []);
   TDesign.RegisterDevice('TDesign', 'Designs', []);
   TDesign.RegisterDevice('TTopDesign', 'Designs', []);
 end.
