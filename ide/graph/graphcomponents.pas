@@ -1192,7 +1192,7 @@ end;
 constructor TSource.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort('', 'TInputPort');
+  AddNewPort('', 'TOutputPort');
 end;
 
 procedure TSource.DoPaint(Sender: TObject);
@@ -1263,7 +1263,7 @@ end;
 constructor TProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort('', 'TOutputPort');
+  AddNewPort('', 'TInputPort');
 end;
 
 procedure TProbe.DoPaint(Sender: TObject);
