@@ -77,12 +77,10 @@ end;
 
 procedure TInputPortRef.SetConnector(AConnector: TConnector);
 begin
-  if Owner is TDesign then with Owner as TDesign do begin
-    if isSelected then begin
-      FInternalConnector := AConnector;
-    end else begin
-      FConnector := AConnector;
-    end;
+  if AConnector.Owner = Owner then begin
+    FInternalConnector := AConnector;
+  end else begin
+    FConnector := AConnector;
   end;
 end;
 
@@ -99,12 +97,10 @@ end;
 
 procedure TOutputPortRef.SetConnector(AConnector: TConnector);
 begin
-  if Owner is TDesign then with Owner as TDesign do begin
-    if isSelected then begin
-      FInternalConnector := AConnector;
-    end else begin
-      FConnector := AConnector;
-    end;
+  if AConnector.Owner = Owner then begin
+    FInternalConnector := AConnector;
+  end else begin
+    FConnector := AConnector;
   end;
 end;
 
