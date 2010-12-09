@@ -907,6 +907,7 @@ var
   InputPort: TInputPort;
   OutputPort: TOutputPort;
   Block: TBlock;
+  DeviceClass: TDeviceClass;
 begin
   Result := true;
   codeFile[ctSource] := SourceFileName(Name);
@@ -939,10 +940,9 @@ begin
   Port := nil;
   while Assigned(DeviceDescriptionNode) do begin
     //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
-    if DeviceDescriptionNode.TypeName = 'TOutputPort' then begin
-      Port := AddNewPort(DeviceDescriptionNode.Name, 'TOutputPort');
-    end else if DeviceDescriptionNode.TypeName = 'TInputPort' then begin
-      Port := AddNewPort(DeviceDescriptionNode.Name, 'TInputPort');
+    DeviceClass := GetDeviceClass(DeviceDescriptionNode.TypeName);
+    if Assigned(DeviceClass) and DeviceClass.InheritsFrom(TPort) then begin
+      Port := AddNewPort(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName);
     end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
