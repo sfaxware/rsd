@@ -8,13 +8,17 @@ uses
   Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
-  TInputPortRef = class(TInputPort)
+  TInputPortRef = class(TInputPort, IOutputPort)
   private
     FInternalConnector: TConnector;
+    function GetConnector: TConnector; override;
+    procedure SetConnector(AConnector: TConnector); override;
   end;
-  TOutputPortRef = class(TOutputPort)
+  TOutputPortRef = class(TOutputPort, IInputPort)
   private
     FInternalConnector: TConnector;
+    function GetConnector: TConnector; override;
+    procedure SetConnector(AConnector: TConnector); override;
   end;
   TDesign = class(TBlock)
   private
@@ -59,6 +63,50 @@ uses
 
 var
   SelectedDesign: TDesign = nil;
+
+function TInputPortRef.GetConnector: TConnector;
+begin
+  if Owner is TDesign then with Owner as TDesign do begin
+    if isSelected then begin
+      Result := FInternalConnector;
+    end else begin
+      Result := FConnector;
+    end;
+  end;
+end;
+
+procedure TInputPortRef.SetConnector(AConnector: TConnector);
+begin
+  if Owner is TDesign then with Owner as TDesign do begin
+    if isSelected then begin
+      FInternalConnector := AConnector;
+    end else begin
+      FConnector := AConnector;
+    end;
+  end;
+end;
+
+function TOutputPortRef.GetConnector: TConnector;
+begin
+  if Owner is TDesign then with Owner as TDesign do begin
+    if isSelected then begin
+      Result := FInternalConnector;
+    end else begin
+      Result := FConnector;
+    end;
+  end;
+end;
+
+procedure TOutputPortRef.SetConnector(AConnector: TConnector);
+begin
+  if Owner is TDesign then with Owner as TDesign do begin
+    if isSelected then begin
+      FInternalConnector := AConnector;
+    end else begin
+      FConnector := AConnector;
+    end;
+  end;
+end;
 
 class function TDesign.GetViewed: TDesign;
 begin
