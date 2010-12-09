@@ -123,7 +123,7 @@ begin
   //WriteLn('Created new TDesign class instance');
   FMagnification := 1;
   SetViewed(not Assigned(SelectedDesign));
-  WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
+  //WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
 end;
 
 destructor TDesign.Destroy;
