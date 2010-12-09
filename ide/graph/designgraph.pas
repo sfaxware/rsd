@@ -395,8 +395,8 @@ begin
 end;
 
 initialization
-  TInputPort.RegisterDevice('TInputPortRef', 'Designs', []);
-  TOutputPort.RegisterDevice('TOutputPortRef', 'Designs', []);
+  TInputPortRef.RegisterDevice('TInputPortRef', 'Designs', []);
+  TOutputPortRef.RegisterDevice('TOutputPortRef', 'Designs', []);
   TDesign.RegisterDevice('TDesign', 'Designs', []);
   TDesign.RegisterDevice('TTopDesign', 'Designs', []);
 end.
