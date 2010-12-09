@@ -11,8 +11,8 @@ function GetDeviceRandomCaption(AName: string): string;
 function GetDeviceRandomName(AName: string): string;
 function GetDeviceQty: Cardinal;
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
-function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
-function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: IDevice): TCodeBuffer;
+function GetCodeBuffer(template: TCodeTemplateType; Owner: IDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
 procedure IncrementDeviceQty;
 procedure GuessNewDeviceNameAndType(var DeviceName, DeviceType, DeviceAncestorType: string);
@@ -56,7 +56,7 @@ begin
   end;
 end;
 
-procedure WriteSimulatorSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
+procedure WriteSimulatorSourceTemplate(Owner: IDevice; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
@@ -85,7 +85,7 @@ begin
   end;
 end;
 
-procedure WriteDesignSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
+procedure WriteDesignSourceTemplate(Owner: IDevice; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
@@ -115,7 +115,7 @@ begin
   end;
 end;
 
-procedure WriteBlockSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
+procedure WriteBlockSourceTemplate(Owner: IDevice; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
@@ -155,7 +155,7 @@ begin
   end;
 end;
 
-function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: IDevice): TCodeBuffer;
 begin
   Result := CodeToolBoss.LoadFile(FileName, False, False);
   if not Assigned(Result) then begin
@@ -172,7 +172,7 @@ begin
   end;
 end;
 
-function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
+function GetCodeBuffer(template: TCodeTemplateType; Owner: IDevice): TCodeBuffer;
 var
   CodeFileName: string;
 begin
