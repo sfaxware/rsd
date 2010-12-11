@@ -995,7 +995,7 @@ begin
       if Device is TInputPort then begin
         InputPort := Device as TInputPort;
       end else if Device is TOutputPortRef then begin
-        InputPort := Device as TInputPortRef;
+        InputPort := Device as TOutputPortRef;
       end;
       Device := AddNewConnector(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, OutputPort, InputPort);
       Device.Load(DesignDescription, DeviceDescriptionNode);
