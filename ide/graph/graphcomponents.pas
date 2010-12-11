@@ -119,6 +119,7 @@ type
     FOutputPort: IOutputPort;
     FPoints: TRoute;
   protected
+    function GetPortIdentifier(Port: IPort): string;
     procedure DoPaint(Sender: TObject); override;
     procedure SetInputPort(Value: IInputPort);
     procedure SetOutputPort(Value: IOutputPort);
@@ -791,6 +792,19 @@ begin
   InputPort := AInputPort;
 end;
 
+function TConnector.GetPortIdentifier(Port: IPort): string;
+var
+  PortOwnerDevice: TDevice;
+begin
+  PortOwnerDevice := Port.OwnerDevice;
+  if Owner = PortOwnerDevice then begin
+    Result := ''
+  end else begin
+    Result := PortOwnerDevice.DeviceIdentifier + '.';
+  end;
+  Result += Port.DeviceIdentifier;
+end;
+
 Procedure TConnector.DoPaint(Sender: TObject);
 begin
   //WriteLn('TConnector.Paint Self = ', Name, '(', Left,', ', Top,', ', Width,', ', Height, ')');
@@ -811,7 +825,7 @@ end;
 procedure TConnector.SetInputPort(Value: IInputPort);
 begin
   FInputPort := Value;
-  SetProperty('InputPort', FInputPort.OwnerDevice.DeviceIdentifier + '.' + FInputPort.DeviceIdentifier);
+  SetProperty('InputPort', GetPortIdentifier(Value));
   FInputPort.Connector := Self;
   if Assigned(FOutputPort) then begin
     UpdatePoints;
@@ -821,7 +835,7 @@ end;
 procedure TConnector.SetOutputPort(Value: IOutputPort);
 begin
   FOutputPort := Value;
-  SetProperty('OutputPort', FOutputPort.OwnerDevice.DeviceIdentifier + '.' + FOutputPort.DeviceIdentifier);
+  SetProperty('OutputPort', GetPortIdentifier(Value));
   FOutputPort.Connector := Self;
   if Assigned(FInputPort) then begin
     UpdatePoints;
