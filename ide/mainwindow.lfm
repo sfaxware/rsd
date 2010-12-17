@@ -3,7 +3,7 @@ object IdeMainWindow: TIdeMainWindow
   Height = 841
   Top = 27
   Width = 1036
-  ActiveControl = DesignLayout
+  ActiveControl = TabControl
   Caption = 'Rapid Simulators Designer IDE'
   ClientHeight = 814
   ClientWidth = 1036
@@ -39,8 +39,8 @@ object IdeMainWindow: TIdeMainWindow
     TabIndex = 0
     TabOrder = 0
     Tabs.Strings = (
-      'schema'
-      'editor'
+      'Layout'
+      'Source'
     )
     TabStop = False
     object SynEdit1: TSynEdit
@@ -955,7 +955,7 @@ object IdeMainWindow: TIdeMainWindow
       end
       object IdeViewUpperLayoutMenuItem: TMenuItem
         Caption = 'Upper layout'
-        ShortCut = 16417
+        ShortCut = 16422
         OnClick = ShowUpperLayout
       end
       object IdeViewTopLayoutMenuItem: TMenuItem
@@ -1056,7 +1056,7 @@ object IdeMainWindow: TIdeMainWindow
     top = 72
     object ShowUpperLayoutMenuItem: TMenuItem
       Caption = 'Upper layout'
-      ShortCut = 16417
+      ShortCut = 16422
       OnClick = ShowUpperLayout
     end
     object ShowTopLayoutMenuItem: TMenuItem
