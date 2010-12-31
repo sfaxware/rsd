@@ -941,7 +941,7 @@ begin
     //WriteLn('TBlock.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
     //WriteLn('TBlock.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
+    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False, False) then begin
       if not Assigned(DesignDescription) then begin
         Exit(False);
       end else begin

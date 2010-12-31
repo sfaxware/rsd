@@ -2,10 +2,10 @@ Source: rsd
 Section: misc
 Priority: optional
 Maintainer: Mazen NEIFER <mazen.neifer@supaero.org>
-Uploaders: 
+Uploaders:
 DM-Upload-Allowed: yes
 Standards-Version: 3.9.1
-Build-Depends: debhelper (>= 7), quilt, lcl-utils, fp-compiler, lcl (>= 0.9.28.2-9)
+Build-Depends: debhelper (>= 7), quilt, lcl-utils, fp-compiler, lcl
 
 Package: rsd
 Architecture: i386 powerpc sparc amd64 arm
