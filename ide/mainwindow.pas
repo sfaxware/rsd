@@ -238,7 +238,14 @@ begin
     if Name = '' then
       Name := ChangeFileExt(ExtractFileName(FileName), '');
     SetValue('ProjectOptions/PathDelim/Value', PathDelim);
+    SetValue('ProjectOptions/General/SessionStorage/Value', 'InProjectDir');
     SetValue('ProjectOptions/General/MainUnit/Value', 0);
+    SetValue('ProjectOptions/RequiredPackages/Count', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/PackageName/Value', 'rsdcore');
+    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Minor', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Valid', True);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Minor', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Valid', True);
     if Units.Count < 2 then
       Units.Count := 2;
     SetValue('ProjectOptions/Units/Count', Units.Count);
@@ -254,12 +261,6 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
     //WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
     //WriteLn('DesignDir = ', DesignDir);
-    SetValue('ProjectOptions/RequiredPackages/Count', 1);
-    SetValue('ProjectOptions/RequiredPackages/Item1/PackageName/Value', 'rsdcore');
-    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Minor', 1);
-    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Valid', True);
-    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Minor', 1);
-    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Valid', True);
     //SetValue('ProjectOptions/RequiredPackages/Item1/DefaultFilename/Value', );
     SetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', BuildDir);
     Flush;
