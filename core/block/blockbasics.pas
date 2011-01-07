@@ -10,46 +10,73 @@ uses
 type
   TDeviceRunFlags = (drfTerminated, drfBlockedByInput, drfBlockedByOutput);
   TDeviceRunStatus = set of TDeviceRunFlags;
-
-  TIDevice = interface
+  IDevice = interface
     function GetName:string;
     property DeviceName: string read GetName;
   end;
-
   TCConnector = class;
-
-  TCDevice = class(TComponent, TIDevice)
+  TCDevice = class(TComponent, IDevice)
   private
     function GetName: string;
   protected
     procedure ValidateContainer(AComponent: TComponent); override;
     procedure ValidateInsert(AComponent: TComponent); override; abstract;
   end;
-
-  TCPort = class(TCDevice)
-  private
+  IPort = interface(IDevice)
+    function GetConnector: TCConnector;
+    procedure SetConnector(Value: TCConnector);
+  end;
+  IInputPort = interface(IPort)
+    function GetIsEmpty: Boolean;
+    function Pop(out Samples; Qty: Word): Boolean;
+    function Pop(out Sample: Integer): Boolean;
+    property IsEmpty: Boolean read GetIsEmpty;
+  end;
+  IOutputPort = interface(IPort)
+    function GetIsFull: Boolean;
+    function Push(const Samples; Qty: Word): Boolean;
+    function Push(Sample: Integer): Boolean;
+    property IsFull: Boolean read GetIsFull;
+  end;
+  TCPort = class(TCDevice, IPort)
+  protected
     FConnector: TCConnector;
     function GetConnector: TCConnector;
     procedure SetConnector(Value: TCConnector);
-  public
   end;
-
   TCInputPort = class(TCPort)
   protected
     function GetIsEmpty: Boolean;
   public
-    property IsEmpty: Boolean read GetIsEmpty;
     function Pop(out Samples; Qty: Word): Boolean;
     function Pop(out Sample: Integer): Boolean; inline;
+    property IsEmpty: Boolean read GetIsEmpty;
   end;
-  
   TCOutputPort = class(TCPort)
   protected
     function GetIsFull: Boolean;
   public
-    property IsFull: Boolean read GetIsFull;
     function Push(const Samples; Qty: Word): Boolean;
     function Push(Sample: Integer): Boolean; inline;
+    property IsFull: Boolean read GetIsFull;
+  end;
+  TCInputPortRef = class(TCInputPort, IOutputPort)
+  private
+    FInternalConnector: TCConnector;
+    //function GetConnector: TCConnector; override;
+    function GetIsFull: Boolean;
+    function Push(const Samples; Qty: Word): Boolean;
+    function Push(Sample: Integer): Boolean;
+   //procedure SetConnector(Value: TCConnector); override;
+  end;
+  TCOutputPortRef = class(TCOutputPort, IInputPort)
+  private
+    FInternalConnector: TCConnector;
+    //function GetConnector: TCConnector; override;
+    function GetIsEmpty: Boolean;
+    function Pop(out Samples; Qty: Word): Boolean;
+    function Pop(out Sample: Integer): Boolean;
+    //procedure SetConnector(Value: TCConnector); override;
   end;
 
   TCBlock = class(TCDevice)
@@ -265,6 +292,73 @@ end;
 function  TCOutputPort.Push(Sample: Integer): Boolean;
 begin
   Result := Push(Sample, SizeOf(Sample));
+end;
+
+function TCInputPortRef.GetIsFull: Boolean;
+begin
+  Result := Assigned(FConnector) and FConnector.IsFull;
+end;
+
+function TCInputPortRef.Push(const Samples; Qty: Word): Boolean;
+var
+  P: PPortData;
+begin
+  //WriteLn(FuncB('TCOutputPort.Push'));
+  P := GetMem(Qty + SizeOf(P^.Size));
+  if not Assigned(P) then begin
+    Exit(False)
+  end;
+  with P^ do begin
+    Size := Qty;
+    Move(Samples, Raw, Qty);
+  end;
+  if Assigned(FConnector) then begin
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
+    Result := FConnector.Push(P);
+  end else begin
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
+    Result := False;
+  end;
+  if Result then begin
+  end;
+  //WriteLn(FuncE('TCOutputPort.Push'));
+end;
+
+function  TCInputPortRef.Push(Sample: Integer): Boolean;
+begin
+  Result := Push(Sample, SizeOf(Sample));
+end;
+
+function TCOutputPortRef.GetIsEmpty: Boolean;
+begin
+  Result := Assigned(FConnector) and FConnector.IsEmpty;
+end;
+
+function TCOutputPortRef.Pop(out Samples; Qty: Word): Boolean;
+var
+  P: PPortData;
+begin
+  //WriteLn(FuncB('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+  if Assigned(FConnector) then begin
+    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
+    Result := FConnector.Pop(P);
+  end else begin
+    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
+    Result := False
+  end;
+  if Result then with P^ do begin
+    if Qty > Size then begin
+      Qty := Size
+    end;
+    Move(Raw, Samples, Qty);
+    Freemem(P);
+  end;
+  //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+end;
+
+function TCOutputPortRef.Pop(out Sample: Integer): Boolean;
+begin
+  Result := Pop(Sample, SizeOf(Sample));
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);

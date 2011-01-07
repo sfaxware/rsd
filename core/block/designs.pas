@@ -5,9 +5,11 @@ unit Designs;
 interface
 
 uses
-  Classes, Blocks;
+  Classes, Blocks, BlockBasics;
 
 type
+  TInputPortRef = class(TCInputPortRef);
+  TOutputPortRef = class(TCOutputPort);
   TDesign = class(TBlock)
   public
     constructor Create(AOwner: TComponent); override;
@@ -16,18 +18,15 @@ type
 
 implementation
 
-uses
-  BlockBasics;
-
 constructor TDesign.Create(AOwner: TComponent);
-var
-  cn: string;
+//var
+//  cn: string;
 begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
-  end else begin
-    cn := 'nil';
-  end;
+  //if Assigned(AOwner) then begin
+    //cn := AOwner.ClassName;
+  //end else begin
+    //cn := 'nil';
+  //end;
   //WriteLn(FuncB('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
   inherited Create(AOwner);
   //WriteLn(FuncE('TDesign.Create(AOwner: TDesign)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
@@ -41,6 +40,7 @@ begin
 end;
 
 initialization
+  RegisterClass(TInputPortRef);
+  RegisterClass(TOutputPortRef);
   RegisterClass(TDesign);
-
 end.
