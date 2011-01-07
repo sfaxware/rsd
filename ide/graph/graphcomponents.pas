@@ -101,14 +101,10 @@ type
   TInputPort = class(TPort, IInputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
-  public
-    constructor Create(AOwner: TComponent); override;
   end;
   TOutputPort = class(TPort, IOutputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
-  public
-    constructor Create(AOwner: TComponent); override;
   end;
   TPortType = class of TPort;
   TConnector = class(TDevice)
@@ -123,7 +119,6 @@ type
     procedure SetOutputPort(Value: IOutputPort);
     procedure UpdatePoints; virtual;
   public
-    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     procedure Connect(AOutputPort: IOutputPort; AInputPort: IInputPort);
@@ -296,6 +291,9 @@ end;
 
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
 begin
+  if DeviceType = '' then begin
+    DeviceType := 'TConnector';
+  end;
   CreateDevice(Result, DeviceName, DeviceType, 'TConnector', AOwner);
 end;
 
@@ -403,11 +401,16 @@ constructor TDevice.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   OnPaint := @DoPaint;
+  if FDeviceType = '' then begin
+    FDeviceType := 'T' + Name;
+  end;
+  if DeviceAncestorType = '' then begin
+    SetAncestorType(ClassName);
+  end;
 end;
 
 constructor TDevice.Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string);
 begin
-  Create(AOwner);
   if DeviceName <> '' then begin
     Name := DeviceName;
   end;
@@ -417,6 +420,7 @@ begin
   if DeviceAncestorType <> '' then begin
     SetAncestorType(DeviceAncestorType);
   end;
+  Create(AOwner);
 end;
 
 class procedure TDevice.RegisterDevice(DeviceType: string; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
@@ -682,14 +686,6 @@ begin
   end;
 end;
 
-constructor TInputPort.Create(AOwner: TComponent);
-begin
-  Inherited Create(AOwner);
-  FDeviceType := 'TInputPort';
-  SetAncestorType('TInputPort');
-  //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
-end;
-
 procedure TInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   R: TRect;
@@ -717,14 +713,6 @@ begin
   end;
 end;
 
-constructor TOutputPort.Create(AOwner: TComponent);
-begin
-  Inherited Create(AOwner);
-  FDeviceType := 'TOutputPort';
-  SetAncestorType('TOutputPort');
-  //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
-end;
-
 procedure TOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   R: TRect;
@@ -750,13 +738,6 @@ begin
   if Assigned(Connector) then with Connector do begin
     UpdatePoints;
   end;
-end;
-
-constructor TConnector.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FDeviceType := 'T' + Name;
-  SetAncestorType('TConnector');
 end;
 
 destructor TConnector.Destroy;
@@ -851,8 +832,6 @@ var
   R: TRect;
 begin
   inherited Create(AOwner);
-  FDeviceType := 'T' + Name;
-  SetAncestorType('TBlock');
   Caption := GetDeviceRandomCaption('Block ');
   FInputComponentCount := 0;
   FOutputComponentCount := 0;
