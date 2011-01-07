@@ -37,7 +37,6 @@ type
   end;
   TDevice = class(TMagnifier, IDevice)
   private
-    FOnCreate: TNotifyEvent;
     FDeviceType: string;
     FDeviceId: Integer;
     FProperties: array of TDeviceProperty;
@@ -67,7 +66,6 @@ type
     function DeviceUnitName: string; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual;
     procedure MouseLeaved(Sender: TObject);
-    property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property PropQty: Integer read GetPropQty;
     property PropName[PropIndex: Integer]: string read GetPropName;
     property PropType[PropIndex: Integer]: string read GetPropType;
@@ -404,13 +402,6 @@ end;
 constructor TDevice.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  if Assigned(AOwner) then begin
-    if AOwner is TDevice then with AOwner as TDevice do begin
-      Self.FOnCreate := FOnCreate;
-    end else if AOwner is TDesign then with AOwner as TDesign do begin
-      Self.FOnCreate := FOnCreate;
-    end;
-  end;
   OnPaint := @DoPaint;
 end;
 
