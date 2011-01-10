@@ -76,6 +76,7 @@ type
   IPort = interface(IDevice)
     function GetConnector: TConnector;
     function OwnerDevice: TDevice;
+    function Unplug(AConnector: TConnector): Boolean;
     procedure SetConnector(AConnector: TConnector);
     property Connector: TConnector read GetConnector write SetConnector;
   end;
@@ -95,6 +96,7 @@ type
     function GetConnector: TConnector; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     function OwnerDevice: TDevice;
+    function Unplug(AConnector: TConnector): Boolean; virtual;
     procedure SetConnector(AConnector: TConnector); virtual;
     property Connector: TConnector read GetConnector write SetConnector;
   end;
@@ -674,6 +676,14 @@ begin
   Result := Owner as TDevice;
 end;
 
+function TPort.Unplug(AConnector: TConnector): Boolean;
+begin
+  Result := FConnector = AConnector;
+  if Result then begin
+    FConnector := nil;
+  end;
+end;
+
 procedure TPort.SetConnector(AConnector: TConnector);
 begin
   FConnector := AConnector;
@@ -743,11 +753,11 @@ end;
 destructor TConnector.Destroy;
 begin
   if Assigned(FOutputPort) then begin
-    FOutputPort.Connector := nil;
+    FOutputPort.Unplug(Self);
     FOutputPort := nil;
   end;
   if Assigned(FInputPort) then begin
-    FInputPort.Connector := nil;
+    FInputPort.Unplug(Self);
     FInputPort := nil;
   end;
   inherited Destroy;
