@@ -48,7 +48,6 @@ type
     FFileName:string;
     procedure SetFileName(AFileName: string);
   public
-    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Execute; override;
   published
@@ -272,12 +271,6 @@ begin
   System.Assign(FFile, FFileName);
   Reset(FFile);
   //WriteLn(FuncE('TFileDumpProbe.SetFileName'), 'FFileName = ', FFileName);
-end;
-
-constructor TFileReadSource.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FileName := GetTempFileName;
 end;
 
 procedure TFileReadSource.Execute;
