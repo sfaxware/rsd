@@ -87,7 +87,6 @@ type
   protected
     FRunStatus: TDeviceRunStatus;
     procedure ValidateInsert(AComponent: TComponent); override;
-    function GetRunStatus: TDeviceRunStatus; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     function GetInputQty: Integer;
@@ -434,11 +433,6 @@ begin
   end;
   //WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
   //WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
-end;
-
-function TCBlock.GetRunStatus: TDeviceRunStatus;
-begin
-  Result := FRunStatus;
 end;
 
 procedure TCBlock.Execute;
