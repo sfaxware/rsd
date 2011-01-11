@@ -277,17 +277,18 @@ procedure TFileReadSource.Execute;
 var
   Sample: Integer;
 begin
-  //WriteLn(FuncB('TFileReadSource.Execute'), 'IsEmpty = ', Input.IsEmpty, ', SampleQty = ', FSampleQty);
+  WriteLn(FuncB('TFileReadSource.Execute'));
   if EoF(FFile) then begin
     Include(FRunStatus, drfTerminated);
+    WriteLn(FuncC('TFileReadSource.Execute'), 'No more samples to read');
   end else begin
     ReadLn(FFile, Sample);
     with Output do begin
-      //WriteLn(FuncC('TFileReadSource.Execute'), 'IsEmpty = ', IsEmpty, ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
+      WriteLn(FuncC('TFileReadSource.Execute'), ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
       Push(Sample);
     end;
   end;
-  //WriteLn(FuncE('TFileReadSource.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
+  WriteLn(FuncE('TFileReadSource.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
 end;
 
 destructor TFileReadSource.Destroy;
