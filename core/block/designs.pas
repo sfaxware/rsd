@@ -9,7 +9,7 @@ uses
 
 type
   TInputPortRef = class(TCInputPortRef);
-  TOutputPortRef = class(TCOutputPort);
+  TOutputPortRef = class(TCOutputPortRef);
   TDesign = class(TBlock)
   public
     constructor Create(AOwner: TComponent); override;
