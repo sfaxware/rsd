@@ -240,13 +240,13 @@ function TCInputPort.Pop(out P: Pointer): Boolean;
 begin
   //WriteLn(FuncB('TCInputPort.Pop(Pointer)'), 'Name = ', Owner.Name, '.', Name);
   if Assigned(FConnector) then begin
-    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
+    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector = ', FConnector.Owner.Name, '.', FConnector.Name);
     Result := FConnector.Pop(P);
   end else begin
     //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
     Result := False
   end;
-  //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+  //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name, ' P = ', hexStr(P));
 end;
 
 function TCInputPort.Pop(out Samples; Qty: Word): Boolean;
@@ -277,9 +277,9 @@ end;
 
 function TCOutputPort.Push(P: Pointer): Boolean;
 begin
-  //WriteLn(FuncB('TCOutputPort.Push'), 'Name = ', Owner.Name, '.', Name, 'P = ', HexStr(P));
+  //WriteLn(FuncB('TCOutputPort.Push'), 'Name = ', Owner.Name, '.', Name, ' P = ', HexStr(P));
   if Assigned(FConnector) then begin
-    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector = ', FConnector.Owner.Name, '.', FConnector.Name);
     Result := FConnector.Push(P);
   end else begin
     //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
@@ -319,9 +319,9 @@ end;
 
 function TCInputPortRef.Push(P: Pointer): Boolean;
 begin
-  //WriteLn(FuncB('TCInputPortRef.Push'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+  //WriteLn(FuncB('TCInputPortRef.Push'), 'Name = ', Owner.Name, '.', Name, ' P = ', hexStr(P));
   if Assigned(FInternalConnector) then begin
-    //WriteLn(FuncC('TCInputPortRef.Push'), 'Connector assigned');
+    //WriteLn(FuncC('TCInputPortRef.Push'), 'Connector = ', FConnector.Owner.Name, '.', FConnector.Name);
     Result := FInternalConnector.Push(P);
   end else begin
     //WriteLn(FuncC('TCInputPortRef.Push'), 'Connector not assigned');
@@ -374,13 +374,13 @@ function TCOutputPortRef.Pop(out P: Pointer): Boolean;
 begin
   //WriteLn(FuncB('TCOutputPortRef.Pop(Pointer)'), 'Name = ', Owner.Name, '.', Name);
   if Assigned(FInternalConnector) then begin
-    //WriteLn(FuncC('TCOutputPortRef.Pop'), 'Connector assigned');
+    //WriteLn(FuncC('TCOutputPortRef.Pop'), 'Connector = ', FConnector.Owner.Name, '.', FConnector.Name);
     Result := FInternalConnector.Pop(P);
   end else begin
     //WriteLn(FuncC('TCOutputPortRef.Pop'), 'Connector not assigned');
     Result := False
   end;
-  //WriteLn(FuncE('TCOutputPortRef.Pop'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+  //WriteLn(FuncE('TCOutputPortRef.Pop'), 'Name = ', Owner.Name, '.', Name, ' P = ', hexStr(P));
 end;
 
 function TCOutputPortRef.Pop(out Samples; Qty: Word): Boolean;
