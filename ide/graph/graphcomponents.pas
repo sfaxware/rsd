@@ -140,6 +140,7 @@ type
   protected
     FSelected: Boolean;
     function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual; abstract;
+    function BlockBoundsDescription(Indent: string): string; virtual;
     procedure HandleMouseEnter(Sender: TObject); virtual; abstract;
     procedure HandleMouseLeave(Sender: TObject); virtual; abstract;
     procedure SetControlsVisibility(Visibility: Boolean); virtual;
@@ -1054,6 +1055,16 @@ begin
   end;
 end;
 
+function TBlock.BlockBoundsDescription(Indent: string): string;
+begin
+  with OriginalBounds do begin
+    Result := Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+  end;
+end;
+
 function TBlock.DeviceCodeTemplateType: TCodeTemplateType;
 begin
   Result := cttBlock;
@@ -1068,14 +1079,11 @@ begin
     for i := 0 to ComponentCount - 1 do with Components[i] as TDevice do begin
       Result += DeviceDescription(Indent + '  ');
     end;
-  end else with OriginalBounds do begin
+  end else begin
     Result += Indent + '  Caption = ''' + Caption + '''' + LineEnding;
     Result += inherited;
-    Result += Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-              Indent + '  Left = ' + IntToStr(Left) + LineEnding +
-              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
-              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
-              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+    Result += Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding;
+    Result += BlockBoundsDescription(Indent);
   end;
 end;
 
