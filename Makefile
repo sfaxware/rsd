@@ -2216,7 +2216,7 @@ clean:fpc_clean clean_packages
 clean_packages:
 	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
 ide:build/bin/${TARGET_PROGRAMS}
-build/bin/%:ide/%.lpi
+build/bin/%:ide/%_ide.lpi
 	lazbuild $<
 packages:$(addprefix build/lib/rsd/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
 build/lib/rsd/%.pas:%.pas build/lib/rsd/%.lpk
