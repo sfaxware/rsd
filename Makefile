@@ -270,7 +270,7 @@ PACKAGES=core/${PACKAGE_NAME}core
 PO_FILES=$(wildcard locale/*_*.po)
 MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
 LPK_FILTERS= -e 's@\.\./build/lib/rsd/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g'
-LPK_FILTERS+= -e 's@AutoUpdate Value=".*"@AutoUpdate Value="Manually"'
+LPK_FILTERS+= -e 's@AutoUpdate Value=".*"@AutoUpdate Value="Manually"@'
 ifeq ($(FULL_TARGET),i386-linux)
 override TARGET_PROGRAMS+=rsd_ide
 endif
