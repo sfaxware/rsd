@@ -1292,7 +1292,11 @@ begin
     Result := c as TOutputPort;
   end;
   if not Assigned(Result) then begin
-    Result := inherited AddNewPort(ADeviceName, ADeviceType);
+    if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+      if Assigned(FOnChildrenCreate) then begin
+        FOnChildrenCreate(Result);
+      end;
+    end;
   end;
 end;
 
@@ -1302,9 +1306,7 @@ var
 begin
   if Indent = '' then begin
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
-      if Name <> 'Input' then begin
-        Result += DeviceDescription(Indent + '  ');
-      end;
+      Result += DeviceDescription(Indent + '  ');
     end;
   end else begin
     Result := inherited;
@@ -1363,7 +1365,11 @@ begin
     Result := c as TInputPort;
   end;
   if not Assigned(Result) then begin
-    Result := inherited AddNewPort(ADeviceName, ADeviceType);
+    if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+      if Assigned(FOnChildrenCreate) then begin
+        FOnChildrenCreate(Result);
+      end;
+    end;
   end;
 end;
 
@@ -1373,9 +1379,7 @@ var
 begin
   if Indent = '' then begin
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
-      if Name <> 'Output' then begin
-        Result += DeviceDescription(Indent + '  ');
-      end;
+      Result += DeviceDescription(Indent + '  ');
     end;
   end else with OriginalBounds do begin
     Result := inherited;
