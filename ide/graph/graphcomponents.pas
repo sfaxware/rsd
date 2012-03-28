@@ -23,13 +23,21 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
   end;
+  TDevicePropertyType = TLFMValueType;
+  TDeviceProperty = string;
   TDevice = class(TMagnifier, TIGraphDevice)
   private
     FOnCreate: TNotifyEvent;
     FDeviceType: string;
-    FDeviceAncestorType: string;
-    FProperties: array of string;
+    FDeviceId: Integer;
+    FProperties: array of TDeviceProperty;
   protected
+    function GetPropertyIndex(const PropName: string): Integer;
+    function GetProperty(PropIndex: Integer): TDeviceProperty; virtual;
+    function GetProperty(const PropName: string): TDeviceProperty;
+    function SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean; virtual;
+    function SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
+    procedure SetAncestorType(const AncestorType: string);
     procedure SetName(const Value: TComponentName); override;
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
@@ -53,7 +61,6 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
-    function DeviceDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
   TInputPort = class(TPort)
@@ -82,10 +89,8 @@ type
     procedure SetOutputPort(Value: TOutputPort);
     procedure UpdatePoints; virtual;
   public
-    Depth: Integer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function DeviceDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     procedure Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
   published
@@ -130,8 +135,6 @@ type
   protected
     procedure DoPaint(Sender: TObject); override;
   public
-    InitialSeed: Integer;
-    Amplitude: Integer;
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DeviceDescription(Indent: string): string; override;
@@ -141,8 +144,6 @@ type
   protected
     procedure DoPaint(Sender: TObject); override;
   public
-    FileName: string;
-    SampleQty: Integer;
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DeviceDescription(Indent: string): string; override;
@@ -154,7 +155,7 @@ function CreateBlock(DeviceName, DeviceType: string; AOwner: TComponent): TBlock
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
 function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TOutputPort;
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
-function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
+function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): TDeviceProperty;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 
@@ -163,23 +164,31 @@ uses
   DesignGraph, CodeToolManager, CodeWriter, Configuration;
 
 type
+  TDevicePropertyInfo = record
+    PropName: string;
+    PropType: TDevicePropertyType;
+  end;
   TDeviceInfo = record
-     TypeName: string;
-     TypeClass: TDeviceClass;
-     Properties: array of string;
+    TypeName: string;
+    TypeClass: TDeviceClass;
+    Properties: array of TDevicePropertyInfo;
   end;
 
 var
   Devices: array of TDeviceInfo;
 
-procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceProperties: array of string);
+function DeviceProperty(const PropName: string; PropType: TDevicePropertyType): TDevicePropertyInfo;
+begin
+  Result.PropName := PropName;
+  Result.PropType := PropType;
+end;
+
+procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceProperties: array of TDevicePropertyInfo);
 var
   l: Integer;
 begin
   l := Length(Devices);
-  WriteLn(l);
   SetLength(Devices, l + 1);
-  WriteLn(Length(Devices));
   with Devices[l] do begin
     TypeName := DeviceType;
     TypeClass := DeviceClass;
@@ -192,7 +201,7 @@ begin
   end;
 end;
 
-function GetDeviceIndex(DeviceType: string): Integer;
+function GetDeviceId(DeviceType: string): Integer;
 var
   i: Integer;
 begin
@@ -206,20 +215,26 @@ begin
   end;
 end;
 
-function GetDeviceClass(DeviceType: string): TDeviceClass;
-var
-  i: Integer;
+function GetDeviceClass(Id: Integer): TDeviceClass;
 begin
-  i := GetDeviceIndex(DeviceType);
-  if i > 0 then begin
-    Result := Devices[i].TypeClass;
+  if(Id >= Low(Devices)) and (Id <= High(Devices)) then begin
+    Result := Devices[Id].TypeClass;
   end else begin
     Result := nil;
   end;
 end;
 
+function GetDeviceClass(DeviceType: string): TDeviceClass;
+var
+  i: Integer;
+begin
+  i := GetDeviceId(DeviceType);
+  Result := GetDeviceClass(i);
+end;
+
 function CreateDevice(DeviceName, DeviceType: string; AncestorType: TDeviceClass; AOwner: TComponent): TDevice;
 var
+  DeviceId: Integer;
   DeviceClass: TDeviceClass;
   CodeFile: string;
   ACodeBuffer: TCodeBuffer;
@@ -253,10 +268,11 @@ begin
       //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
     end;
   end;
-  DeviceClass := GetDeviceClass(DeviceType);
-  if not Assigned(DeviceClass) then begin
-    DeviceClass := GetDeviceClass(DeviceAncestorType);
+  DeviceId := GetDeviceId(DeviceType);
+  if DeviceId < 0 then begin
+    DeviceId := GetDeviceId(DeviceAncestorType);
   end;
+  DeviceClass := GetDeviceClass(DeviceId);
   if Assigned(DeviceClass) then begin
     Result := DeviceClass.Create(AOwner);
     if Assigned(Result) then begin
@@ -274,7 +290,8 @@ begin
       Result.FDeviceType := DeviceType;
     end;
     if DeviceAncestorType <> '' then begin
-      Result.FDeviceAncestorType := DeviceAncestorType;
+      Result.SetAncestorType(DeviceAncestorType);
+      SetLength(Result.FProperties, Length(Devices[DeviceId].Properties));
     end;
   end else begin
     Result := nil;
@@ -301,7 +318,7 @@ begin
   Result := CreateDevice(DeviceName, DeviceType, TConnector, AOwner) as TConnector;
 end;
 
-function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
+function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): TDeviceProperty;
 var
   PropertyNode: TLFMPropertyNode;
   ValueNode: TLFMTreeNode;
@@ -318,7 +335,7 @@ begin
   PropertyNode := Self.FindProperty(PropertyName, nil);
   ValueNode := PropertyNode.Next;
   //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
-  if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
+  if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do begin
     case ValueType of
       lfmvString: Result := ReadString;
       lfmvInteger: begin
@@ -354,6 +371,7 @@ begin
     else
       WriteLn('GetPropertyValue : Unsupported node type "', Integer(ValueType), '"');
     end;
+  end;
   //WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
 end;
 
@@ -410,6 +428,61 @@ begin
   OnPaint := @DoPaint;
 end;
 
+function TDevice.GetPropertyIndex(const PropName: string): Integer;
+var
+  PropIndex: Integer;
+begin
+  with Devices[FDeviceId] do begin
+    for PropIndex := Low(Properties) to High(Properties) do begin
+      if PropName = Properties[PropIndex].PropName then begin
+        Exit(PropIndex);
+      end;
+    end;
+  end;
+  Result := -1;
+end;
+
+function TDevice.GetProperty(PropIndex: Integer): TDeviceProperty;
+begin
+  if(PropIndex >= Low(FProperties)) and (PropIndex <= High(FProperties))then begin
+    Result := FProperties[PropIndex];
+  end else begin
+    Result := '';
+  end;
+end;
+
+function TDevice.GetProperty(const PropName: string): TDeviceProperty;
+var
+  PropIndex: Integer;
+begin
+  PropIndex := GetPropertyIndex(PropName);
+  Result := GetProperty(PropIndex);
+end;
+
+function TDevice.SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean;
+begin
+  Result := (PropIndex >= Low(FProperties)) and (PropIndex <= High(FProperties));
+  if Result then begin
+    FProperties[PropIndex] := PropVal;
+  end;
+end;
+
+function TDevice.SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
+var
+  PropIndex: Integer;
+begin
+  PropIndex := GetPropertyIndex(PropName);
+  Result := SetProperty(PropIndex, PropVal);
+end;
+
+procedure TDevice.SetAncestorType(const AncestorType: string);
+begin
+  FDeviceId := GetDeviceId(AncestorType);
+  with Devices[FDeviceId] do begin
+    SetLength(FProperties, Length(Properties));
+  end;
+end;
+
 procedure TDevice.SetName(const Value: TComponentName);
 var
   i: Integer;
@@ -440,19 +513,34 @@ end;
 
 function TDevice.DeviceAncestorType: string;
 begin
-  Result := FDeviceAncestorType;
+  Result := Devices[FDeviceId].TypeName;
 end;
 
 function TDevice.DeviceDescription(Indent: string): string;
 var
   i: Integer;
+  PropValue: string;
 begin
   Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
-  i := GetDeviceIndex(FDeviceAncestorType);
-  if i >= 0 then with Devices[i] do begin
+  if Indent <> '' then begin
+    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding;
+  end;
+  with Devices[FDeviceId] do begin
     for i := Low(Properties) to High(Properties) do begin;
-      Result += Indent + '  ' + Properties[i] + ' = ' + FProperties[i];
+      case Properties[i].PropType of
+        lfmvString: PropValue := '''' + GetProperty(i) + '''';
+      else
+        PropValue := GetProperty(i);
+      end;
+      Result += Indent + '  ' + Properties[i].PropName + ' = ' + PropValue + LineEnding;
     end;
+  end;
+  if Self is TBlock then with OriginalBounds do begin
+    Result += Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+              Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
   Result += Indent + 'end' + LineEnding;
 end;
@@ -503,25 +591,11 @@ begin
     ContextNode := Parent as TLFMObjectNode;
   end;
   //WriteLn('TPort : Path = ', Path);
-//  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
-//  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
+//  Left := GetPropertyValue(DesignDescription, Path + 'Left'));
+//  Top := GetPropertyValue(DesignDescription, Path + 'Top'));
   Color := clBlack;
 //  Caption := GetPropertyValue(DesignDescription, Path + 'Caption');
   Result := True;
-end;
-
-function TPort.DeviceDescription(Indent: string): string;
-var
-  PortType: string;
-begin
-  if Self is TInputPort then
-    PortType := 'Input'
-  else if Self is TOutputPort then
-    PortType := 'Output'
-  else
-    PortType := '';
-  Result := Indent + 'object ' + Name + ': T' + PortType + 'Port' + LineEnding +
-    Indent + 'end' + LineEnding;
 end;
 
 procedure TPort.ValidateContainer(AComponent: TComponent);
@@ -536,7 +610,7 @@ begin
   Inherited Create(AOwner);
   Name := 'Port';
   FDeviceType := 'TInputPort';
-  FDeviceAncestorType := 'TInputPort';
+  SetAncestorType('TInputPort');
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
@@ -590,7 +664,7 @@ begin
   Inherited Create(AOwner);
   Name := 'Port';
   FDeviceType := 'TOutputPort';
-  FDeviceAncestorType := 'TOutputPort';
+  SetAncestorType('TOutputPort');
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
@@ -640,12 +714,13 @@ begin
 end;
 
 constructor TConnector.Create(AOwner: TComponent);
+var
+  DeviceId: Integer;
 begin
   inherited Create(AOwner);
   Name := 'Connector';
   FDeviceType := 'T' + Name;
-  FDeviceAncestorType := 'TConnector';
-  Depth := 127;
+  SetAncestorType('TConnector');
 end;
 
 destructor TConnector.Destroy;
@@ -661,18 +736,9 @@ begin
   inherited Destroy;
 end;
 
-function TConnector.DeviceDescription(Indent: string): string;
-begin
-  Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
-    Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
-    Indent + '  InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
-    Indent + '  Depth = ' + IntToStr(Depth) + LineEnding +
-    Indent + 'end' + LineEnding;
-end;
-
 function TConnector.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
-  Depth := StrToInt(GetPropertyValue(ContextNode, 'Depth', DesignDescription));
+  SetProperty('Depth', GetPropertyValue(ContextNode, 'Depth', DesignDescription));
   Result := True;
 end;
 
@@ -702,6 +768,7 @@ end;
 procedure TConnector.SetInputPort(Value: TInputPort);
 begin
   FInputPort := Value;
+  SetProperty('InputPort', FInputPort.Owner.Name + '.' + FInputPort.Name);
   FInputPort.FConnector := Self;
   if Assigned(FOutputPort) then begin
     UpdatePoints;
@@ -711,6 +778,7 @@ end;
 procedure TConnector.SetOutputPort(Value: TOutputPort);
 begin
   FOutputPort := Value;
+  SetProperty('OutputPort', FOutputPort.Owner.Name + '.' + FOutputPort.Name);
   FOutputPort.FConnector := Self;
   if Assigned(FInputPort) then begin
     UpdatePoints;
@@ -737,7 +805,7 @@ begin
   inherited Create(AOwner);
   Name := 'Block';
   FDeviceType := 'T' + Name;
-  FDeviceAncestorType := 'TBlock';
+  SetAncestorType('TBlock');
   Caption := 'Block ' + IntToStr(Owner.ComponentCount);
   FInputComponentCount := 0;
   FOutputComponentCount := 0;
@@ -774,13 +842,13 @@ begin
   with R do begin
     Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
     Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
-    Right := Left + StrToInt(GetPropertyValue(ContextNode, 'Width', DesignDescription));;
+    Right := Left + StrToInt(GetPropertyValue(ContextNode, 'Width', DesignDescription));
     Bottom := Top + StrToInt(GetPropertyValue(ContextNode, 'Height', DesignDescription));
     //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
   end;
   OriginalBounds := R;
   Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
-  Caption := GetPropertyValue(ContextNode, 'DeviceName', DesignDescription);
+  Caption := string(GetPropertyValue(ContextNode, 'DeviceName', DesignDescription));
 end;
 
 function TBlock.Load: boolean;
@@ -913,20 +981,15 @@ function TBlock.DeviceDescription(Indent: string): string;
 var
   i: Integer;
 begin
-  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
   if Indent = '' then begin
+    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TDevice do begin
       Result += DeviceDescription(Indent + '  ');
     end;
-  end else with OriginalBounds do begin
-    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
-      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
-      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
-      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
-      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+    Result += Indent + 'end' + LineEnding;
+  end else begin
+    Result := inherited;
   end;
-  Result += Indent + 'end' + LineEnding;
 end;
 
 procedure TBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -1117,31 +1180,24 @@ function TSource.DeviceDescription(Indent: string): string;
 var
   i: Integer;
 begin
-  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
   if Indent = '' then begin
+    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
       if Name <> 'Input' then begin
         Result += DeviceDescription(Indent + '  ');
       end;
     end;
-  end else with OriginalBounds do begin
-    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
-      Indent + '  InitialSeed = ' + IntToStr(InitialSeed) + LineEnding +
-      Indent + '  Amplitude = ' + IntToStr(Amplitude) + LineEnding +
-      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
-      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
-      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
-      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+    Result += Indent + 'end' + LineEnding;
+  end else begin
+    Result := inherited;
   end;
-  Result += Indent + 'end' + LineEnding;
 end;
 
 function TSource.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
   Result := inherited Load(DesignDescription, ContextNode);
-  InitialSeed := StrToInt(GetPropertyValue(ContextNode, 'InitialSeed', DesignDescription));
-  Amplitude := StrToInt(GetPropertyValue(ContextNode, 'Amplitude', DesignDescription));
+  SetProperty('InitialSeed', GetPropertyValue(ContextNode, 'InitialSeed', DesignDescription));
+  SetProperty('Amplitude', GetPropertyValue(ContextNode, 'Amplitude', DesignDescription));
 end;
 
 constructor TProbe.Create(AOwner:TComponent);
@@ -1202,39 +1258,31 @@ function TProbe.DeviceDescription(Indent: string): string;
 var
   i: Integer;
 begin
-  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
   if Indent = '' then begin
+    Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
     for i := 0 to ComponentCount - 1 do with Components[i] as TPort do begin
       if Name <> 'Output' then begin
         Result += DeviceDescription(Indent + '  ');
       end;
     end;
+    Result += Indent + 'end' + LineEnding;
   end else with OriginalBounds do begin
-    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
-      Indent + '  FileName = ''' + FileName + '''' + LineEnding +
-      Indent + '  SampleQty = ' + IntToStr(SampleQty) + LineEnding +
-      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
-      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
-      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
-      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+    Result := inherited;
   end;
-  Result += Indent + 'end' + LineEnding;
 end;
 
 function TProbe.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 begin
   Result := inherited Load(DesignDescription, ContextNode);
-  FileName := GetPropertyValue(ContextNode, 'FileName', DesignDescription);
-  SampleQty := StrToInt(GetPropertyValue(ContextNode, 'SampleQty', DesignDescription));
+  SetProperty('FileName', GetPropertyValue(ContextNode, 'FileName', DesignDescription));
+  SetProperty('SampleQty', GetPropertyValue(ContextNode, 'SampleQty', DesignDescription));
 end;
 
 initialization
-  RegisterDevice('TInputPort', TInputPort, ['DeviceName']);
-  RegisterDevice('TOutputPort', TOutputPort, ['DeviceName']);
-  RegisterDevice('TConnector', TConnector, ['DeviceName', 'OutputPort', 'InputPort', 'Depth']);
-  RegisterDevice('TBlock', TBlock, ['DeviceName']);
-  RegisterDevice('TRandomSource', TSource, ['DeviceName', 'InitialSeed', 'Amplitude']);
-  RegisterDevice('TFileDumpProbe', TProbe, ['DeviceName', 'FileName', 'SampleQty']);
+  RegisterDevice('TInputPort', TInputPort, []);
+  RegisterDevice('TOutputPort', TOutputPort, []);
+  RegisterDevice('TConnector', TConnector, [DeviceProperty('OutputPort', lfmvSymbol), DeviceProperty('InputPort', lfmvSymbol), DeviceProperty('Depth', lfmvInteger)]);
+  RegisterDevice('TBlock', TBlock, []);
+  RegisterDevice('TRandomSource', TSource, [DeviceProperty('InitialSeed', lfmvInteger), DeviceProperty('Amplitude', lfmvInteger)]);
+  RegisterDevice('TFileDumpProbe', TProbe, [DeviceProperty('FileName', lfmvString), DeviceProperty('SampleQty', lfmvInteger)]);
 end.
-
