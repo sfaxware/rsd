@@ -123,7 +123,6 @@ procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
   CodeTool := TStandardCodeTool.Create;
-  CodeTool.Scanner := TLinkScanner.Create;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -148,7 +147,6 @@ var
   LFMCodeCache, PASCodeCache: TCodeCache;
   LFMBuf, PASBuf: TCodeBuffer;
   LFMTree: TLFMTree;
-  OnFindDefineProperty: TOnFindDefinePropertyForContext;
   SrcFile, DescrFile: string;
 begin
   if Sender is TCGraphBlock then
@@ -159,8 +157,10 @@ begin
         ReWrite(f);
         WriteLn(f, 'unit ', Name, ';');
         WriteLn(f, 'interface');
+        WriteLn(f, 'uses');
+        WriteLn(f, '  Blocks;');
+        WriteLn(f);
         WriteLn(f, 'type');
-        WriteLn(f, '  TBlock = class;');
         WriteLn(f, '  T', Name, ' = class(TBlock)');
         WriteLn(f, '    procedure Execute;');
         WriteLn(f, '  end;');
@@ -184,12 +184,12 @@ begin
         System.Assign(f, DescrFile);
         ReWrite(f);
         WriteLn(f, 'object ', Name, ': T' + Name);
-        WriteLn(f, '  name = ', Name);
-        WriteLn(f, '  type = ', Typ);
-        WriteLn(f, '  left = ', Left);
-        WriteLn(f, '  top = ', Top);
-        WriteLn(f, '  width = ', Width);
-        WriteLn(f, '  height = ', Height);
+        WriteLn(f, '  Name = ', Name);
+        WriteLn(f, '  Typ = ', Typ);
+        WriteLn(f, '  Left = ', Left);
+        WriteLn(f, '  Top = ', Top);
+        WriteLn(f, '  Width = ', Width);
+        WriteLn(f, '  Height = ', Height);
         WriteLn(f, 'end');
         System.Close(f);
       end;
@@ -198,10 +198,12 @@ begin
   LFMBuf := LFMCodeCache.LoadFile(DescrFile);
   PASCodeCache := TCodeCache.Create;
   PASBuf := PASCodeCache.LoadFile(srcFile);
-  PASBuf.Scanner := CodeTool.Scanner;
-  if CodeTool.CheckLFM(LFMBuf, LFMTree, OnFindDefineProperty, False, False) then
-    TabControl.TabIndex := 1
-  else
+  CodeToolBoss.GetCodeToolForSource(PASBuf, true, false);
+  if CodeToolBoss.CheckLFM(PASBuf, LFMBuf, LFMTree, False, False) then begin
+    TabControl.TabIndex := 1;
+    SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
+    SynEdit1.EnsureCursorPosVisible;
+  end else
     ShowMessage('False');
 end;
 
@@ -233,7 +235,7 @@ begin
     BlockQuantity += 1;
     repeat
       try
-        Name := 'block' + IntToStr(BlockQuantity);
+        Name := 'Block' + IntToStr(BlockQuantity);
         break;
       except
         BlockQuantity += 1;
