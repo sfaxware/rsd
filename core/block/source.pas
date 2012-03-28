@@ -5,42 +5,34 @@ unit Source;
 interface
 
 uses
-  Blocks;
+  Classes, Blocks;
 
-{ Period parameter }
-Const
-  MT19937N=624;
-
-Type
-  tMT19937StateArray = array [0..MT19937N-1] of longint; // the array for the state vector
-
-  TRandomSeed = LongWord;
+type
+  TSourceSeed = LongWord;
   TSource = class(TBlock)
   private
-    function GetSample: Integer; virtual;abstract;
+    FInitialSeed: TSourceSeed;
+    FCurrentSeed: TSourceSeed;
+    procedure SetInitialSeed(Seed: TSourceSeed); virtual;
+    procedure UpdateCurrentSeed; virtual; abstract;
   public
     procedure Execute; override;
+    property CurrentSeed: TSourceSeed read FCurrentSeed;
   published
     Output: TOutputPort;
+    property InitialSeed: TSourceSeed read FInitialSeed write SetInitialSeed;
   end;
 
   TRandomSource = class(TSource)
   private
-    FInitialSeed: TRandomSeed;
-    FCurrentSeed: TRandomSeed;
-    mt : tMT19937StateArray;
-    mti: longint; // mti=MT19937N+1 means mt[] is not initialized
+    mt: array of LongInt;
+    mti: LongInt; // mti=MT19937N+1 means mt[] is not initialized
     procedure sgenrand_MT19937(seed: longint);
     function genrand_MT19937: longint;
     function random(l:longint): longint;
     function random(l:int64): int64;
-    function GetSample: Integer; override;
-    procedure SetInitialSeed(Seed: TRandomSeed);
-  public
-    procedure Execute; override;
-    property CurrentSeed: TRandomSeed read FCurrentSeed;
-  published
-    property InitialSeed: TRandomSeed read FInitialSeed write SetInitialSeed;
+    procedure SetInitialSeed(Seed: TSourceSeed); override;
+    procedure UpdateCurrentSeed; override;
   end;
 
 implementation
@@ -48,9 +40,16 @@ implementation
 uses
   BlockBasics;
 
+procedure TSource.SetInitialSeed(Seed: TSourceSeed);
+begin
+  FInitialSeed := Seed;
+  FCurrentSeed := Seed;
+end;
+
 procedure TSource.Execute;
 begin
-  Output.Push(GetSample);
+  UpdateCurrentSeed;
+  Output.Push(FCurrentSeed);
 end;
 
 {----------------------------------------------------------------------
@@ -123,6 +122,7 @@ end;
 
 { Period parameters }
 const
+  MT19937N=624;
   MT19937M=397;
   MT19937MATRIX_A  =$9908b0df;  // constant vector a
   MT19937UPPER_MASK=longint($80000000);  // most significant w-r bits
@@ -138,7 +138,7 @@ var
   i: longint;
 begin
   mt[0] := seed;
-  for i := 1 to MT19937N-1 do
+  for i := 1 to MT19937N - 1 do
     begin
       mt[i] := 1812433253 * (mt[i-1] xor (mt[i-1] shr 30)) + i;
       { See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. }
@@ -158,15 +158,6 @@ var
 begin
   if (mti >= MT19937N) { generate MT19937N longints at one time }
   then begin
-     if mti = (MT19937N+1) then  // if sgenrand_MT19937() has not been called,
-       begin
-         sgenrand_MT19937(FInitialSeed);   // default initial seed is used
-         { hack: randseed is not used more than once in this algorithm. Most }
-         {  user changes are re-initialising reandseed with the value it had }
-         {  at the start -> with the "not", we will detect this change.      }
-         {  Detecting other changes is not useful, since the generated       }
-         {  numbers will be different anyway.                                }
-       end;
      for kk:=0 to MT19937N-MT19937M-1 do begin
         y := (mt[kk] and MT19937UPPER_MASK) or (mt[kk+1] and MT19937LOWER_MASK);
         mt[kk] := mt[kk+MT19937M] xor (y shr 1) xor mag01[y and $00000001];
@@ -193,41 +184,32 @@ begin
   { otherwise we can return values = l (JM) }
   if (l < 0) then
     inc(l);
-  random := longint((int64(cardinal(genrand_MT19937))*l) shr 32);
+  Result := longint((int64(cardinal(genrand_MT19937))*l) shr 32);
 end;
 
 function TRandomSource.random(l:int64): int64;
 begin
   { always call random, so the random generator cycles (TP-compatible) (JM) }
-  random := int64((qword(cardinal(genrand_MT19937)) or ((qword(cardinal(genrand_MT19937)) shl 32))) and $7fffffffffffffff);
+  Result := int64((qword(cardinal(genrand_MT19937)) or ((qword(cardinal(genrand_MT19937)) shl 32))) and $7fffffffffffffff);
   if (l<>0) then
-    random := random mod l
+    Result := Result mod l
   else
-    random := 0;
+    Result := 0;
 end;
 
-function TRandomSource.GetSample: Integer;
-begin
-  Result := random(MaxInt);
-end;
-
-procedure TRandomSource.SetInitialSeed(Seed: TRandomSeed);
+procedure TRandomSource.SetInitialSeed(Seed: TSourceSeed);
 begin
   //WriteLn(FuncB('TRandomSource.SetInitialSeed'));
-  FInitialSeed := Seed;
-  FCurrentSeed := Seed;
-  mti := MT19937N+1;
+  SetLength(mt, MT19937N);
+  inherited SetInitialSeed(Seed);
+  sgenrand_MT19937(FInitialSeed);   // default initial seed is used
   //WriteLn(FuncC('TRandomSource.SetInitialSeed'), 'Seed = ', Seed);
   //WriteLn(FuncB('TRandomSource.SetInitialSeed'));
 end;
 
-procedure TRandomSource.Execute;
+procedure TRandomSource.UpdateCurrentSeed;
 begin
-  //WriteLn(FuncB('TRandomSource.Execute'));
   FCurrentSeed := random(MaxUIntValue);
-  Output.Push(FCurrentSeed);
-  //WriteLn(FuncC('TRandomSource.Execute'), 'CurrentSeed = ', CurrentSeed);
-  //WriteLn(FuncE('TRandomSource.Execute'));
 end;
 
 end.
