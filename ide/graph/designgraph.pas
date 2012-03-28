@@ -11,6 +11,7 @@ type
   TCGraphDesign = class(TScrollBox, TIGraphDevice)
   private
     FMagnification: Real;
+    FOnChildrenCreate: TNotifyEvent;
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
@@ -21,7 +22,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function AddNewBlock(BlockType: TCGraphBlockClass): TCGraphBlock; virtual;
+    function AddNewBlock(BlockType: TCGraphBlockClass; DeviceName: string): TCGraphBlock; virtual;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function GetUpdatedDescription(Indent: string): string;
@@ -30,6 +31,7 @@ type
     procedure ConnectPorts(Sender: TObject);
     procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
+    property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   end;
   TScrollBox = class(TCGraphDesign);
 
@@ -80,41 +82,53 @@ begin
     Parent := Self;
     Connect(SelectedOutputPort, SelectedInputPort);
   end;
+  if Assigned(FOnChildrenCreate) then begin
+    FOnChildrenCreate(Connector);
+  end;
 end;
 
-function TCGraphDesign.AddNewBlock(BlockType: TCGraphBlockClass):TCGraphBlock;
+function TCGraphDesign.AddNewBlock(BlockType: TCGraphBlockClass; DeviceName: string):TCGraphBlock;
 var
   BlockQuantity: integer = 0;
   R: TRect;
   w, h: Integer;
 begin
   Result := BlockType.Create(Self);
-  R := Result.OriginalBounds;
-  with R do begin
-    w := Right - Left;
-    h := Bottom - Top;
-    Left := Random(Width - w);
-    Top := Random(Height - h);
-    Right := Left + w;
-    Bottom := Top + h;
+  if DeviceName <> '' then begin
+    with Result do begin
+      Name := DeviceName;
+    end;
+  end else begin
+    R := Result.OriginalBounds;
+    with R do begin
+      w := Right - Left;
+      h := Bottom - Top;
+      Left := Random(Width - w);
+      Top := Random(Height - h);
+      Right := Left + w;
+      Bottom := Top + h;
+    end;
+    with Result do begin
+      OriginalBounds := R;
+      Parent := Self;
+      BlockQuantity += 1;
+      repeat
+        try
+          Name := 'Block' + IntToStr(BlockQuantity);
+          break;
+        except
+          BlockQuantity += 1;
+        end;
+      until false;
+      Caption := 'Block ' + IntToStr(BlockQuantity);
+    end;
   end;
   with Result do begin
-    OriginalBounds := R;
-    Parent := Self;
-    BlockQuantity += 1;
-    repeat
-      try
-        Name := 'Block' + IntToStr(BlockQuantity);
-        break;
-      except
-        BlockQuantity += 1;
-      end;
-    until false;
-    Caption := 'Block ' + IntToStr(BlockQuantity);
-    OnClick := @SelectBlock;
-    OnDblClick := Self.OnDblClick;
-    PopupMenu := Self.PopupMenu;
     Selected := True;
+    OnClick := @SelectBlock;
+  end;
+  if Assigned(FOnChildrenCreate) then begin
+    FOnChildrenCreate(Result);
   end;
 end;
 
@@ -200,27 +214,23 @@ begin
 end;
 
 function TCGraphDesign.Load: Boolean;
-  function CreateDevice(DeviceName, DeviceType: string; out Device): Boolean;
+  function GetDeviceClass(DeviceName, DeviceType: string): TCGraphBlockClass;
   var
     CodeFile: string;
     ACodeBuffer: TCodeBuffer;
     AncestorClassName: string;
   begin
-    Result := True;
     CodeFile := DesignDir + DeviceName + '.pas';
     //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
     ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
     CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, AncestorClassName, True);
     WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', AncestorClassName = ', AncestorClassName);
     if AncestorClassName = 'TBlock' then begin
-      TCGraphBlock(Device) := TCGraphBlock.Create(Self);
+      Result := TCGraphBlock;
     end else if AncestorClassName = 'TRandomSource' then begin
-      TCGraphSource(Device) := TCGraphSource.Create(Self);
+      Result := TCGraphSource;
     end else if AncestorClassName = 'TFileDumpProbe' then begin
-      TCGraphProbe(Device) := TCGraphProbe.Create(Self);
-    end;
-    with TCGraphBlock(Device) do begin
-      Name := DeviceName;
+      Result := TCGraphProbe;
     end;
   end;
 var
@@ -289,13 +299,8 @@ begin
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
-      CreateDevice(BlockDescription.Name, BlockDescription.TypeName, SelectedBlock);
-      with SelectedBlock do begin
-        OnClick := @SelectBlock;
-        OnDblClick := Self.OnDblClick;
-        PopupMenu := Self.PopupMenu;
-        Load(DesignDescription, BlockDescription);
-      end;
+      SelectedBlock := AddNewBlock(GetDeviceClass(BlockDescription.Name, BlockDescription.TypeName), BlockDescription.Name);
+      SelectedBlock.Load(DesignDescription, BlockDescription);
       //WriteLn('++++++++++++++');
     end;
     BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);

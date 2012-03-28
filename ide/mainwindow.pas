@@ -13,32 +13,39 @@ type
   { TdtslIdeMainWindow }
 
   TdtslIdeMainWindow = class(TForm)
+    AddBlockMenuItem: TMenuItem;
+    AddInputPortMenuItem: TMenuItem;
+    AddOutputPortMenuItem: TMenuItem;
+    AddProbeMenuItem: TMenuItem;
+    AddSourceMenuItem: TMenuItem;
+    DesignColorMenuItem: TMenuItem;
+    BlockColorMenuItem: TMenuItem;
+    DesignNameMenuItem: TMenuItem;
+    BlockNameMenuItem: TMenuItem;
+    DesignPropertiesMenuItem: TMenuItem;
+    BlockPropertiesMenuItem: TMenuItem;
+    BlocksSubMenu: TMenuItem;
     ColorDialog1: TColorDialog;
+    ConnectPortsMenuItem: TMenuItem;
+    DesignPopupMenu: TPopupMenu;
+    BlockPopupMenu: TPopupMenu;
     dtslIdeMainMenu: TMainMenu;
     dtslIdeFileMenuItem: TMenuItem;
     dtslIdeEditMenuItem: TMenuItem;
     dtslIdeFileNewMenuItem: TMenuItem;
     dtslIdeFileOpenMenuItem: TMenuItem;
     dtslIdeFileExitMenuItem: TMenuItem;
-    AddOutputPortMenuItem: TMenuItem;
-    ConnectPortsMenuItem: TMenuItem;
-    BlockColorMenuItem: TMenuItem;
-    BlocksSubMenu: TMenuItem;
-    AddBlockMenuItem: TMenuItem;
     CompileMenuItem: TMenuItem;
     CompileProjectMenuItem: TMenuItem;
-    AddSourceMenuItem: TMenuItem;
-    AddProbeMenuItem: TMenuItem;
-    PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
+    DeleteConnectorMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
     MenuItem12: TMenuItem;
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
-    BlockPropertiesMenuItem: TMenuItem;
-    BlockNameMenuItem: TMenuItem;
-    AddInputPortMenuItem: TMenuItem;
+    ConnectorPopupMenu: TPopupMenu;
+    PortsSubMenu: TMenuItem;
     ViewMenuItem: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
     dtslEditGraphInsertBlockMenuItem: TMenuItem;
@@ -49,7 +56,6 @@ type
     dtslIdeConfigurationMenuItem: TMenuItem;
     dtslIdeConfigurationPathsMenuItem: TMenuItem;
     OpenDialog1: TOpenDialog;
-    PopupMenu1: TPopupMenu;
     SaveDialog1: TSaveDialog;
     Design: TScrollBox;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
@@ -82,6 +88,7 @@ type
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
     procedure AddNewBlock(BlockType: TCGraphBlockClass);
+    procedure SetupChildrenEvents(Sender: TObject);
   public
     destructor Destroy; override;
   end;
@@ -134,6 +141,7 @@ var
   Path: string;
   p: Integer;
   ProjectSettings: PProjectSettings;
+  Component: TComponent;
 begin
   ProjectSettings := _ProjectSettings;
   with Project, ProjectSettings^ do begin
@@ -239,13 +247,14 @@ begin
     OnSearchUsedUnit := @SearchUsedUnit;
   end;
   with Design do begin
-    OnDblClick := @ViewFile;
+    OnChildrenCreate := @SetupChildrenEvents;
   end;
   NewProject(Sender);
 end;
 
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
+  WriteLn('Sender.ClassName = ', Sender.ClassName);
   Design.SelectedBlock.AddNewPort(TCGraphInputPort);
 end;
 
@@ -314,7 +323,18 @@ procedure TdtslIdeMainWindow.AddNewBlock(BlockType: TCGraphBlockClass);
 begin
   if Assigned(Design.SelectedBlock) then
     Design.SelectedBlock.Selected := False;
-  Design.SelectedBlock := Design.AddNewBlock(BlockType);
+  Design.SelectedBlock := Design.AddNewBlock(BlockType, '');
+end;
+
+procedure TdtslIdeMainWindow.SetupChildrenEvents(Sender: TObject);
+begin
+  if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
+    OnDblClick := @ViewFile;
+    PopupMenu := BlockPopupMenu;
+  end else if Sender is TCGraphConnector then with Sender as TCGraphConnector do begin
+    OnDblClick := @ViewFile;
+    PopupMenu := ConnectorPopupMenu;
+  end;
 end;
 
 destructor TdtslIdeMainWindow.Destroy;
