@@ -182,7 +182,6 @@ end;
 
 function TCGraphDesign.Load(Path: string): Boolean;
 var
-  BlocksCount: integer;
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
   PortName: string;
@@ -247,7 +246,7 @@ begin
       Save;
     end; 
   end;
-  CodeFileName := DesignDir + '/' + Name + '.lfm';
+  CodeFileName := DesignDir + Name + '.lfm';
   GetCodeBuffer(CodeFileName, cttNone,Self, CodeBuffer[ctDescription]);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
   Result := CodeBuffer[ctDescription].Save;

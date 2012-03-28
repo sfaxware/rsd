@@ -82,12 +82,17 @@ begin
       LineEnding +
       'implementation' + LineEnding +
       LineEnding +
+      'uses' + LineEnding +
+      '  Classes;' + LineEnding +
+      LineEnding +
       'procedure T' + Owner.Name + '.Execute;' + LineEnding +
       'begin;' + LineEnding +
       '  {Write here your code}' + LineEnding +
       'end;' + LineEnding +
       LineEnding +
       'initialization' + LineEnding +
+      LineEnding +
+      '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
       'end.');
@@ -114,9 +119,13 @@ begin
       LineEnding +
       'implementation' + LineEnding +
       LineEnding +
+      'uses' + LineEnding +
+      '  Classes;' + LineEnding +
+      LineEnding +
       'initialization' + LineEnding +
       '  {$R *.lfm}' + LineEnding +
-      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(''' + Owner.Name + ''');' + LineEnding +
+      '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
+      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
       '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +

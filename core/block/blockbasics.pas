@@ -13,7 +13,7 @@ type
   TIDevice = interface
     function GetName:string;
     procedure Execute;
-    property Name: string read GetName;
+    property DeviceName: string read GetName;
   end;
 
   TIPort = interface(TIDevice)
@@ -46,11 +46,16 @@ type
   TCPort = class(TComponent, TIPort)
   private
     FConnector: TIConnector;
-    FName: string;
+    FCaption: string;
     function GetConnector: TIConnector;
     function GetName: string;
     procedure SetConnector(Value: TIConnector);
+  protected
+    procedure ValidateContainer(AComponent: TComponent); override;
+  public
     procedure Execute; virtual; abstract;
+  published
+    property Caption: string read FCaption write FCaption;
   end;
 
   TCInputPort = class(TCPort, TIInputPort)
@@ -61,11 +66,15 @@ type
 
   TCBlock = class(TComponent, TIBlock)
   private
-    Blocks: array of TIBlock;
-    InputPorts: array of TIInputPort;
-    OutputPorts: array of TIOutputPort;
-    FName: string;
+    FBlocks: array of TIBlock;
+    FInputPorts: array of TIInputPort;
+    FOutputPorts: array of TIOutputPort;
+    FInputComponentCount: Integer;
+    FOutputComponentCount: Integer;
+    FCaption: string;
     function GetName: string;
+  protected
+    procedure ValidateInsert(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
     function GetInputQty: Integer;
@@ -73,11 +82,13 @@ type
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const OutputName: string): Integer;
     procedure Execute; virtual;
+  published
+    property Caption: string read FCaption write FCaption;
   end;
 
   TCConnector = class(TComponent,TIConnector)
   private
-    FName: string;
+    FCaption: string;
     function GetName: string;
   public
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
@@ -105,12 +116,19 @@ end;
 
 function TCPort.GetName: string;
 begin
-  Result := FName;
+  Result := FCaption;
 end;
 
 procedure TCPort.SetConnector(Value: TIConnector);
 begin
   FConnector := Value;
+end;
+
+procedure TCPort.ValidateContainer(AComponent: TComponent);
+begin
+  if AComponent is TCBlock then with AComponent as TCBlock do begin
+    ValidateInsert(Self);
+  end;
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -120,12 +138,12 @@ end;
 
 function TCBlock.GetInputQty: Integer;
 begin
-  Result := Length(InputPorts);
+  Result := Length(FInputPorts);
 end;
 
 function TCBlock.GetOutputQty: Integer;
 begin
-  Result := Length(OutputPorts);
+  Result := Length(FOutputPorts);
 end;
 
 function TCBlock.GetInputIdx(const InputName: string): Integer;
@@ -133,8 +151,8 @@ var
   i: Integer;
 begin
   Result := -1;
-  for i := Low(InputPorts) to High(InputPorts) do begin
-    if InputPorts[i].Name = InputName then begin
+  for i := Low(FInputPorts) to High(FInputPorts) do begin
+    if FInputPorts[i].DeviceName = InputName then begin
       Exit(i);
     end;
   end;
@@ -145,8 +163,8 @@ var
   i: Integer;
 begin
   Result := -1;
-  for i := Low(OutputPorts) to High(OutputPorts) do begin
-    if OutputPorts[i].Name = OutputName then begin
+  for i := Low(FOutputPorts) to High(FOutputPorts) do begin
+    if FOutputPorts[i].DeviceName = OutputName then begin
       Exit(i);
     end;
   end;
@@ -154,28 +172,39 @@ end;
 
 function TCBlock.GetName: string;
 begin
-  Result := Fname;
+  Result := FCaption;
+end;
+
+procedure TCBlock.ValidateInsert(AComponent: TComponent);
+begin
+  if AComponent is TCInputPort then begin
+    FInputPorts[FInputComponentCount] := AComponent as TCInputPort;
+    FInputComponentCount += 1;
+  end else if AComponent is TCOutputPort then begin
+    FOutputPorts[FOutputComponentCount] := AComponent as TCOutputPort;
+    FOutputComponentCount += 1;
+  end;
 end;
 
 procedure TCBlock.Execute;
 var
   i: Integer;
 begin
-  //WriteLn('TCBlock.Execute : Name = ', FName);
-  for i := Low(InputPorts) to High(InputPorts) do with InputPorts[i] do begin
+  //WriteLn('TCBlock.Execute : Name = ', FCaption);
+  for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i] do begin
     Execute;
   end;
-  for i := Low(Blocks) to High(Blocks) do with Blocks[i] do begin
+  for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     Execute;
   end;
-  for i := Low(OutputPorts) to High(OutputPorts) do with OutputPorts[i] do begin
+  for i := Low(FOutputPorts) to High(FOutputPorts) do with FOutputPorts[i] do begin
     Execute;
   end;
 end;
 
 function TCConnector.GetName:string;
 begin
-  Result := FName;
+  Result := FCaption;
 end;
 
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);

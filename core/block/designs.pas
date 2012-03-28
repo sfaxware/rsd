@@ -14,11 +14,17 @@ type
 
 implementation
 
+uses
+  Classes;
+
 procedure TDesign.Run;
 begin
   repeat
     Execute;
   until False;
 end;
+
+initialization
+  RegisterClass(TDesign);
 
 end.
