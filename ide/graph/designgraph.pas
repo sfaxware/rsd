@@ -15,8 +15,8 @@ type
     FMousePos: TPoint;
     procedure HandleMouseEnter(Sender: TObject);
     procedure HandleMouseLeave(Sender: TObject);
-    procedure MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SimCodeBuffer: TCodeBuffer;
@@ -29,10 +29,12 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
+    function DeviceAncestorUnitName: string;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
+    function DeviceUnitName: string;
     function Load: Boolean;
     function Save: Boolean;
     procedure DeleteConnector(var Connector: TConnector);
@@ -51,8 +53,8 @@ constructor TDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   //WriteLn('Created new TDesign class instance');
-  OnMouseWheel := @MouseWheele;
-  OnMouseMove := @MouseMove;
+  OnMouseWheel := @HandleMouseWheele;
+  OnMouseMove := @HandleMouseMove;
   FMagnification := 1;
 end;
 
@@ -115,6 +117,7 @@ begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
+  WriteLn(' adding ', Result.DeviceIdentifier);
   CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
   CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
@@ -135,6 +138,11 @@ begin
   if not Assigned(CodeBuffer[ctSource]) then begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
   end;
+end;
+
+function TDesign.DeviceAncestorUnitName: string;
+begin
+  Result := 'Designs';
 end;
 
 function TDesign.DeviceIdentifier: string;
@@ -169,6 +177,11 @@ begin
   Result += Indent + 'end' + LineEnding;
 end;
 
+function TDesign.DeviceUnitName: string;
+begin
+  Result := 'Designs';
+end;
+
 procedure TDesign.DeleteConnector(var Connector: TConnector);
 begin
   FreeAndNil(Connector);
@@ -192,7 +205,7 @@ begin
   end;
 end;
 
-procedure TDesign.MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TDesign.HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   if Sender = Self then begin
     FMousePos.x := X;
@@ -200,7 +213,7 @@ begin
   end;
 end;
 
-procedure TDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+procedure TDesign.HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
   i: Integer;
   Control: TControl;

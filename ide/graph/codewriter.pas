@@ -46,7 +46,7 @@ begin
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
-      '  Blocks, Designs;' + LineEnding +
+      '  ' + Owner.DeviceAncestorUnitName + ';' + LineEnding +
       LineEnding +
       'type' + LineEnding +
       '  TCustom' + Owner.DeviceIdentifier + ' = class(TDesign)' + LineEnding +
@@ -77,7 +77,7 @@ begin
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
-      '  Blocks;' + LineEnding +
+      '  ' + Owner.DeviceAncestorUnitName + ';' + LineEnding +
       LineEnding +
       'type' + LineEnding +
       '  ' + Owner.DeviceType + ' = class(' + Owner.DeviceAncestorType + ')' + LineEnding +

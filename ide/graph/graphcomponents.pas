@@ -18,10 +18,12 @@ type
   TCodeType = (ctSource, ctDescription);
   TCodeTemplateType = (cttNone, cttDescription, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
   TIGraphDevice = interface
+    function DeviceAncestorType: string;
+    function DeviceAncestorUnitName: string;
+    function DeviceDescription(Indent: string): string;
     function DeviceIdentifier: string;
     function DeviceType: string;
-    function DeviceAncestorType: string;
-    function DeviceDescription(Indent: string): string;
+    function DeviceUnitName: string;
   end;
   TDevicePropertyType = TLFMValueType;
   TDeviceProperty = string;
@@ -47,10 +49,12 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string; DeviceId: Integer);
+    function DeviceAncestorUnitName: string;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string; virtual;
+    function DeviceUnitName: string;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; virtual; abstract;
     procedure MouseLeaved(Sender: TObject);
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
@@ -180,6 +184,7 @@ type
   TDeviceInfo = record
     TypeName: string;
     TypeClass: TDeviceClass;
+    UnitName: string;
     Properties: array of TDevicePropertyInfo;
   end;
 
@@ -196,7 +201,7 @@ begin
   Result.DefaultValue := DefaultValue;
 end;
 
-procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceProperties: array of TDevicePropertyInfo);
+procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceUnitName: string; DeviceProperties: array of TDevicePropertyInfo);
 var
   l: Integer;
 begin
@@ -205,6 +210,7 @@ begin
   with Devices[l] do begin
     TypeName := DeviceType;
     TypeClass := DeviceClass;
+    UnitName := DeviceUnitName;
     l := Length(DeviceProperties);
     SetLength(Properties, l);
     while l > 0 do begin
@@ -552,6 +558,11 @@ begin
   SetProperty(PropIndex, PropVal);
 end;
 
+function TDevice.DeviceAncestorUnitName: string;
+begin
+  Result := Devices[FDeviceId].UnitName;
+end;
+
 function TDevice.DeviceIdentifier: string;
 begin
   Result := Name;
@@ -594,6 +605,11 @@ begin
               Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
   Result += Indent + 'end' + LineEnding;
+end;
+
+function TDevice.DeviceUnitName: string;
+begin
+  Result := Name;
 end;
 
 procedure TDevice.MouseLeaved(Sender: TObject);
@@ -1335,11 +1351,11 @@ begin
 end;
 
 initialization
-  RegisterDevice('TInputPort', TInputPort, []);
-  RegisterDevice('TOutputPort', TOutputPort, []);
-  RegisterDevice('TConnector', TConnector, [DeviceProperty('OutputPort', lfmvSymbol, ''), DeviceProperty('InputPort', lfmvSymbol, ''), DeviceProperty('Depth', lfmvInteger, '127')]);
-  RegisterDevice('TBlock', TBlock, []);
-  RegisterDevice('TRandomSource', TSource, [DeviceProperty('InitialSeed', lfmvInteger, '1234'), DeviceProperty('Amplitude', lfmvInteger, '255')]);
-  RegisterDevice('TFileReadSource', TSource, [DeviceProperty('FileName', lfmvString, '')]);
-  RegisterDevice('TFileDumpProbe', TProbe, [DeviceProperty('FileName', lfmvString, ''), DeviceProperty('SampleQty', lfmvInteger, IntToStr(MaxInt))]);
+  RegisterDevice('TInputPort', TInputPort, 'Blocks', []);
+  RegisterDevice('TOutputPort', TOutputPort, 'Blocks', []);
+  RegisterDevice('TConnector', TConnector, 'Blocks', [DeviceProperty('OutputPort', lfmvSymbol, ''), DeviceProperty('InputPort', lfmvSymbol, ''), DeviceProperty('Depth', lfmvInteger, '127')]);
+  RegisterDevice('TBlock', TBlock, 'Blocks', []);
+  RegisterDevice('TRandomSource', TSource, 'Sources', [DeviceProperty('InitialSeed', lfmvInteger, '1234'), DeviceProperty('Amplitude', lfmvInteger, '255')]);
+  RegisterDevice('TFileReadSource', TSource, 'Sources', [DeviceProperty('FileName', lfmvString, '')]);
+  RegisterDevice('TFileDumpProbe', TProbe, 'Probes', [DeviceProperty('FileName', lfmvString, ''), DeviceProperty('SampleQty', lfmvInteger, IntToStr(MaxInt))]);
 end.
