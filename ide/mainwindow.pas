@@ -70,9 +70,6 @@ implementation
 uses
   LFMTrees, StdCodeTools, CodeCache, CodeToolManager, LinkScanner;
 
-var
-  CodeTool: TStandardCodeTool;
-  
 { TdtslIdeMainWindow }
 
 procedure TdtslIdeMainWindow.dtslIdeFileExitMenuItemClick(Sender: TObject);
@@ -122,7 +119,6 @@ end;
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
-  CodeTool := TStandardCodeTool.Create;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -144,8 +140,6 @@ end;
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 var
   f: System.Text;
-  LFMCodeCache, PASCodeCache: TCodeCache;
-  LFMBuf, PASBuf: TCodeBuffer;
   LFMTree: TLFMTree;
   SrcFile, DescrFile: string;
 begin
@@ -193,18 +187,16 @@ begin
         WriteLn(f, 'end');
         System.Close(f);
       end;
+      CodeBuffer[ctDescription] := CodeCache[ctDescription].LoadFile(DescrFile);
+      CodeBuffer[ctSource] := CodeCache[ctSource].LoadFile(srcFile);
+      CodeToolBoss.GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+      if CodeToolBoss.CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], LFMTree, False, False) then begin
+        TabControl.TabIndex := 1;
+        SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
+        SynEdit1.EnsureCursorPosVisible;
+      end else
+        ShowMessage('False');
     end;
-  LFMCodeCache := TCodeCache.Create;
-  LFMBuf := LFMCodeCache.LoadFile(DescrFile);
-  PASCodeCache := TCodeCache.Create;
-  PASBuf := PASCodeCache.LoadFile(srcFile);
-  CodeToolBoss.GetCodeToolForSource(PASBuf, true, false);
-  if CodeToolBoss.CheckLFM(PASBuf, LFMBuf, LFMTree, False, False) then begin
-    TabControl.TabIndex := 1;
-    SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
-    SynEdit1.EnsureCursorPosVisible;
-  end else
-    ShowMessage('False');
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
