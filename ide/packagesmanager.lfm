@@ -7,11 +7,11 @@ object PackagesManagerForm: TPackagesManagerForm
   Caption = 'Packages manager'
   ClientHeight = 300
   ClientWidth = 400
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '0.9.28.2'
-  Visible = True
   object PackagesListCheckGroup: TCheckGroup
     Left = 8
     Height = 266
@@ -33,14 +33,16 @@ object PackagesManagerForm: TPackagesManagerForm
     Top = 272
     Width = 77
     Caption = 'Cancel'
+    OnClick = UpdateInstalledPackages
     TabOrder = 1
   end
-  object ApplyButton1: TButton
+  object ApplyButton: TButton
     Left = 312
     Height = 26
     Top = 272
     Width = 77
     Caption = 'Apply'
+    OnClick = UpdateInstalledPackages
     TabOrder = 2
   end
   object PackageFiles: TXMLConfig

@@ -54,7 +54,7 @@ type
     IdeEditCutMenuItem: TMenuItem;
     IdeFileSaveMenuItem: TMenuItem;
     IdeConfigurationMenuItem: TMenuItem;
-    IdeConfigurationPathsMenuItem: TMenuItem;
+    IdeConfigurationInstalledPackagesMenuItem: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
     Design: TScrollBox;
@@ -84,7 +84,7 @@ type
     procedure SelectBlockColor(Sender: TObject);
     procedure SelectBlockName(Sender: TObject);
     procedure SetBlockColor(Sender: TObject);
-    procedure SetCoreBlocksPath(Sender: TObject);
+    procedure UpdateInstalledPackages(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure IdeEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure IdeEditGraphInsertBlockMenuItemClick(Sender: TObject);
@@ -107,7 +107,7 @@ var
 implementation
 
 uses
-  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockProperties;
+  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration, BlockProperties, PackagesManager;
 
 { TIdeMainWindow }
 
@@ -497,13 +497,10 @@ begin
   AddNewBlock('TBlock');
 end;
 
-procedure TIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
+procedure TIdeMainWindow.UpdateInstalledPackages(Sender: TObject);
 begin
-  with ProjectSettings, SelectDirectoryDialog1 do begin
-    if Execute then begin
-      Core.Path := FileName;
-    end;
-    //WriteLn('Core.Blocks.Path = ', Core.Path);
+  with PackagesManagerForm do begin
+    Show
   end;
 end;
 

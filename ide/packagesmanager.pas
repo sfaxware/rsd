@@ -14,17 +14,22 @@ type
 
   TPackagesManagerForm = class(TForm)
     CancelButton: TButton;
-    ApplyButton1: TButton;
+    ApplyButton: TButton;
     PackagesListCheckGroup: TCheckGroup;
     PackageFiles: TXMLConfig;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure UpdateInstalledPackages(Sender: TObject);
   private
     PackagesList: TFPList;
   public
-    function PackageIsInstalled(PkgPath: string): boolean;
-  end; 
+    function IndexOfPackage(PkgName: string): Integer;
+    function PackageIsInstalled(PkgIndex: Integer): boolean;
+    procedure InstallPackage(PkgIndex: Integer);
+    procedure UninstallPackage(PkgIndex: Integer);
+  end;
 
 var
   PackagesManagerForm: TPackagesManagerForm;
@@ -102,6 +107,12 @@ begin
   end;
 end;
 
+procedure TPackagesManagerForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  CanClose := False;
+  UpdateInstalledPackages(Sender);
+end;
+
 procedure TPackagesManagerForm.FormDestroy(Sender: TObject);
 var
   n: Integer;
@@ -119,31 +130,103 @@ end;
 procedure TPackagesManagerForm.FormShow(Sender: TObject);
 var
   n: Integer;
-  PkgPath: PString;
 begin
   with PackagesListCheckGroup, PackagesList do begin
     for n := 0 to Count - 1 do begin
-      PkgPath := Items[n];
-      Checked[n] := PackageIsInstalled(PkgPath^);
+      Checked[n] := PackageIsInstalled(n);
     end;
   end;
 end;
 
-function TPackagesManagerForm.PackageIsInstalled(PkgPath: string): boolean;
+procedure TPackagesManagerForm.UpdateInstalledPackages(Sender: TObject);
 var
   n: Integer;
-  XmlPath: string;
 begin
-  Result := False;
-  //WriteLn('PkgPath = "', PkgPath, '"');
-  with PackageFiles do begin
-    for n := 1 to GetValue('UserPkgLinks/Count', 0) do begin
-      XmlPath := GetValue('UserPkgLinks/Item' + IntToStr(n) + '/Filename/Value', '');
-      //WriteLn('XmlPath = "', XmlPath, '"');
-      if XmlPath = PkgPath then begin
-        Exit(True)
+  if Sender = ApplyButton then with PackagesListCheckGroup do begin
+    for n := 0 to Items.Count do begin
+      if Checked[n] then begin
+        InstallPackage(n);
+      end else begin
+        UninstallPackage(n);
       end;
     end;
+  end else begin
+  end;
+  Visible := False;
+end;
+
+function TPackagesManagerForm.IndexOfPackage(PkgName: string): Integer;
+var
+  n: Integer;
+  PkgXmlName: string;
+begin
+  Result := -1;
+  with PackageFiles do begin
+    for n := 1 to GetValue('UserPkgLinks/Count', 0) do begin
+      PkgXmlName := GetValue('UserPkgLinks/Item' + IntToStr(n) + '/Name/Value', '');
+      //WriteLn('XmlPath = "', XmlPath, '"');
+      if PkgXmlName = PkgName then begin
+        Exit(n)
+      end;
+    end;
+  end;
+end;
+
+function TPackagesManagerForm.PackageIsInstalled(PkgIndex: Integer): boolean;
+var
+  n: Integer;
+  PkgName: string;
+  PkgPath: PString;
+  PkgXmlPath: string;
+begin
+  PkgName := PackagesListCheckGroup.Items[PkgIndex];
+  //WriteLn('PkgPath = "', PkgPath, '"');
+  n := IndexOfPackage(PkgName);
+  if n >= 0 then with PackageFiles do begin
+    PkgPath := PackagesList.Items[PkgIndex];
+    PkgXmlPath := GetValue('UserPkgLinks/Item' + IntToStr(n) + '/Filename/Value', '');
+    Result := PkgXmlPath = PkgPath^;
+  end else begin
+    Result := False;
+  end;
+end;
+
+procedure TPackagesManagerForm.InstallPackage(PkgIndex: Integer);
+var
+  n: Integer;
+  PkgName: string;
+  PkgPath: PString;
+  PkgXmlPath: string;
+begin
+  PkgName := PackagesListCheckGroup.Items[PkgIndex];
+  //WriteLn('PkgPath = "', PkgPath, '"');
+  n := IndexOfPackage(PkgName);
+  PkgPath := PackagesList.Items[PkgIndex];
+  with PackageFiles do begin
+    if n < 0 then begin
+      n := GetValue('UserPkgLinks/Count', 1) + 1;
+      SetValue('UserPkgLinks/Count', n);
+    end;
+    PkgXmlPath := 'UserPkgLinks/Item' + IntToStr(n);
+    SetValue(PkgXmlPath + '/Name/Value', PkgName);
+    SetValue(PkgXmlPath + '/Filename/Value', PkgPath^);
+    Flush;
+  end;
+end;
+
+procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
+var
+  n: Integer;
+  PkgName: string;
+  PkgPath: PString;
+  PkgXmlPath: string;
+begin
+  PkgName := PackagesListCheckGroup.Items[PkgIndex];
+  //WriteLn('PkgPath = "', PkgPath, '"');
+  n := IndexOfPackage(PkgName);
+  if n >= 0 then with PackageFiles do begin
+    DeletePath('UserPkgLinks/Item' + IntToStr(n));
+    Flush;
   end;
 end;
 
