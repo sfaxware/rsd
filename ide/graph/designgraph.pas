@@ -219,8 +219,10 @@ function TCGraphDesign.Load: Boolean;
     end else if AncestorClassName = 'TFileDumpProbe' then begin
       TCGraphProbe(Device) := TCGraphProbe.Create(Self);
     end;
+    with TCGraphBlock(Device) do begin
+      Name := DeviceName;
+    end;
   end;
-
 var
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
@@ -289,8 +291,6 @@ begin
         SelectedBlock.Selected := False;
       CreateDevice(BlockDescription.Name, BlockDescription.TypeName, SelectedBlock);
       with SelectedBlock do begin
-        Parent := Self;
-        Name := BlockDescription.Name;
         OnClick := @SelectBlock;
         OnDblClick := Self.OnDblClick;
         PopupMenu := Self.PopupMenu;

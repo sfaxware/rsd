@@ -108,6 +108,8 @@ type
     property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
   end;
   TCGraphSource = class(TCGraphBlock)
+  protected
+    procedure Paint; override;
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
@@ -449,6 +451,11 @@ begin
   end;
   OriginalBounds := R;
   FSelected := False;
+  if AOwner is TWinControl then begin
+    Parent := TWinControl(AOwner);
+  end else begin
+    Parent := TCGraphDevice(AOwner).Parent
+  end;
   OnMouseDown := @StartMove;
   OnMouseUp := @EndMove;
   OnMouseMove := @Move;
@@ -824,6 +831,40 @@ begin
   AddNewPort(TCGraphInputPort);
 end;
 
+procedure TCGraphSource.Paint;
+var
+  PaintRect: TRect;
+  TXTStyle : TTextStyle;
+begin
+  //WriteLn('TCGraphBlock.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
+  PaintRect:=ClientRect;
+  //with PaintRect do WriteLn('TCGraphBlock.Paint PaintRect=', Left,', ', Top,', ', Right,', ', Bottom);
+  with Canvas do begin
+    if FSelected then begin
+      Pen.Color := clBlack;
+      Rectangle(PaintRect);
+      InflateRect(PaintRect, -2, -2);
+    end;
+    If not Enabled then
+      Brush.Color := clBtnShadow;
+    Ellipse(PaintRect);
+    if Caption <> '' then begin
+      TXTStyle := Canvas.TextStyle;
+      with TXTStyle do begin
+        Opaque := False;
+        Clipping := True;
+        ShowPrefix := False;
+        Alignment := taCenter;
+        Layout := tlCenter;
+      end;
+    // set color here, otherwise SystemFont is wrong if the button was disabled before
+      Font.Color := Self.Font.Color;
+      TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
+    end;
+  end;
+  inherited Paint;
+end;
+
 function TCGraphSource.AddNewPort(PortType: TPortType): TCGraphPort;
 var
   c: TComponent;
@@ -835,6 +876,7 @@ begin
   end;
   if not Assigned(Result) then begin
     Result := TCGraphOutputPort.Create(Self);
+    Result.Name := 'Output';
   end;
 end;
 
@@ -855,6 +897,7 @@ begin
   end;
   if not Assigned(Result) then begin
     Result := TCGraphInputPort.Create(Self);
+    Result.Name := 'Input';
   end;
 end;
 
