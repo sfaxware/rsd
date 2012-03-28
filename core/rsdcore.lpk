@@ -3,7 +3,7 @@
   <Package Version="3">
     <Name Value="rsdcore"/>
     <AddToProjectUsesSection Value="False"/>
-    <AutoUpdate Value="Manually"/>
+    <AutoUpdate Value="AsNeeded"/>
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
@@ -101,7 +101,7 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
