@@ -263,27 +263,18 @@ begin
 end;
 
 procedure TDesign.SetViewed(ShowDesign: Boolean);
-var
-  i: Integer;
-  Component: TComponent;
 begin
-  //WriteLn('TDesign.SetViewed(ShowDesign = ', ShowDesign, ')');
-  if Assigned(SelectedDesign) then begin
-    if ShowDesign then begin
-      SelectedDesign.SetViewed(False);
-    end else if IsSelected then begin
-      SelectedDesign := nil;
-    end;
-  end;
-  for i := 0 to ComponentCount - 1 do begin
-    Component := Components[i];
-    if Component is TControl then with Component as TControl do begin
-      Visible := ShowDesign;
-    end;
-  end;
+  //WriteLn(Name, '.SetViewed(ShowDesign = ', ShowDesign, ')');
   if ShowDesign then begin
+    if Assigned(SelectedDesign) then begin
+      SelectedDesign.SetViewed(False);
+    end;
     SelectedDesign := Self;
+    Visible := False;
+  end else if IsSelected then begin
+    SelectedDesign := nil;
   end;
+  SetControlsVisibility(ShowDesign);
 end;
 
 function TDesign.Save: Boolean;
