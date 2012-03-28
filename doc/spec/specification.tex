@@ -1,7 +1,9 @@
 \documentclass[10pt, A4]{article}
+\input{blocks}
 \usepackage[utf8]{inputenc}
 \usepackage[LAE]{fontenc}
 \usepackage[english, arabic]{babel}
+\usepackage{texdraw}
 \begin{document}
 \selectlanguage{english}
 \title{{\bf D}iscreete {\bf T}ime {\bf S}imulator {\bf L}ibraries\\Specification Document}
@@ -18,8 +20,17 @@
 \section{طرح الإشكالية}
 \begin{otherlanguage}{english}
 \par The main problem duscussed in this document is the creation of a set of tools easing creation of a simulator. Plese note that any system can be modeled as following
-\begin{figure}
-%\begin{}
+\begin{figure}[h]
+\begin{texdraw}
+  \Vecteur{0.5}{0.0}{$\vec X$}
+  \CylindreH{0.2}{0.3}{1.0}{FIFO($\vec X$)}
+  \Vecteur{0.5}{0.0}{$\vec X$}
+  \Rectangle{0.6}{0.8}{$f(\vec X)$}
+  \Vecteur{0.5}{0.0}{$\vec Y$}
+  \CylindreH{0.2}{0.3}{1.0}{FIFO($\vec Y$)}
+  \Vecteur{0.5}{0.0}{$\vec Y$}
+\end{texdraw}
+\caption{example of draw}
 \end{figure}
 \end{otherlanguage}
 \par
