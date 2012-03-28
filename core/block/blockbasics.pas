@@ -230,11 +230,6 @@ begin
   end else begin
     cn := 'nil';
   end;
-  //if AOwner is TCBlock then begin
-//    Create(AOwner as TCBlock);
-  //end else begin
-  //  Fail;
-  //end;
   //WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
   inherited Create(AOwner);
   if not InitComponentFromResource(Self, ClassType) then begin
