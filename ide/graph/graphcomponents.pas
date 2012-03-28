@@ -996,10 +996,11 @@ var
 begin
   P1 := RectCenter(FOutputPort.BoundsRect);
   P2 := RectCenter(FInputPort.BoundsRect);
-  FPoints := Route(P1, P2, nil);
-  //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
-  BoundsRect := Bounds(FPoints);
-  //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
+  if Route(P1, P2, nil, FPoints) then begin
+    //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
+    BoundsRect := Bounds(FPoints);
+    //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
+  end;
 end;
 
 constructor TSource.Create(AOwner:TComponent);

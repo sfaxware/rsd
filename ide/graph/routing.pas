@@ -21,7 +21,7 @@ function Intersect(const S1: TSegment; S: TSegments): Boolean;
 function Intersect(const S1: TSegment; S: TRoute): Boolean;
 function Segment(const P1, P2: TPoint): TSegment;
 function RectCenter(Rect: TRect): TPoint;
-function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
+function Route(const P1, P2: TPoint; const Area: TArea; out ARoute: TRoute): Boolean;
 procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
 procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
 procedure AddRect(const R: TRect; var A: TArea);
@@ -112,13 +112,14 @@ begin
   end;
 end;
 
-function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
+function Route(const P1, P2: TPoint; const Area: TArea; out ARoute: TRoute): Boolean;
 begin
-  SetLength(Result, 4);
-  Result[0] := P1;
-  Result[3] := P2;
-  Result[1] := Point((Result[0].x + Result[3].x) div 2, Result[0].y);
-  Result[2] := Point((Result[0].x + Result[3].x) div 2, Result[3].y);
+  SetLength(ARoute, 4);
+  ARoute[0] := P1;
+  ARoute[3] := P2;
+  ARoute[1] := Point((ARoute[0].x + ARoute[3].x) div 2, ARoute[0].y);
+  ARoute[2] := Point((ARoute[0].x + ARoute[3].x) div 2, ARoute[3].y);
+  Result := True;
 end;
 
 procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
