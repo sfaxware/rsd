@@ -353,9 +353,10 @@ end;
 
 procedure TDesign.SelectBlock(Sender: TObject);
 begin
-  if Sender is TBlock then begin
-     if Assigned(SelectedBlock) then
+  if (Sender <> SelectedBlock) and (Sender is TBlock) then begin
+     if Assigned(SelectedBlock) then begin
        SelectedBlock.Selected := False;
+     end;
     SelectedBlock := Sender as TBlock;
     SelectedBlock.Selected := True;
   end;
