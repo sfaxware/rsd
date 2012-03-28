@@ -42,7 +42,7 @@ clean:fpc_clean clean_packages
 clean_packages:
 	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
 
-ide:build/bin/${TARGET_PROGRAMS}
+ide:$(addprefix build/bin/,${TARGET_PROGRAMS})
 
 build/bin/%:ide/%_ide.lpi
 	lazbuild $<
@@ -159,7 +159,7 @@ else
 endif
 
 debsetup:
-	$(COPYTREE) ${DEBDIR} $(DEBSRCDIR)/debian
+	${COPYTREE} ${DEBDIR} $(DEBSRCDIR)/debian
 ifdef SNAPSHOT
 	sed -e "s/${DEBPACKAGEVERSION}/${DEBPACKAGEVERSION}-${BUILDDATE}/" $(DEBSRCDIR)/debian/changelog > $(DEBSRCDIR)/debian/changelog.tmp
 	${MOVE} $(DEBSRCDIR)/debian/changelog.tmp $(DEBSRCDIR)/debian/changelog
