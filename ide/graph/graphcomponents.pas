@@ -196,7 +196,9 @@ begin
       CodeFile := SourceFileName(DeviceName);
       //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
       ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+      if Assigned(ACodeBuffer) then begin
+        CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+      end;
       WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
     end;
   end;
