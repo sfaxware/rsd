@@ -114,10 +114,7 @@ function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Sel
 
 implementation
 uses
-  math, DesignGraph, CodeToolManager, CodeWriter;
-
-type
-  TConnection = array of TPoint;
+  Math, DesignGraph, CodeToolManager, CodeWriter, Routing;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 var
@@ -177,9 +174,6 @@ end;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 var
   Node: TLFMTreeNode;
-  p: LongInt;
-  FirstPart: String;
-  RestParts: String;
 begin
   if Assigned(ContextNode) then
     Node := ContextNode.NextSibling
@@ -197,27 +191,14 @@ begin
 end;
 
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
-var
-  p: LongInt;
-  FirstPart: String;
-  RestParts: String;
 begin
-  p:=System.Pos('.', PropertyPath);
-  if p > 0 then begin
-    FirstPart:=copy(PropertyPath, 1, p - 1);
-    RestParts:=copy(PropertyPath, p + 1, length(PropertyPath));
-  end else begin
-    FirstPart := PropertyPath;
-    RestParts := '';
-  end;
-  //WriteLn('FindObjectProperty : FirstPart = ', FirstPart, ', RestParts = ', RestParts);
   repeat
     Result := FindObjectProperty(ContextNode, Self);
     ContextNode := Result;
   until (Result = nil) or (SysUtils.CompareText(Result.Name, PropertyPath) = 0);
 end;
 
-function Translate(Points: TConnection; dx, dy: Integer): TConnection;
+function Translate(Points: TRoute; dx, dy: Integer): TRoute;
 var
   l: Integer;
 begin
