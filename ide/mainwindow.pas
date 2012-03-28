@@ -154,7 +154,7 @@ begin
   end;
   with Design do begin
     Cleanup;
-    Load('');
+    Load;
   end;
   ViewFile(Design);
   TabControl.TabIndex := 0;
@@ -289,18 +289,18 @@ var
   DirList: string;
 begin
   ProjectSettings := _ProjectSettings;
-  WriteLn('SrcFilename = ', SrcFilename);
-  WriteLn('TheUnitName = ', TheUnitName);
-  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  //WriteLn('SrcFilename = ', SrcFilename);
+  //WriteLn('TheUnitName = ', TheUnitName);
+  //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   DirList := ProjectSettings^.Core.Blocks.Path;
-  WriteLn('DirList = ', DirList);
+  //WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
     FileName := LowerCase(TheUnitName) + '.pas';
-    WriteLn('TheUnitInFilename := ', FileName);
+    //WriteLn('TheUnitInFilename := ', FileName);
   end;
   FileName := FileSearch(FileName, DirList);
-  WriteLn('FileName = ', FileName);
+  //WriteLn('FileName = ', FileName);
   if FileName = '' then
     Result := nil
   else

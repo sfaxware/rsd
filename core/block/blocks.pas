@@ -14,6 +14,8 @@ type
   TBlock = class(TCBlock)
   private
     FColor: Cardinal;
+    FTop: Cardinal;
+    FLeft: Cardinal;
     FWidth: Cardinal;
     FHeight: Cardinal;
   public
@@ -21,6 +23,8 @@ type
     constructor Create(AOwner: TBlock); virtual;
   published
     property Color: Cardinal read FColor write FColor;
+    property Top: Cardinal read FTop write FTop;
+    property Left: Cardinal read FLeft write FLeft;
     property Width: Cardinal read FWidth write FWidth;
     property Height: Cardinal read FHeight write FHeight;
   end;

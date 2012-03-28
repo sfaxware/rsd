@@ -22,9 +22,8 @@ type
     destructor Destroy; override;
     procedure Cleanup;
     function CreateNewBlock: TCGraphBlock; virtual;
-    function GetUpdatedDescription: string;
+    function GetUpdatedDescription(Indent: string): string;
     function Load: Boolean;
-    function Load(Path: string): Boolean;
     function Save: Boolean;
     procedure ConnectPorts(Sender: TObject);
     procedure DestroyBlock(var Block: TCGraphBlock);
@@ -118,21 +117,21 @@ begin
   end;
 end;
 
-function TCGraphDesign.GetUpdatedDescription: string;
+function TCGraphDesign.GetUpdatedDescription(Indent: string): string;
 var
   Component: TComponent;
   i: Integer;
 begin
-  Result := 'object ' + Name + 'Simulator: TCustomDesign' + LineEnding;
+  Result := Indent + 'object ' + Name + 'Simulator: TCustomDesign' + LineEnding;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
-      Result += GetUpdatedDescription;
+      Result += GetUpdatedDescription('');
     end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      Result += GetUpdatedDescription;
+      Result += GetUpdatedDescription(Indent + '  ');
     end;
   end;
-  Result += 'end' + LineEnding;
+  Result += Indent + 'end' + LineEnding;
 end;
 
 procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
@@ -184,33 +183,31 @@ begin
   end;
 end;
 
-function TCGraphDesign.Load: boolean;
-var
-  CodeFile: array[TCodeType] of string;
-  CodeType: TCodeType;
-begin
-  codeFile[ctSource] := DesignDir + '/' + Name + '.pas';
-  codeFile[ctDescription] := DesignDir + '/' + Name + '.lfm';
-  for CodeType := Low(CodeType) To High(CodeType) do begin
-    //WriteLn(CodeFile[CodeType]);
-    if Assigned(CodeBuffer[CodeType]) then
-      CodeBuffer[CodeType].Reload
-    else begin
-      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone,Self);
-    end;
-  end;
-  Result := true;
-end;
-
-function TCGraphDesign.Load(Path: string): Boolean;
+function TCGraphDesign.Load: Boolean;
 var
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
   PortName: string;
   BlockName: string;
   p: Integer;
+  CodeFile: array[TCodeType] of string;
+  CodeType: TCodeType;
 begin
-  if Load() then with CodeToolBoss do begin
+  Result := true;
+  codeFile[ctSource] := DesignDir + Name + '.pas';
+  codeFile[ctDescription] := DesignDir + Name + '.lfm';
+  for CodeType := Low(CodeType) To High(CodeType) do begin
+    if Assigned(CodeBuffer[CodeType]) then
+      Result := Result and CodeBuffer[CodeType].Reload
+    else begin
+      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone, Self);
+      Result := Result and Assigned(CodeBuffer[CodeType]);
+    end;
+  end;
+  if not Result then begin
+    Exit(False);
+  end;
+  with CodeToolBoss do begin
     //WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
     //WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
@@ -247,16 +244,15 @@ begin
       with SelectedBlock do begin
         Parent := Self;
         Name := BlockDescription.Name;
-        Load(DesignDescription, BlockDescription);
         OnClick := @SelectBlock;
         OnDblClick := Self.OnDblClick;
         PopupMenu := Self.PopupMenu;
+        Load(DesignDescription, BlockDescription);
       end;
       //WriteLn('++++++++++++++');
     end;
     BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);
   end;
-  DesignDescription.Free;
 end;
 
 function TCGraphDesign.Save: Boolean;
@@ -265,24 +261,23 @@ var
   i: Integer;
   CodeFileName: string;
 begin
-  //WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
-  for i := 0 to ComponentCount - 1 do begin
-    Component := Components[i];
-    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      Save;
-    end; 
-  end;
   CodeFileName := DesignDir + Name + '.lfm';
   CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
-  CodeBuffer[ctDescription].Source := GetUpdatedDescription;
+  CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
-  SimCodeBuffer := GetCodeBuffer(CodeFileName, cttSimulator, Self);
-  Result := Result and SimCodeBuffer.Save;
-  CodeFileName := DesignDir + '/' + Name + '.pas';
+  CodeFileName := DesignDir + Name + '.pas';
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+      Result := Result and Save;
+    end; 
+  end;
+  CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
+  SimCodeBuffer := GetCodeBuffer(CodeFileName, cttSimulator, Self);
+  Result := Result and SimCodeBuffer.Save;
 end;
 
 {procedure Register;

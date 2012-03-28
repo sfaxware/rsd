@@ -32,7 +32,7 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
-    function GetUpdatedDescription: string;
+    function GetUpdatedDescription(Indent: string): string;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
   end;
   TCGraphInputPort = class(TCGraphPort)
@@ -60,8 +60,7 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
-    function GetDescription: TLFMTree;
-    function GetUpdatedDescription: string;
+    function GetUpdatedDescription(Indent: string): string;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
@@ -74,20 +73,6 @@ type
     procedure ValidateInsert(AComponent: TComponent); override;
   published
     property Selected: Boolean read FSelected write SetSeleted;
-    property BorderSpacing;
-    property Constraints;
-    property Caption;
-    property Enabled;
-    property Font;
-    property Visible;
-    property OnClick;
-    property OnDblClick;
-    property OnPaint;
-    property OnResize;
-    property ShowHint;
-    property ParentFont;
-    property ParentShowHint;
-    property PopupMenu;
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
@@ -98,7 +83,7 @@ type
     FPoints: TRoute;
   public
     constructor Create(AOwner: TComponent); override;
-    function GetUpdatedDescription: string;
+    function GetUpdatedDescription(Indent: string): string;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   protected
     procedure Paint; override;
@@ -298,7 +283,7 @@ begin
   Result := True;
 end;
 
-function TCGraphPort.GetUpdatedDescription: string;
+function TCGraphPort.GetUpdatedDescription(Indent: string): string;
 var
   PortType: string;
 begin
@@ -308,8 +293,8 @@ begin
     PortType := 'Output'
   else
     PortType := '';
-  Result := '    object ' + Name + ': T' + PortType + 'Port' + LineEnding +
-    '    end' + LineEnding;
+  Result := Indent + 'object ' + Name + ': T' + PortType + 'Port' + LineEnding +
+    Indent + 'end' + LineEnding;
 end;
 
 procedure TCGraphPort.ValidateContainer(AComponent: TComponent);
@@ -436,23 +421,11 @@ begin
   inherited Destroy;
 end;
 
-function TCGraphBlock.GetDescription: TLFMTree;
-begin
-  if Load then with CodeToolBoss do begin
-    GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
-      Result := nil;
-  end;
-end;
-
 function TCGraphBlock.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
-  ChildNode: TLFMTreeNode;
-  PortDescription: TLFMObjectNode;
-  Port: TCGraphPort;
   R: TRect;
 begin
-  ChildNode := ContextNode.FirstChild;
+  Result := Load();
   with R do begin
     Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
     Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
@@ -463,60 +436,115 @@ begin
   OriginalBounds := R;
   Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
   Caption := GetPropertyValue(ContextNode, 'DeviceName', DesignDescription);
-  Selected := True;
-  PortDescription := FindObjectProperty(ChildNode, DesignDescription);
-  while Assigned(PortDescription) do begin
-    //WriteLn('PortDescription.TypeName = ', PortDescription.TypeName);
-    if PortDescription.TypeName = 'TOutputPort' then
-      Port := TCGraphOutputPort.Create(Self)
-    else if PortDescription.TypeName = 'TInputPort' then
-      Port := TCGraphInputPort.Create(Self)
-    else
-      Exit(False);
-    with Port do begin
-      Parent := Self.Parent;
-      Load(DesignDescription, PortDescription);
-      OnDblClick := Self.OnDblClick;
-    end;
-    PortDescription := FindObjectProperty(PortDescription, DesignDescription);
-  end;
-  Result := True;
 end;
 
 function TCGraphBlock.Load: boolean;
 var
+  DesignDescription: TLFMTree;
+  DeviceDescription: TLFMObjectNode;
+  PortName: string;
+  BlockName: string;
+  p: Integer;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
+  ChildNode: TLFMTreeNode;
+  Port: TCGraphPort;
 begin
-  codeFile[ctSource] := DesignDir + PathDelim + Name + '.pas';
-  codeFile[ctDescription] := DesignDir + PathDelim + Name + '.lfm';
+  Result := true;
+  codeFile[ctSource] := DesignDir + Name + '.pas';
+  codeFile[ctDescription] := DesignDir + Name + '.lfm';
   for CodeType := Low(CodeType) To High(CodeType) do begin
     if Assigned(CodeBuffer[CodeType]) then
-      CodeBuffer[CodeType].Reload
+      Result := Result and CodeBuffer[CodeType].Reload
     else begin
-      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttBlock, Self);
+      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone, Self);
+      Result := Result and Assigned(CodeBuffer[CodeType]);
     end;
   end;
-  Result := true;
+  if not Result then begin
+    WriteLn('Exiting');
+    Exit(False);
+  end;
+  with CodeToolBoss do begin
+    WriteLn('TCGraphBlock.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
+    WriteLn('TCGraphBlock.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
+    GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
+      if not Assigned(DesignDescription) then begin
+        Exit(False);
+      end else begin
+        WriteLn('Errors encountered while loading design');
+      end;
+    end;
+  end;
+  WriteLn('TCGraphBlock.Load : LFM created');
+  DeviceDescription := FindObjectProperty(nil, DesignDescription);
+  Port := nil;
+  while Assigned(DeviceDescription) do begin
+    WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
+    if DeviceDescription.TypeName = 'TOutputPort' then
+      Port := TCGraphOutputPort.Create(Self)
+    else if DeviceDescription.TypeName = 'TInputPort' then
+      Port := TCGraphInputPort.Create(Self)
+    else if DeviceDescription.TypeName = 'TConnector' then begin
+      PortName := GetPropertyValue(DeviceDescription, 'OutputPort', DesignDescription);
+      p := Pos('.', PortName);
+      BlockName := Copy(PortName, 1, p - 1);
+      PortName := Copy(PortName, p + 1, length(PortName));
+      WriteLn('OutputPortName = ', PortName);
+      //SelectedOutputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphOutputPort;
+      PortName := GetPropertyValue(DeviceDescription, 'InputPort', DesignDescription);
+      p := Pos('.', PortName);
+      BlockName := Copy(PortName, 1, p - 1);
+      PortName := Copy(PortName, p + 1, length(PortName));
+      WriteLn('InputPortName = ', PortName);
+      //SelectedInputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphInputPort;
+      //ConnectPorts(Self);
+    end else begin
+      {if Assigned(SelectedBlock) then
+        SelectedBlock.Selected := False;
+      SelectedBlock := TCGraphBlock.Create(Self);
+      with SelectedBlock do begin
+        Parent := Self;
+        Name := BlockDescription.Name;
+        Load(DesignDescription, BlockDescription);
+        OnClick := @SelectBlock;
+        OnDblClick := Self.OnDblClick;
+        PopupMenu := Self.PopupMenu;
+      end;}
+      WriteLn('++++++++++++++');
+    end;
+    if Assigned(Port) then with Port do begin
+      Parent := Self.Parent;
+      Load(DesignDescription, DeviceDescription);
+      OnDblClick := Self.OnDblClick;
+      Port := nil;
+    end;
+    DeviceDescription := FindObjectProperty(DeviceDescription, DesignDescription);
+  end;
+  Selected := True;
 end;
 
 function TCGraphBlock.Save: boolean;
 var
-  CodeType: TCodeType;
+  Component: TComponent;
+  i: Integer;
   CodeFileName: string;
 begin
-  Result := true;
-  {CodeFileName := DesignDir + PathDelim + Name + '.lfm';
-  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctDescription]);
-  CodeBuffer[ctDescription].Source := GetUpdatedDescription;
-  Result := CodeBuffer[ctDescription].Save;}
-  CodeFileName := DesignDir + PathDelim + Name + '.pas';
+  CodeFileName := DesignDir + Name + '.lfm';
+  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
+  CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
+  Result := CodeBuffer[ctDescription].Save;
+  CodeFileName := DesignDir + Name + '.pas';
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
-  for CodeType := Low(CodeType) To High(CodeType) do
-    if not Assigned(CodeBuffer[CodeType]) then
-      Result := Load;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+      Result := Result and Save;
+    end;
+  end;
 end;
 
 procedure TCGraphBlock.Magnify(m: Real);
@@ -526,23 +554,24 @@ begin
   UpdatePortsBounds(TCGraphOutputPort);
 end;
 
-function TCGraphBlock.GetUpdatedDescription: string;
+function TCGraphBlock.GetUpdatedDescription(Indent: string): string;
 var
   i: Integer;
 begin
-  with OriginalBounds do begin
-    Result := '  object ' + Name + ': T' + Name + LineEnding +
-      '    DeviceName = ''' + Caption + '''' + LineEnding +
-      '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-      '    Left = ' + IntToStr(Left) + LineEnding +
-      '    Top = ' + IntToStr(Top) + LineEnding +
-      '    Width = ' + IntToStr(Right - Left) + LineEnding +
-      '    Height = ' + IntToStr(Bottom - Top) + LineEnding;
+  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
+  if Indent = '' then begin
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      Result += GetUpdatedDescription(Indent + '  ');
     end;
-  for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-    Result += GetUpdatedDescription;
+  end else with OriginalBounds do begin
+    Result +=  '  DeviceName = ''' + Caption + '''' + LineEnding +
+      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
-  Result += '  end' + LineEnding;
+  Result += Indent + 'end' + LineEnding;
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -682,12 +711,12 @@ begin
   Name := 'Connector' + IntToStr(AOwner.ComponentCount);
 end;
 
-function TCGraphConnector.GetUpdatedDescription: string;
+function TCGraphConnector.GetUpdatedDescription(Indent: string): string;
 begin
-  Result := '  object ' + Name + ': TConnector' + LineEnding +
-    '    OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
-    '    InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
-    '  end' + LineEnding;
+  Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
+    Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
+    Indent + '  InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
+    Indent + 'end' + LineEnding;
 end;
 
 procedure TCGraphConnector.Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
