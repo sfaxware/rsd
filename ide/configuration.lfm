@@ -5,7 +5,7 @@ object SplashWindow: TSplashWindow
   Width = 758
   BorderIcons = []
   BorderStyle = bsNone
-  Caption = 'D.T.S.L. IDE'
+  Caption = 'Rapid Simulators Designer'
   Font.Color = clDefault
   FormStyle = fsSplash
   OnCreate = UpdateConfiguration
