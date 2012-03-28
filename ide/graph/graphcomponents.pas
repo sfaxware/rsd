@@ -70,6 +70,27 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
   TPortType = class of TPort;
+  TConnector = class(TDevice)
+  private
+    FInputPort: TInputPort;
+    FOutputPort: TOutputPort;
+    FPoints: TRoute;
+  protected
+    procedure DoPaint(Sender: TObject); override;
+    procedure SetInputPort(Value: TInputPort);
+    procedure SetOutputPort(Value: TOutputPort);
+    procedure UpdatePoints; virtual;
+  public
+    Depth: Integer;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    function DeviceDescription(Indent: string): string; override;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
+    procedure Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
+  published
+    property InputPort: TInputPort read FInputPort write SetInputPort;
+    property OutputPort: TOutputPort read FoutputPort write SetOutputPort;
+  end;
   TBlock = class(TDevice)
   private
     _MouseDown: Boolean;
@@ -104,27 +125,6 @@ type
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
   TBlockClass = class of TBlock;
-  TConnector = class(TDevice)
-  private
-    FInputPort: TInputPort;
-    FOutputPort: TOutputPort;
-    FPoints: TRoute;
-  protected
-    procedure DoPaint(Sender: TObject); override;
-    procedure SetInputPort(Value: TInputPort);
-    procedure SetOutputPort(Value: TOutputPort);
-    procedure UpdatePoints; virtual;
-  public
-    Depth: Integer;
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    function DeviceDescription(Indent: string): string; override;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
-    procedure Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
-  published
-    property InputPort: TInputPort read FInputPort write SetInputPort;
-    property OutputPort: TOutputPort read FoutputPort write SetOutputPort;
-  end;
   TSource = class(TBlock)
   protected
     procedure DoPaint(Sender: TObject); override;
@@ -597,6 +597,97 @@ begin
   end;
 end;
 
+constructor TConnector.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Name := 'Connector';
+  FDeviceType := 'T' + Name;
+  FDeviceAncestorType := 'TConnector';
+  Depth := 127;
+end;
+
+destructor TConnector.Destroy;
+begin
+  if Assigned(FOutputPort) then begin
+    FOutputPort.FConnector := nil;
+    FOutputPort := nil;
+  end;
+  if Assigned(FInputPort) then begin
+    FInputPort.FConnector := nil;
+    FInputPort := nil;
+  end;
+  inherited Destroy;
+end;
+
+function TConnector.DeviceDescription(Indent: string): string;
+begin
+  Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
+    Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
+    Indent + '  InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
+    Indent + '  Depth = ' + IntToStr(Depth) + LineEnding +
+    Indent + 'end' + LineEnding;
+end;
+
+function TConnector.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+begin
+  Depth := StrToInt(GetPropertyValue(ContextNode, 'Depth', DesignDescription));
+  Result := True;
+end;
+
+procedure TConnector.Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
+begin
+  OutputPort := AOutputPort;
+  InputPort := AInputPort;
+end;
+
+Procedure TConnector.DoPaint(Sender: TObject);
+begin
+  //WriteLn('TConnector.Paint Self=', Left,', ', Top,', ', Width,', ', Height);
+  if Length(FPoints) > 0 then with Canvas do begin
+    {if FSelected then begin
+      Color := clBlack;
+      Brush.Color := clGray;
+      InflateRect(PaintRect, -2, -2);
+    end;}
+    If not Enabled then
+      Color := clBtnShadow
+    else
+      Color:= clGreen;
+    Polyline(Translate(FPoints, -Left, -Top));
+  end;
+end;
+
+procedure TConnector.SetInputPort(Value: TInputPort);
+begin
+  FInputPort := Value;
+  FInputPort.FConnector := Self;
+  if Assigned(FOutputPort) then begin
+    UpdatePoints;
+  end;
+end;
+
+procedure TConnector.SetOutputPort(Value: TOutputPort);
+begin
+  FOutputPort := Value;
+  FOutputPort.FConnector := Self;
+  if Assigned(FInputPort) then begin
+    UpdatePoints;
+  end;
+end;
+
+procedure TConnector.UpdatePoints;
+var
+  P1, P2: TPoint;
+begin
+  P1 := RectCenter(FOutputPort.BoundsRect);
+  P2 := RectCenter(FInputPort.BoundsRect);
+  if Route(P1, P2, nil, FPoints) then begin
+    //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
+    BoundsRect := Bounds(FPoints);
+    //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
+  end;
+end;
+
 constructor TBlock.Create(AOwner:TComponent);
 var
   R: TRect;
@@ -923,97 +1014,6 @@ begin
   end else if AComponent is TOutputPort then begin
     FOutputComponentCount += 1;
     UpdatePortsBounds(TOutputPort);
-  end;
-end;
-
-constructor TConnector.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  Name := 'Connector';
-  FDeviceType := 'T' + Name;
-  FDeviceAncestorType := 'TConnector';
-  Depth := 127;
-end;
-
-destructor TConnector.Destroy;
-begin
-  if Assigned(FOutputPort) then begin
-    FOutputPort.FConnector := nil;
-    FOutputPort := nil;
-  end;
-  if Assigned(FInputPort) then begin
-    FInputPort.FConnector := nil;
-    FInputPort := nil;
-  end;
-  inherited Destroy;
-end;
-
-function TConnector.DeviceDescription(Indent: string): string;
-begin
-  Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
-    Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
-    Indent + '  InputPort = ' + InputPort.Owner.Name + '.' + InputPort.Name + LineEnding +
-    Indent + '  Depth = ' + IntToStr(Depth) + LineEnding +
-    Indent + 'end' + LineEnding;
-end;
-
-function TConnector.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
-begin
-  Depth := StrToInt(GetPropertyValue(ContextNode, 'Depth', DesignDescription));
-  Result := True;
-end;
-
-procedure TConnector.Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
-begin
-  OutputPort := AOutputPort;
-  InputPort := AInputPort;
-end;
-
-Procedure TConnector.DoPaint(Sender: TObject);
-begin
-  //WriteLn('TConnector.Paint Self=', Left,', ', Top,', ', Width,', ', Height);
-  if Length(FPoints) > 0 then with Canvas do begin
-    {if FSelected then begin
-      Color := clBlack;
-      Brush.Color := clGray;
-      InflateRect(PaintRect, -2, -2);
-    end;}
-    If not Enabled then
-      Color := clBtnShadow
-    else
-      Color:= clGreen;
-    Polyline(Translate(FPoints, -Left, -Top));
-  end;
-end;
-
-procedure TConnector.SetInputPort(Value: TInputPort);
-begin
-  FInputPort := Value;
-  FInputPort.FConnector := Self;
-  if Assigned(FOutputPort) then begin
-    UpdatePoints;
-  end;
-end;
-
-procedure TConnector.SetOutputPort(Value: TOutputPort);
-begin
-  FOutputPort := Value;
-  FOutputPort.FConnector := Self;
-  if Assigned(FInputPort) then begin
-    UpdatePoints;
-  end;
-end;
-
-procedure TConnector.UpdatePoints;
-var
-  P1, P2: TPoint;
-begin
-  P1 := RectCenter(FOutputPort.BoundsRect);
-  P2 := RectCenter(FInputPort.BoundsRect);
-  if Route(P1, P2, nil, FPoints) then begin
-    //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
-    BoundsRect := Bounds(FPoints);
-    //WriteLn('Left = ', Left, ', Top = ', Top, ', Width = ', Width, ', Height = ', Height);
   end;
 end;
 
