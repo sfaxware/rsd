@@ -85,7 +85,6 @@ type
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
   private
-    _ProjectSettings: pointer;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
     procedure AddNewBlock(BlockType: string);
@@ -100,19 +99,7 @@ var
 implementation
 
 uses
-  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter;
-
-type
-  PProjectSettings = ^ TProjectSettings;
-  TProjectSettings = record
-    Name: string;
-    Units: record
-      Count: Word;
-    end;
-    Core: record
-      Path: string;
-    end;
-  end;
+  StdCodeTools, CodeToolManager, LinkScanner, CodeWriter, Configuration;
 
 { TdtslIdeMainWindow }
 
@@ -122,46 +109,42 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.NewProject(Sender: TObject);
-var
-  ProjectSettings: PProjectSettings;
 begin
-  ProjectSettings := _ProjectSettings;
-  with Project, ProjectSettings^ do begin
-    DesignDir := GetTempDir;
+  with Project, ProjectSettings do begin
+    Path := GetTempDir;
     Name := 'Design';
     Units.Count := 0;
+    Units.SourceExt := 'pas';
+    Units.ResourceExt := 'lfm';
     Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
-    Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core');
-    //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
+    Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
+    WriteLn('Core.Path = "', Core.Path, '"');
   end;
   Design.Cleanup;
 end;
 
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
 var
-  Path: string;
+  APath: string;
   p: Integer;
-  ProjectSettings: PProjectSettings;
-  Component: TComponent;
 begin
-  ProjectSettings := _ProjectSettings;
-  with Project, ProjectSettings^ do begin
+  with Project, ProjectSettings do begin
     if OpenDialog1.Execute then
       FileName := OpenDialog1.FileName
     else
       Exit;
-    DesignDir := ExtractFilePath(FileName);
+    Path := ExtractFilePath(FileName);
     Units.Count := GetValue('ProjectOptions/Units/Count', 0);
     if Units.Count > 1 then begin
       Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
     end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
-    Path := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
-    p := Pos(';', Path);
+    APath := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
+    p := Pos(';', APath);
     if p > 0 then begin
-      Delete(Path, p, Length(Path));
+      Delete(APath, p, Length(APath));
     end;
-    Core.Path := ExpandFileName(ExtractFilePath(DesignDir + Path));
+    Core.Path := ExpandFileName(ExtractFilePath(Path + APath));
     WriteLn('Core.Path = "', Core.Path, '"');
   end;
   with Design do begin
@@ -174,17 +157,15 @@ end;
 
 procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
 var
-  Path: string;
-  ProjectSettings: PProjectSettings;
+  APath: string;
 begin
-  ProjectSettings := _ProjectSettings;
-  with Project, ProjectSettings^ do begin
+  with Project, ProjectSettings do begin
     if Filename = '' then
       if SaveDialog1.Execute then
         FileName := SaveDialog1.FileName
       else
         Exit;
-    DesignDir := ExtractFilePath(FileName);
+    APath := ExtractFilePath(FileName);
     if Name = '' then
       Name := ChangeFileExt(ExtractFileName(FileName), '');
     SetValue('ProjectOptions/PathDelim/Value', PathDelim);
@@ -204,9 +185,9 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
 //    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
 //    WriteLn('DesignDir = ', DesignDir);
-    path := ExtractRelativepath(DesignDir, Core.Path) + 'block;' + ExtractRelativepath(DesignDir, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
+    Apath := ExtractRelativepath(APath, Core.Path) + 'block;' + ExtractRelativepath(APath, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
 //    WriteLn('realtive path = ', path);
-    SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
+    SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', APath);
     Flush;
   end;
   if Assigned(EditorCodeBuffer) then with SynEdit1 do begin
@@ -239,11 +220,7 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
-var
-  ProjectSettings: PProjectSettings;
 begin
-  New(ProjectSettings);
-  _ProjectSettings := ProjectSettings;
   with CodeToolBoss do begin
     OnSearchUsedUnit := @SearchUsedUnit;
   end;
@@ -311,14 +288,12 @@ end;
 function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
 var
   FileName: string;
-  ProjectSettings: PProjectSettings;
   DirList: string;
 begin
-  ProjectSettings := _ProjectSettings;
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  DirList := ProjectSettings^.Core.Path + 'block' + PathSep + ProjectSettings^.Core.Path + 'fifo';
+  DirList := ProjectSettings.Core.Path + 'block' + PathSep + ProjectSettings.Core.Path + 'fifo';
   WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
@@ -352,12 +327,7 @@ begin
 end;
 
 destructor TdtslIdeMainWindow.Destroy;
-var
-  ProjectSettings: PProjectSettings;
 begin
-  ProjectSettings := _ProjectSettings;
-  Dispose(ProjectSettings);
-  _ProjectSettings := nil;
   inherited Destroy;
 end;
 
@@ -371,7 +341,7 @@ begin
     end;
     if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
       try
-        CodeFileName := DesignDir + PathDelim + Name + '.pas';
+        CodeFileName := ProjectSettings.Path + PathDelim + Name + '.pas';
         CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Sender as TCGraphBlock);
         UpdateUsedBlocks(Sender as TCGraphBlock, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
@@ -380,7 +350,7 @@ begin
       end
     end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
       try
-        CodeFileName := DesignDir + '/' + Name + '.pas';
+        CodeFileName := ProjectSettings.Path + '/' + Name + '.pas';
         CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Sender as TCGraphDesign);
         UpdateUsedBlocks(Sender as TCGraphDesign, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
@@ -412,11 +382,8 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
-var
-  ProjectSettings: PProjectSettings;
 begin
-  ProjectSettings := _ProjectSettings;
-  with ProjectSettings^, SelectDirectoryDialog1 do begin
+  with ProjectSettings, SelectDirectoryDialog1 do begin
     if Execute then begin
       Core.Path := FileName;
     end;
