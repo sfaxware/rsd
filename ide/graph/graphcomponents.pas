@@ -72,7 +72,16 @@ type
   end;
   TDeviceClass = class of TDevice;
   TConnector = class;
-  TPort = class(TDevice)
+  TIPort = interface(TIGraphDevice)
+    function GetConnector: TConnector;
+    procedure SetConnector(AConnector: TConnector);
+    property Connector: TConnector read GetConnector write SetConnector;
+  end;
+  TIInputPort = interface(TIPort)
+  end;
+  TIOutputPort = interface(TIPort)
+  end;
+  TPort = class(TDevice, TIPort)
   private
     FConnector: TConnector;
   protected
@@ -82,15 +91,18 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
+    function GetConnector: TConnector;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
+    procedure SetConnector(AConnector: TConnector);
+    property Connector: TConnector read GetConnector write SetConnector;
   end;
-  TInputPort = class(TPort)
+  TInputPort = class(TPort, TIInputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
   end;
-  TOutputPort = class(TPort)
+  TOutputPort = class(TPort, TIOutputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public
@@ -635,6 +647,11 @@ begin
   end;
 end;
 
+function TPort.GetConnector: TConnector;
+begin
+  Result := FConnector;
+end;
+
 function TPort.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
   Path: string;
@@ -650,6 +667,11 @@ begin
   Color := clBlack;
 //  Caption := GetPropertyValue(DesignDescription, Path + 'Caption');
   Result := True;
+end;
+
+procedure TPort.SetConnector(AConnector: TConnector);
+begin
+  FConnector := AConnector;
 end;
 
 procedure TPort.ValidateContainer(AComponent: TComponent);
@@ -689,7 +711,7 @@ begin
     //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
   end;
   OriginalBounds := R;
-  if Assigned(FConnector) then with FConnector do begin
+  if Assigned(Connector) then with Connector do begin
     UpdatePoints;
   end;
 end;
@@ -724,7 +746,7 @@ begin
     //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
   end;
   OriginalBounds := R;
-  if Assigned(FConnector) then with FConnector do begin
+  if Assigned(Connector) then with Connector do begin
     UpdatePoints;
   end;
 end;
@@ -739,11 +761,11 @@ end;
 destructor TConnector.Destroy;
 begin
   if Assigned(FOutputPort) then begin
-    FOutputPort.FConnector := nil;
+    FOutputPort.Connector := nil;
     FOutputPort := nil;
   end;
   if Assigned(FInputPort) then begin
-    FInputPort.FConnector := nil;
+    FInputPort.Connector := nil;
     FInputPort := nil;
   end;
   inherited Destroy;
@@ -781,7 +803,7 @@ procedure TConnector.SetInputPort(Value: TInputPort);
 begin
   FInputPort := Value;
   SetProperty('InputPort', FInputPort.Owner.Name + '.' + FInputPort.Name);
-  FInputPort.FConnector := Self;
+  FInputPort.Connector := Self;
   if Assigned(FOutputPort) then begin
     UpdatePoints;
   end;
@@ -791,7 +813,7 @@ procedure TConnector.SetOutputPort(Value: TOutputPort);
 begin
   FOutputPort := Value;
   SetProperty('OutputPort', FOutputPort.Owner.Name + '.' + FOutputPort.Name);
-  FOutputPort.FConnector := Self;
+  FOutputPort.Connector := Self;
   if Assigned(FInputPort) then begin
     UpdatePoints;
   end;
