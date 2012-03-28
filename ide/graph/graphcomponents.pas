@@ -75,15 +75,19 @@ type
   end;
   TCGraphConnector = class(TGraphicControl)
   private
-    FInput: TCGraphInputPort;
-    FOutput: TCGraphOutputPort;
+    FInputPort: TCGraphInputPort;
+    FOutputPort: TCGraphOutputPort;
+    FPoints: array of TPoint;
   public
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); override;
   protected
-    procedure paint; override;
+    procedure Paint; override;
+    procedure SetInputPort(Value: TCGraphInputPort);
+    procedure SetOutputPort(Value: TCGraphOutputPort);
+    procedure UpdatePoints; virtual;
   published
-    property Input: TCGraphInputPort read FInput write FInput;
-    property Output: TCGraphOutputPort read Foutput write FOutput;
+    property InputPort: TCGraphInputPort read FInputPort write SetInputPort;
+    property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
   end;
 
 implementation
@@ -387,33 +391,46 @@ end;
 
 Procedure TCGraphConnector.Paint;
 begin
-  {with Canvas do begin
+  if Length(FPoints) > 0 then with Canvas do begin
     //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
-    if FSelected then begin
+    {if FSelected then begin
       Color := clBlack;
       Brush.Color := clGray;
       Rectangle();
       InflateRect(PaintRect, -2, -2);
-    end;
+    end;}
     If not Enabled then
       Brush.Color := clBtnShadow
     else
-      Brush.Color:= clRed;
-    Rectangle(PaintRect);
-    if Caption <> '' then begin
-      TXTStyle := Canvas.TextStyle;
-      with TXTStyle do begin
-        Opaque := False;
-        Clipping := True;
-        ShowPrefix := False;
-        Alignment := taCenter;
-        Layout := tlCenter;
-      end;
-    // set color here, otherwise SystemFont is wrong if the button was disabled before
-      Font.Color := Self.Font.Color;
-    end;
-  end;}
+      Brush.Color:= clGreen;
+    Polyline(FPoints);
+  end;
   inherited Paint;
+end;
+
+procedure TCGraphConnector.SetInputPort(Value: TCGraphInputPort);
+begin
+  FInputPort := Value;
+  if Assigned(FOutputPort) then begin
+    UpdatePoints;
+  end;
+end;
+
+procedure TCGraphConnector.SetOutputPort(Value: TCGraphOutputPort);
+begin
+  FOutputPort := Value;
+  if Assigned(FInputPort) then begin
+    UpdatePoints;
+  end;
+end;
+
+procedure TCGraphConnector.UpdatePoints;
+begin
+  SetLength(FPoints, 4);
+  FPoints[0] := Point(FOutputPort.Top + FOutputPort.Height div 2, FOutputPort.Left - FOutputPort.Width);
+  FPoints[4] := Point(FInputPort.Top + FInputPort.Height div 2, FInputPort.Left + FInputPort.Width);
+  FPoints[2] := Point((FPoints[0].x + FPoints[4].x) div 2, FPoints[0].y);
+  FPoints[3] := Point((FPoints[0].x + FPoints[4].x) div 2, FPoints[4].y);
 end;
 
 end.
