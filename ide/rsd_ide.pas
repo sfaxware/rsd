@@ -11,8 +11,8 @@ uses
 
 begin
   Application.Initialize;
-  Application.CreateForm(TIdeMainWindow, IdeMainWindow);
   Application.CreateForm(TSplashWindow, SplashWindow);
+  Application.CreateForm(TIdeMainWindow, IdeMainWindow);
   Application.CreateForm(TBlockPropertiesDialog, BlockPropertiesDialog);
   Application.CreateForm(TPackagesManagerForm, PackagesManagerForm);
   Application.Run;
