@@ -39,7 +39,7 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     for i := 0 to Block.ComponentCount - 1 do begin
       Component := Block.Components[i];
       if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-        usedBlocks += Name + ', ';
+        usedBlocks += DeviceIdentifier + ', ';
       end;
     end;
     //WriteLn('p = ', p, ', e = ', e);
