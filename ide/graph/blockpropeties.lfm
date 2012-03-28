@@ -21,6 +21,7 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     ScrollBars = ssBoth
     TabOrder = 0
     TitleStyle = tsNative
+    OnEditingDone = ValidateInput
     OnSelectCell = StringGrid1SelectCell
     ColWidths = (
       160

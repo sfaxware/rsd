@@ -211,23 +211,12 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.SetBlockProperties(Sender: TObject);
-var
-  i: Integer;
-  DevicePropQty: Integer;
 begin
   with BlockPropertiesDialog do begin
-    with StringGrid1 do begin
-      if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
-        DevicePropQty := PropQty;
-        RowCount := DevicePropQty + 1;
-        for i := 0 to DevicePropQty - 1 do with Rows[i + 1] do begin
-          Strings[0] := PropName[i];
-          Strings[1] := PropType[i];
-          Strings[2] := PropVal[i];
-        end;
-      end;
+    if Design.PointedDevice is TBlock then begin
+      Device := Design.PointedDevice as TBlock;
+      Visible := True;
     end;
-    Visible := True;
   end;
 end;
 

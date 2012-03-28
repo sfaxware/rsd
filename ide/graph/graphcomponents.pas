@@ -42,6 +42,7 @@ type
     function SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
     procedure SetAncestorType(const AncestorType: string);
     procedure SetName(const Value: TComponentName); override;
+    procedure SetPropVal(PropIndex: Integer; PropVal: TDeviceProperty);
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
@@ -54,7 +55,7 @@ type
     property PropQty: Integer read GetPropQty;
     property PropName[PropIndex: Integer]: string read GetPropName;
     property PropType[PropIndex: Integer]: string read GetPropType;
-    property PropVal[PropIndex: Integer]: TDeviceProperty read GetProperty;
+    property PropVal[PropIndex: Integer]: TDeviceProperty read GetProperty write SetPropVal;
   end;
   TDeviceClass = class of TDevice;
   TConnector = class;
@@ -182,7 +183,7 @@ type
   end;
 
 const
-  DevicePropertyType: array[TDevicePropertyType] of string = ('', 'Integer', 'Float', 'String', 'Symbol', 'Set', 'List', 'Collection', 'Binary');
+  DevicePropertyType: array[TDevicePropertyType] of string = ('', 'Integer', 'Real', 'String', 'Symbol', 'Set', 'List', 'Collection', 'Binary');
 var
   Devices: array of TDeviceInfo;
 
@@ -535,6 +536,11 @@ begin
       i += 1;
     end;
   until i = MaxInt;
+end;
+
+procedure TDevice.SetPropVal(PropIndex: Integer; PropVal: TDeviceProperty);
+begin
+  SetProperty(PropIndex, PropVal);
 end;
 
 function TDevice.DeviceIdentifier: string;
