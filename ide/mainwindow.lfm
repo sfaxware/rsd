@@ -750,9 +750,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     left = 64
     object PortsSubMenu: TMenuItem
       Caption = 'Ports'
-      object AddPortMenuItem: TMenuItem
-        Caption = 'Add Port...'
-        OnClick = AddPortMenuItemClick
+      object AddInputPortMenuItem: TMenuItem
+        Caption = 'Add input port...'
+        OnClick = AddInputPortMenuItemClick
+      end
+      object AddOutputPortMenuItem: TMenuItem
+        Caption = 'Add output port...'
+        OnClick = AddOutputPortMenuItemClick
       end
     end
     object MenuItem2: TMenuItem

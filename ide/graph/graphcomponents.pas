@@ -21,7 +21,16 @@ type
     constructor Create(AOwner: TComponent); override;
   protected
     procedure Paint; override;
+    procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
+  end;
+  TCGraphInputPort = class(TCGraphPort)
+  protected
+    procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
+  end;
+  TCGraphOutputPort = class(TCGraphPort)
+  protected
+    procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TCGraphBlock = class(TGraphicControl)
   private
@@ -65,16 +74,16 @@ implementation
 
 constructor TCGraphPort.Create(AOwner: TComponent);
 var
-  dy, PortTop, PortLeft: Integer;
+  dy: Integer;
+  idx: Integer;
 begin
   Inherited Create(AOwner);
   with AOwner as TCGraphBlock do begin
-    dy := Height div ComponentCount;
-    PortTop := Top + ComponentCount * dy - dy div 2;
-    PortLeft := Left - DefaultPortWidth;
+    Idx := ComponentCount;
+    dy := Height div idx;
   end;
-  //WriteLn('dy = ', dy, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
-  ChangeBounds(PortLeft, PortTop - DefaultPortHeight div 2, DefaultPortWidth, DefaultPortHeight);
+  Idx -= 1;
+  UpdateBounds(idx, dy);
 end;
 
 procedure TCGraphPort.Paint;
@@ -113,6 +122,30 @@ begin
   if AComponent is TCGraphBlock then with AComponent as TCGraphBlock do begin
     ValidateInsert(Self);
   end;
+end;
+
+procedure TCGraphInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
+var
+  PortTop, PortLeft: Integer;
+begin
+  with Owner as TCGraphBlock do begin
+    PortTop := Top + idx * Interval + Interval div 2 - DefaultPortHeight div 2;
+    PortLeft := Left + Width;
+  end;
+  //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
+  ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
+end;
+
+procedure TCGraphOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
+var
+  PortTop, PortLeft: Integer;
+begin
+  with Owner as TCGraphBlock do begin
+    PortTop := Top + idx * Interval + Interval div 2 - DefaultPortHeight div 2;
+    PortLeft := Left - DefaultPortWidth;
+  end;
+  //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
+  ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
 end;
 
 constructor TCGraphBlock.Create(AOwner:TComponent);
@@ -207,7 +240,6 @@ begin
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var MousePos: TPoint;
 begin
   if Sender = Self then case Button of
     mbLeft:begin
@@ -298,14 +330,12 @@ end;
 procedure TCGraphBlock.ValidateInsert(AComponent: TComponent);
 var
   i: Integer;
-  dy, PortTop: Integer;
+  dy: Integer;
 begin
   if AComponent is TCGraphPort then begin
     dy := Height div (ComponentCount + 1);
-    PortTop := Top + dy div 2;
     for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-      ChangeBounds(Left, PortTop - Height div 2, Width, Height);
-      PortTop += dy;
+      UpdateBounds(i, dy);
     end;
   end;
 end;
