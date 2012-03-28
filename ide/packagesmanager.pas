@@ -99,10 +99,10 @@ begin
   PackagesList := BuildPackagesList;
   UpdateForm(PackagesList);
   EnvironmentOptions := TEnvironmentOptions.Create;
-  GlobalBuildProperties := TGlobalBuildProperties.Create;
+  {GlobalBuildProperties := TGlobalBuildProperties.Create;
   with GlobalBuildProperties do begin
     AddStandardModes;
-  end;
+  end;}
   PkgLinks:=TPackageLinks.Create;
   with PkgLinks do begin
     UpdateUserLinks;
@@ -130,7 +130,7 @@ begin
   FreeAndNil(PackagesList);
   FreeAndNil(PkgLinks);
   FreeAndNil(EnvironmentOptions);
-  FreeAndNil(GlobalBuildProperties);
+  //FreeAndNil(GlobalBuildProperties);
 end;
 
 procedure TPackagesManagerForm.FormShow(Sender: TObject);
@@ -245,7 +245,7 @@ begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
-  PkgLinks.RemoveLink(PkgLinks.FindLinkWithPkgName(PkgName), True);
+  PkgLinks.RemoveLink(PkgLinks.FindLinkWithPkgName(PkgName));
 end;
 
 initialization

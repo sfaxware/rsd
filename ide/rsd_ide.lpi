@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="7"/>
+    <Version Value="9"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
@@ -10,12 +10,15 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
+      <ResourceType Value="res"/>
     </General>
     <LazDoc Paths="../doc/devel/ide/;../doc/devel/ide/graph/;../doc/devel/ide/routing/"/>
     <VersionInfo>
-      <ProjectVersion Value=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
+    </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -28,7 +31,7 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="4">
       <Item1>
         <PackageName Value="CodeTools"/>
       </Item1>
@@ -40,13 +43,9 @@
         <PackageName Value="LCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="RunTimeTypeInfoControls"/>
-        <MinVersion Minor="1" Valid="True"/>
-      </Item4>
-      <Item5>
         <PackageName Value="SynEdit"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item5>
+      </Item4>
     </RequiredPackages>
     <Units Count="10">
       <Unit0>
@@ -111,19 +110,20 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="9"/>
     <Target>
       <Filename Value="../build/bin/rsd"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)/;$(LazarusDir)/ide/include/$(TargetOS)/;$(LazarusDir)/ide/include/"/>
-      <OtherUnitFiles Value="graph/;routing/;$(LazarusDir)/packager/;$(LazarusDir)/ide/"/>
+      <IncludeFiles Value="$(ProjOutDir);$(LazarusDir)/ide/include/$(TargetOS);$(LazarusDir)/ide/include"/>
+      <OtherUnitFiles Value="graph;routing;$(LazarusDir)/packager;$(LazarusDir)/ide"/>
       <UnitOutputDirectory Value="../build"/>
-      <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
+      <SrcPath Value="$(LazarusDir)/lcl;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <IncludeAssertionCode Value="True"/>
+        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>
@@ -138,6 +138,9 @@
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
