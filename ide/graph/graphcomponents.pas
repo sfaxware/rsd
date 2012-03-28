@@ -24,6 +24,9 @@ type
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceUnitName: string;
+    function GetOriginalBounds: TRect;
+    procedure SetOriginalBounds(B: TRect);
+    property OriginalBounds: TRect read GetOriginalBounds write SetOriginalBounds;
   end;
   TDevicePropertyType = TLFMValueType;
   TDeviceProperty = string;
@@ -74,6 +77,7 @@ type
   TConnector = class;
   IPort = interface(IDevice)
     function GetConnector: TConnector;
+    function OwnerDevice: TDevice;
     procedure SetConnector(AConnector: TConnector);
     property Connector: TConnector read GetConnector write SetConnector;
   end;
@@ -93,6 +97,7 @@ type
     constructor Create(AOwner: TComponent); override;
     function GetConnector: TConnector;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
+    function OwnerDevice: TDevice;
     procedure SetConnector(AConnector: TConnector);
     property Connector: TConnector read GetConnector write SetConnector;
   end;
@@ -111,22 +116,22 @@ type
   TPortType = class of TPort;
   TConnector = class(TDevice)
   private
-    FInputPort: TInputPort;
-    FOutputPort: TOutputPort;
+    FInputPort: IInputPort;
+    FOutputPort: IOutputPort;
     FPoints: TRoute;
   protected
     procedure DoPaint(Sender: TObject); override;
-    procedure SetInputPort(Value: TInputPort);
-    procedure SetOutputPort(Value: TOutputPort);
+    procedure SetInputPort(Value: IInputPort);
+    procedure SetOutputPort(Value: IOutputPort);
     procedure UpdatePoints; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
-    procedure Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
+    procedure Connect(AOutputPort: IOutputPort; AInputPort: IInputPort);
   published
-    property InputPort: TInputPort read FInputPort write SetInputPort;
-    property OutputPort: TOutputPort read FoutputPort write SetOutputPort;
+    property InputPort: IInputPort read FInputPort write SetInputPort;
+    property OutputPort: IOutputPort read FoutputPort write SetOutputPort;
   end;
   TBlock = class(TDevice)
   private
@@ -669,6 +674,11 @@ begin
   Result := True;
 end;
 
+function TPort.OwnerDevice: TDevice;
+begin
+  Result := Owner as TDevice;
+end;
+
 procedure TPort.SetConnector(AConnector: TConnector);
 begin
   FConnector := AConnector;
@@ -776,7 +786,7 @@ begin
   Result := inherited;
 end;
 
-procedure TConnector.Connect(AOutputPort: TOutputPort; AInputPort: TInputPort);
+procedure TConnector.Connect(AOutputPort: IOutputPort; AInputPort: IInputPort);
 begin
   OutputPort := AOutputPort;
   InputPort := AInputPort;
@@ -799,20 +809,20 @@ begin
   end;
 end;
 
-procedure TConnector.SetInputPort(Value: TInputPort);
+procedure TConnector.SetInputPort(Value: IInputPort);
 begin
   FInputPort := Value;
-  SetProperty('InputPort', FInputPort.Owner.Name + '.' + FInputPort.Name);
+  SetProperty('InputPort', FInputPort.OwnerDevice.DeviceIdentifier + '.' + FInputPort.DeviceIdentifier);
   FInputPort.Connector := Self;
   if Assigned(FOutputPort) then begin
     UpdatePoints;
   end;
 end;
 
-procedure TConnector.SetOutputPort(Value: TOutputPort);
+procedure TConnector.SetOutputPort(Value: IOutputPort);
 begin
   FOutputPort := Value;
-  SetProperty('OutputPort', FOutputPort.Owner.Name + '.' + FOutputPort.Name);
+  SetProperty('OutputPort', FOutputPort.OwnerDevice.DeviceIdentifier + '.' + FOutputPort.DeviceIdentifier);
   FOutputPort.Connector := Self;
   if Assigned(FInputPort) then begin
     UpdatePoints;
@@ -823,8 +833,8 @@ procedure TConnector.UpdatePoints;
 var
   P1, P2: TPoint;
 begin
-  P1 := RectCenter(FOutputPort.BoundsRect);
-  P2 := RectCenter(FInputPort.BoundsRect);
+  P1 := RectCenter(FOutputPort.OriginalBounds);
+  P2 := RectCenter(FInputPort.OriginalBounds);
   if Route(P1, P2, nil, FPoints) then begin
     //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
     BoundsRect := Bounds(FPoints);
