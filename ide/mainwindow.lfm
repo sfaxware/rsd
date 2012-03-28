@@ -1,11 +1,11 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
   Left = 232
-  Height = 852
-  Top = 140
+  Height = 844
+  Top = 27
   Width = 1036
   ActiveControl = TabControl
   Caption = 'D.T.S.L. IDE'
-  ClientHeight = 825
+  ClientHeight = 817
   ClientWidth = 1036
   Font.Color = clDefault
   Menu = dtslIdeMainMenu
@@ -19,7 +19,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 800
+    Height = 792
     Top = 2
     Width = 842
     Align = alCustom
@@ -43,7 +43,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 768
+      Height = 760
       Top = 30
       Width = 838
       Align = alClient
@@ -57,7 +57,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -662,7 +661,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object Design: TScrollBox
       Left = 2
-      Height = 768
+      Height = 760
       Top = 30
       Width = 838
       HorzScrollBar.Page = 833
@@ -682,7 +681,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
-    Top = 804
+    Top = 796
     Width = 1036
     AutoSize = False
     Color = clBlue

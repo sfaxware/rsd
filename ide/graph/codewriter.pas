@@ -9,12 +9,11 @@ uses
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 procedure GetCodeBuffer(FileName: string; Owner: TComponent; var Self: TCodeBuffer);
-procedure WriteSourceTemplate(Owner:TComponent; Self: TCodeBuffer);
 
 implementation
 
 uses
-  GraphComponents;
+  DesignGraph, GraphComponents;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 var
@@ -42,30 +41,18 @@ begin
   Result := True;
 end;
 
-procedure GetCodeBuffer(FileName: string; Owner: TComponent; var Self: TCodeBuffer);
-begin
-  if not Assigned(Self) then begin
-    Self := TCodeCache.Create.LoadFile(FileName);
-  end;
-  if not Assigned(Self) then begin
-    Self := TCodeCache.Create.CreateFile(FileName);
-    with Self do begin
-      WriteSourceTemplate(Owner, Self);
-    end;
-  end;
-end;
-
-procedure WriteSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
+procedure WriteBlockSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
-    Insert(SourceLength, 'unit ' + Owner.Name + ';' + LineEnding + LineEnding);
-    Insert(SourceLength, '{$mode objfpc}{$H+}{$interfaces corba}' +
+    Insert(SourceLength, 'unit ' + Owner.Name + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' +
       LineEnding +
       'interface' + LineEnding +
-      LineEnding);
-    Insert(SourceLength, 'uses' + LineEnding + '  Blocks;' + LineEnding);
-    Insert(SourceLength,   LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  Blocks;' + LineEnding +
+      LineEnding +
       'type' + LineEnding +
       '  T' + Owner.Name + ' = class(TBlock)' + LineEnding +
       '    procedure Execute; override;' + LineEnding +
@@ -81,8 +68,52 @@ begin
       'initialization' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
-      LineEnding +
       'end.');
+  end;
+end;
+
+procedure WriteDesignSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
+begin
+  with Self do begin
+    Clear;
+    Insert(SourceLength, 'program Simulate' + Owner.Name + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' +
+      LineEnding +
+      'interface' + LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  Designs;' + LineEnding +
+      LineEnding +
+      'type' + LineEnding +
+      '  TCustom' + Owner.Name + ' = class(TDesign)' + LineEnding +
+      '  end;' + LineEnding +
+      LineEnding +
+      'var' + LineEnding +
+      '  ' + Owner.Name + ': TCustom' + Owner.Name + LineEnding +
+      LineEnding +
+      'begin' + LineEnding +
+      '  {$R *.lfm}' + LineEnding +
+      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(' + Owner.Name + ');' + LineEnding +
+      '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
+      '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
+      'end.');
+  end;
+end;
+
+procedure GetCodeBuffer(FileName: string; Owner: TComponent; var Self: TCodeBuffer);
+begin
+  if not Assigned(Self) then begin
+    Self := TCodeCache.Create.LoadFile(FileName);
+  end;
+  if not Assigned(Self) then begin
+    Self := TCodeCache.Create.CreateFile(FileName);
+    with Self do begin
+      if Owner is TCGraphDesign then begin
+        WriteDesignSourceTemplate(Owner, Self);
+      end else if Owner is TCGraphBlock then begin
+        WriteBlockSourceTemplate(Owner, Self);
+      end;
+    end;
   end;
 end;
 

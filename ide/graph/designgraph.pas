@@ -5,7 +5,7 @@ unit DesignGraph;
 interface
 
 uses
-  Classes, SysUtils, Forms, XMLCfg, CodeCache, GraphComponents;
+  Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
   TCGraphDesign = class(TScrollBox)
@@ -32,7 +32,7 @@ type
 
 implementation
 uses
-  Controls, Graphics, LFMTrees, CodeToolManager, BasicCodeTools, CodeWriter,
+  Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
   Magnifier;
                         
 constructor TCGraphDesign.Create(AOwner: TComponent);
@@ -111,7 +111,7 @@ var
   Component: TComponent;
   i: Integer;
 begin
-  Result := 'object ' + Name + ': TDesign' + LineEnding;
+  Result := 'object ' + Name + ': TCustomDesign' + LineEnding;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
@@ -148,13 +148,10 @@ begin
   m := FMagnification + 1 / dm;
   with HorzScrollBar do begin
     Range := Round(Width * m);
-    Position := Position + dx;
   end;
   with VertScrollBar do begin
     Range := Round(Height * m);
-    Position := Position + dy;
   end;
-  //ScrollBy(dx, dy);
   for i := 0 to ControlCount - 1 do begin
     Control := Controls[i];
     if Control is TCGraphBlock then with Control as TMagnifier do begin
@@ -162,6 +159,7 @@ begin
     end;
   end;
   FMagnification := m;
+  ScrollBy(dx, dy);
 end;
 
 procedure TCGraphDesign.SelectBlock(Sender: TObject);
@@ -267,23 +265,6 @@ begin
   GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
-  System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
-  ReWrite(f);
-  WriteLn(f, 'program Simulate', Name, ';');
-  WriteLn(f);
-  WriteLn(f, 'uses');
-  Write(f, '  ', Name, ';');
-  WriteLn(f);
-  WriteLn(f, 'var');
-  Write(f, '  ', Name, 'Simulator: TDesign;');
-  WriteLn(f);
-  WriteLn(f, 'begin');
-  WriteLn(f, '  ', Name, 'Simulator := TDesign.Create;');
-  WriteLn(f, '  ', Name, 'Simulator.Run;');
-  WriteLn(f, '  ', Name, 'Simulator.Free;');
-  WriteLn(f, 'end.');
-  Close(f);
-  Result := True;
 end;
 
 {procedure Register;
