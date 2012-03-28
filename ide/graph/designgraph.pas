@@ -16,6 +16,7 @@ type
     SelectedOutputPort: TCGraphOutputPort;
     constructor Create(AOwner: TComponent); override;
     function CreateNewBlock: TCGraphBlock; virtual;
+    function GetUpdatedDescription: string;
     function Load: Boolean;
     function Load(Path: string; const Project: TXMLConfig): Boolean;
     function Save(DesignName: string; var Project: TXMLConfig): Boolean;
@@ -70,6 +71,23 @@ begin
     PopupMenu := Self.PopupMenu;
     Selected := True;
   end;
+end;
+
+function TCGraphDesign.GetUpdatedDescription: string;
+var
+  Component: TComponent;
+  i: Integer;
+begin
+  Result := 'object ' + Name + ': TDesign' + LineEnding;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TCGraphConnector then with Component as TCGraphConnector do begin
+      Result += GetUpdatedDescription;
+    end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+      Result += GetUpdatedDescription;
+    end;
+  end;
+  Result += 'end' + LineEnding;
 end;
 
 procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
@@ -162,31 +180,27 @@ function TCGraphDesign.Save(DesignName: string; var Project: TXMLConfig): Boolea
 var
   Component: TComponent;
   i: Integer;
-  f: System.Text;
   CodeFileName: string;
+  f: System.Text;
 begin
   with Project do begin
     SetValue('design/name', DesignName);
   end;
   //WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
-  System.Assign(f, DesignDir + '/' + Name + '.lfm');
-  ReWrite(f);
-  WriteLn(f, 'object ', Name, ': TDesign');
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
-    if Component is TCGraphConnector then with Component as TCGraphConnector do begin
-      Save(f);
-    end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      Save(f);
+    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
       Save;
     end; 
   end;
-  WriteLn(f, 'end');
-  Close(f);
+  CodeFileName := DesignDir + '/' + Name + '.lfm';
+  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctDescription]);
+  CodeBuffer[ctDescription].Source := GetUpdatedDescription;
+  Result := CodeBuffer[ctDescription].Save;
   CodeFileName := DesignDir + '/' + Name + '.pas';
   GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
-  Result := CodeBuffer[ctSource].Save;
+  Result := Result and CodeBuffer[ctSource].Save;
   System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
   ReWrite(f);
   WriteLn(f, 'program Simulate', Name, ';');

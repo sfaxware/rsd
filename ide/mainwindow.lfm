@@ -1,7 +1,7 @@
 object dtslIdeMainWindow: TdtslIdeMainWindow
-  Left = 232
+  Left = 288
   Height = 852
-  Top = 140
+  Top = 151
   Width = 1036
   Caption = 'D.T.S.L. IDE'
   ClientHeight = 822

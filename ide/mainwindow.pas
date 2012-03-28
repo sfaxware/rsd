@@ -68,6 +68,7 @@ type
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
   private
     _ProjectSettings: pointer;
+    EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
     procedure ViewFile(Sender: TObject);
@@ -222,21 +223,23 @@ end;
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 var
   LFMTree: TLFMTree;
-  SrcFile: string;
 begin
   if Sender is TCGraphBlock then begin
     with Sender as TCGraphBlock do begin
       Save;
-      SrcFile := CodeBuffer[ctSource].FileName;
       LFMTree := GetDescription;
+      if Assigned(LFMTree) then with SynEdit1 do begin
+        if Assigned(EditorCodeBuffer) then begin
+           EditorCodeBuffer.Source := Text;
+        end;
+        EditorCodeBuffer := CodeBuffer[ctSource];
+        Text := EditorCodeBuffer.Source;
+        TabControl.TabIndex := 1;
+        CaretXY := LFMTree.PositionToCaret(25);
+        EnsureCursorPosVisible;
+      end else
+        ShowMessage('False');
     end;
-    if Assigned(LFMTree) then with SynEdit1 do begin
-      Lines.LoadFromFile(srcFile);
-      TabControl.TabIndex := 1;
-      CaretXY := LFMTree.PositionToCaret(25);
-      EnsureCursorPosVisible;
-    end else
-      ShowMessage('False');
   end;
 end;
 
@@ -245,7 +248,7 @@ begin
   if Assigned(Design.SelectedBlock) then begin
     //WriteLn('Removing block');
     Design.DestroyBlock(Design.SelectedBlock);
-  end;
+  end;             
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
