@@ -46,7 +46,9 @@ var
   CodeType: TCodeType;
 begin
   for CodeType := Low(CodeType) to High(CodeType) do begin
-    CodeBuffer[CodeType].Free;
+    if Assigned(CodeBuffer[CodeType]) then
+      FreeAndNil(CodeBuffer[CodeType]);
+    end;
   end;
   inherited Destroy
 end;
