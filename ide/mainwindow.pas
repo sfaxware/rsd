@@ -478,7 +478,7 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  AddNewBlock('TBlock');
+  AddNewBlock('');
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);

@@ -46,6 +46,7 @@ type
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string; DeviceId: Integer);
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
@@ -175,6 +176,7 @@ type
   TDevicePropertyInfo = record
     PropName: string;
     PropType: TDevicePropertyType;
+    DefaultValue: TDeviceProperty;
   end;
   TDeviceInfo = record
     TypeName: string;
@@ -187,10 +189,11 @@ const
 var
   Devices: array of TDeviceInfo;
 
-function DeviceProperty(const PropName: string; PropType: TDevicePropertyType): TDevicePropertyInfo;
+function DeviceProperty(const PropName: string; PropType: TDevicePropertyType; DefaultValue: TDeviceProperty): TDevicePropertyInfo;
 begin
   Result.PropName := PropName;
   Result.PropType := PropType;
+  Result.DefaultValue := DefaultValue;
 end;
 
 procedure RegisterDevice(DeviceType: string; DeviceClass: TDeviceClass; DeviceProperties: array of TDevicePropertyInfo);
@@ -252,19 +255,19 @@ var
 begin
   if DeviceName = '' then begin
     if DeviceType = '' then begin
-      DeviceType := AncestorType.ClassName;
-      if Pos('T', DeviceType) = 1 then begin
-        DeviceType := 'T' + Copy(DeviceType, 8, Length(DeviceType));
-      end
-    end;
-    DeviceAncestorType := DeviceType;
-    if Pos('T', DeviceType) = 1 then begin
-      DeviceName := Copy(DeviceType, 2, Length(DeviceType));
+      DeviceAncestorType := AncestorType.ClassName;
     end else begin
-      DeviceName := 'A' + DeviceType;
+      DeviceAncestorType := DeviceType;
+    end;
+    if Pos('T', DeviceAncestorType) = 1 then begin
+      DeviceName := Copy(DeviceAncestorType, 2, Length(DeviceAncestorType));
+    end else begin
+      DeviceName := 'A' + DeviceAncestorType;
     end;
     DeviceName += IntToStr(AOwner.ComponentCount + 1);
-    DeviceType := 'T' + DeviceName;
+    if DeviceType = '' then begin
+      DeviceType := 'T' + DeviceName;
+    end;
   end else begin
     if DeviceType = '' then begin
       DeviceType := 'T' + DeviceName;
@@ -284,24 +287,14 @@ begin
   end;
   DeviceClass := GetDeviceClass(DeviceId);
   if Assigned(DeviceClass) then begin
-    Result := DeviceClass.Create(AOwner);
+    Result := DeviceClass.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
     if Assigned(Result) then begin
       if not (Result is AncestorType) then begin
         FreeAndNil(Result);
       end;
     end;
     if not Assigned(Result) then begin
-      Result := AncestorType.Create(AOwner);
-    end;
-    if DeviceName <> '' then begin
-      Result.Name := DeviceName;
-    end;
-    if DeviceType <> '' then begin
-      Result.FDeviceType := DeviceType;
-    end;
-    if DeviceAncestorType <> '' then begin
-      Result.SetAncestorType(DeviceAncestorType);
-      SetLength(Result.FProperties, Length(Devices[DeviceId].Properties));
+      Result := AncestorType.Create(AOwner, DeviceName, DeviceType, DeviceAncestorType, DeviceId);
     end;
   end else begin
     Result := nil;
@@ -438,6 +431,20 @@ begin
   OnPaint := @DoPaint;
 end;
 
+constructor TDevice.Create(AOwner: TComponent; DeviceName, DeviceType, DeviceAncestorType: string; DeviceId: Integer);
+begin
+  Create(AOwner);
+  if DeviceName <> '' then begin
+    Name := DeviceName;
+  end;
+  if DeviceType <> '' then begin
+    FDeviceType := DeviceType;
+  end;
+  if DeviceAncestorType <> '' then begin
+    SetAncestorType(DeviceAncestorType);
+  end;
+end;
+
 function TDevice.GetPropertyIndex(const PropName: string): Integer;
 var
   PropIndex: Integer;
@@ -513,10 +520,15 @@ begin
 end;
 
 procedure TDevice.SetAncestorType(const AncestorType: string);
+var
+  PropIndex: Integer;
 begin
   FDeviceId := GetDeviceId(AncestorType);
   with Devices[FDeviceId] do begin
     SetLength(FProperties, Length(Properties));
+    for PropIndex := Low(Properties) to High(Properties) do begin
+      SetProperty(PropIndex, Properties[PropIndex].DefaultValue);
+    end;
   end;
 end;
 
@@ -1323,9 +1335,9 @@ end;
 initialization
   RegisterDevice('TInputPort', TInputPort, []);
   RegisterDevice('TOutputPort', TOutputPort, []);
-  RegisterDevice('TConnector', TConnector, [DeviceProperty('OutputPort', lfmvSymbol), DeviceProperty('InputPort', lfmvSymbol), DeviceProperty('Depth', lfmvInteger)]);
+  RegisterDevice('TConnector', TConnector, [DeviceProperty('OutputPort', lfmvSymbol, ''), DeviceProperty('InputPort', lfmvSymbol, ''), DeviceProperty('Depth', lfmvInteger, '127')]);
   RegisterDevice('TBlock', TBlock, []);
-  RegisterDevice('TRandomSource', TSource, [DeviceProperty('InitialSeed', lfmvInteger), DeviceProperty('Amplitude', lfmvInteger)]);
-  RegisterDevice('TFileReadSource', TSource, [DeviceProperty('FileName', lfmvString)]);
-  RegisterDevice('TFileDumpProbe', TProbe, [DeviceProperty('FileName', lfmvString), DeviceProperty('SampleQty', lfmvInteger)]);
+  RegisterDevice('TRandomSource', TSource, [DeviceProperty('InitialSeed', lfmvInteger, '1234'), DeviceProperty('Amplitude', lfmvInteger, '255')]);
+  RegisterDevice('TFileReadSource', TSource, [DeviceProperty('FileName', lfmvString, '')]);
+  RegisterDevice('TFileDumpProbe', TProbe, [DeviceProperty('FileName', lfmvString, ''), DeviceProperty('SampleQty', lfmvInteger, IntToStr(MaxInt))]);
 end.
