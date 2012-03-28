@@ -7,7 +7,7 @@
 // Bug report             : mazen.neifer@supaero.org
 //*****************************************************************************
 unit RealMatrix;
-{$MODE FPC}
+{$MODE OBJFPC}
 interface
 {$DEFINE INTERFACE}
 
@@ -23,11 +23,11 @@ type
   is written in the file <A HREF="vectors.inc.html">vectors.inc</A> to provide
   an type independant implementation.}
 
-{$I matrix.inc} {See code of <A HREF="vectors.inc.html#interface">vectors.inc</A>.}
+{$INCLUDE matrix.inc} {See code of <A HREF="vectors.inc.html#interface">vectors.inc</A>.}
 
 implementation
 {$UNDEF INTERFACE}
 
-{$I matrix.inc}
+{$INCLUDE matrix.inc}
 
-END.
+end.
