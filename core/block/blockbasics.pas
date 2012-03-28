@@ -4,9 +4,6 @@ unit BlockBasics;
 
 interface
 
-uses
-  Classes, SysUtils; 
-
 type
   TIConnector = interface;
 
