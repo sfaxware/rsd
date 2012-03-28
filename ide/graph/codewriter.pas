@@ -10,11 +10,11 @@ uses
 function GetDeviceRandomCaption(AName: string): string;
 function GetDeviceRandomName(AName: string): string;
 function GetDeviceQty: Cardinal;
-function GetNewDeviceRandomName(Device: TDevice): string;
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
+procedure IncrementDeviceQty;
 procedure GuessNewDeviceNameAndType(var DeviceName, DeviceType, DeviceAncestorType: string);
 procedure ResetDeviceQty;
 
@@ -39,15 +39,6 @@ end;
 function GetDeviceQty: Cardinal;
 begin
   Result := DeviceQty;
-end;
-
-function GetNewDeviceRandomName(Device: TDevice): string;
-var
-  ClassName: string;
-begin
-  DeviceQty +=  1;
-  ClassName := Device.ClassName;
-  Result := GetDeviceRandomName(Copy(ClassName, 2, Length(ClassName)));
 end;
 
 function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
@@ -211,6 +202,11 @@ begin
     end;
   end;
   Result.Y := l;
+end;
+
+procedure IncrementDeviceQty;
+begin
+  DeviceQty +=  1;
 end;
 
 procedure GuessNewDeviceNameAndType(var DeviceName, DeviceType, DeviceAncestorType: string);
