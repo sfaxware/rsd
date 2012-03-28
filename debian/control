@@ -1,23 +1,23 @@
 Source: rsd
 Section: misc
 Priority: optional
-Maintainer: Abou Al Montacir <abou.almontacir@sfr.fr>
+Maintainer: Mazen NEIFER <mazen.neifer@supaero.org>
 Uploaders: 
 DM-Upload-Allowed: yes
 Standards-Version: 3.9.1
-Build-Depends: debhelper (>= 7), quilt, lcl-utils (>= 0.9.28.2-9), fp-compiler (>= 2.4.0-2), lcl
+Build-Depends: debhelper (>= 7), quilt, lcl-utils, fp-compiler, lcl (>= 0.9.28.2-9)
 
 Package: rsd
 Architecture: i386 powerpc sparc amd64 arm
 Depends: ${misc:Depends}, ${shlibs:Depends}, ${fpc-abi:Depends}
-Recommends: lcl-utils, lcl, rsd-doc
-Suggests: rsd-src
-Description: Rapid Simulator Designer
- rsd is a program that computes Muaslim prayer time and notify user for evey
- Salat by playing Athan. It features multiple compuations methods, full
- internationalization support.
+Recommends: lcl-utils, lcl
+Suggests: rsd-doc
+Description: Rapid Simulator Designer - IDE and simulator core package
+ RSD is a development tool that allow system designes to easily create a
+ simulation tool for their design. It has a powerful, block based, view with a
+ source code editor as well as a code generator and a development library.
  .
- This package contains the main binary executable program and data files.
+ This package contains the IDE binary executable program and data files.
 
 Package: rsd-doc
 Section: doc
@@ -25,8 +25,8 @@ Architecture: all
 Depends: ${misc:Depends}
 Suggests: rsd, fptc-src
 Description: Rapid Simulator Designer - Developer's Documentation
- rsd is a program that computes Muaslim prayer time and notify user for evey
- Salat by playing Athan. It features multiple compuations methods, full
- internationalization support.
+ RSD is a development tool that allow system designes to easily create a
+ simulation tool for their design. It has a powerful, block based, view with a
+ source code editor as well as a code generator and a development library.
  .
- This package contains documentation.
+ This package contains the user documentation.
