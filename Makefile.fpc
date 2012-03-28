@@ -36,6 +36,7 @@ all:mo_files
 	lazbuild ide/dtsl_ide.lpi
 	lazbuild core/fifo/fifotest.lpi
 	lazbuild core/block/blocktest.lpi
+	lazbuild core/num/numtest.lpi
 
 mo_files:${MO_FILES}
 
