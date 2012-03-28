@@ -32,8 +32,8 @@ type
     SimCodeBuffer: TCodeBuffer;
     PointedDevice : TDevice;
     SelectedBlock:TBlock;
-    SelectedInputPort: TInputPort;
-    SelectedOutputPort: TOutputPort;
+    SelectedInputPort: IInputPort;
+    SelectedOutputPort: IOutputPort;
     class function GetViewed: TDesign; inline;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;

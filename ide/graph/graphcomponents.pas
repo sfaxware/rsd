@@ -156,7 +156,7 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
-    function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
+    function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: IOutputPort; AInputPort: IInputPort): TConnector;
     function AddNewPort(ADeviceName, ADeviceType: string): TPort; virtual;
     function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DevicePropertiesDescription(Indent: string): string; override;
@@ -1018,7 +1018,7 @@ begin
   UpdatePortsBounds(TOutputPort);
 end;
 
-function TBlock.AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: TOutputPort; AInputPort: TInputPort): TConnector;
+function TBlock.AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: IOutputPort; AInputPort: IInputPort): TConnector;
 begin
   Result := CreateConnector(ADeviceName, ADeviceType, Self);
   with Result do begin
