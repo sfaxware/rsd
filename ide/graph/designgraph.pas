@@ -35,16 +35,21 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
+    function IsSelected: Boolean; inline;
     function Save: Boolean;
     procedure DeleteConnector(var Connector: TConnector);
     procedure DestroyBlock(var Block: TBlock);
     procedure SelectBlock(Sender: TObject);
+    procedure SetSelected(ShowDesign: Boolean);
   end;
 
 implementation
 uses
   Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
   Magnifier, Configuration;
+
+var
+  SelectedDesign: TDesign = nil;
                         
 constructor TDesign.Create(AOwner: TComponent);
 begin
@@ -58,10 +63,12 @@ begin
     OnMouseMove := @HandleMouseMove;
   end;
   FMagnification := 1;
+  SetSelected(not Assigned(SelectedDesign));
 end;
 
 destructor TDesign.Destroy;
 begin
+  SetSelected(False);
   inherited Destroy;
 end;
 
@@ -180,6 +187,11 @@ begin
   Result := 'Designs';
 end;
 
+function TDesign.IsSelected: Boolean; inline;
+begin
+  Result := SelectedDesign = Self;
+end;
+
 procedure TDesign.DeleteConnector(var Connector: TConnector);
 begin
   FreeAndNil(Connector);
@@ -256,6 +268,23 @@ begin
        SelectedBlock.Selected := False;
     SelectedBlock := Sender as TBlock;
     SelectedBlock.Selected := True;
+  end;
+end;
+
+procedure TDesign.SetSelected(ShowDesign: Boolean);
+var
+  i: Integer;
+begin
+  if Assigned(SelectedDesign) then begin
+    if ShowDesign then begin
+      SelectedDesign.SetSelected(False);
+      SelectedDesign := Self;
+    end else if IsSelected then begin
+      SelectedDesign := nil;
+    end;
+  end;
+  for i := 0 to ComponentCount do with Components[i] do begin
+    Visible := ShowDesign;
   end;
 end;
 
