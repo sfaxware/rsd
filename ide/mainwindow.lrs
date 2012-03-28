@@ -1,0 +1,13 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TdtslIdeMainWindow','FORMDATA',[
+  'TPF0'#18'TdtslIdeMainWindow'#17'dtslIdeMainWindow'#4'Left'#3#196#0#6'Height'
+  +#3#205#3#3'Top'#2#25#5'Width'#3'4'#4#18'HorzScrollBar.Page'#3'3'#4#18'VertSc'
+  +'rollBar.Page'#3#204#3#7'Caption'#6#12'D.T.S.L. IDE'#4'Menu'#7#15'dtslIdeMai'
+  +'nMenu'#0#9'TMainMenu'#15'dtslIdeMainMenu'#0#9'TMenuItem'#19'dtslIdeFileMenu'
+  +'Item'#7'Caption'#6#5'&File'#0#9'TMenuItem'#22'dtslIdeFileNewMenuItem'#7'Cap'
+  +'tion'#6#4'&New'#0#0#9'TMenuItem'#23'dtslIdeFileOpenMenuItem'#7'Caption'#6#5
+  +'&Open'#0#0#9'TMenuItem'#23'dtslIdeFileExitMenuItem'#7'Caption'#6#5'E&xit'#7
+  +'OnClick'#7#28'dtslIdeFileExitMenuItemClick'#0#0#0#9'TMenuItem'#19'dtslIdeEd'
+  +'itMenuItem'#7'Caption'#6#5'&Edit'#0#0#0#0
+]);

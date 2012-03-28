@@ -8,11 +8,11 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms
-  { add your units here }, dtsl_ide;
+  { add your units here }, mainWindow;
 
 begin
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TdtslIdeMainWindow, dtslIdeMainWindow);
   Application.Run;
 end.
 
