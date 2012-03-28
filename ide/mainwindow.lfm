@@ -3,9 +3,11 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   Height = 852
   Top = 140
   Width = 1036
+  ActiveControl = TabControl
   Caption = 'D.T.S.L. IDE'
-  ClientHeight = 822
+  ClientHeight = 823
   ClientWidth = 1036
+  Font.Color = clDefault
   Menu = dtslIdeMainMenu
   OnCreate = FormCreate
   LCLVersion = '0.9.26.2'
@@ -17,7 +19,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 797
+    Height = 798
     Top = 2
     Width = 842
     Align = alCustom
@@ -27,8 +29,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
     DockSite = True
-    Font.CharSet = ANSI_CHARSET
-    Font.Color = clText
+    Font.Color = clDefault
     Font.Height = 12
     Font.Name = 'Arial 12'
     OnChange = TabControlChange
@@ -42,12 +43,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 765
+      Height = 766
       Top = 30
       Width = 838
       Align = alClient
       CFDividerDrawLevel = 0
       Ctl3D = False
+      Font.Color = clDefault
       Font.Height = -15
       Font.Name = 'courier'
       Font.Pitch = fpFixed
@@ -418,17 +420,16 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
     object Design: TScrollBox
       Left = 2
-      Height = 765
+      Height = 766
       Top = 30
       Width = 838
       HorzScrollBar.Page = 833
-      VertScrollBar.Page = 760
+      VertScrollBar.Page = 761
       Align = alClient
       AutoScroll = False
       Color = clCream
       Ctl3D = False
-      Font.CharSet = ANSI_CHARSET
-      Font.Color = clBtnText
+      Font.Color = clDefault
       Font.Height = 12
       Font.Name = 'Arial 12'
       ParentColor = False
@@ -440,7 +441,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
-    Top = 801
+    Top = 802
     Width = 1036
     AutoSize = False
     Color = clBlue
