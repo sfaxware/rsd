@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<fpdoc-descriptions>
+  <package name="dtsl_ide">
+    <module name="Magnifier">
+      <element name="TMagnifier.Magnify">
+        <short>Change size of control</short>
+        <descr>This function will change the size of the control multiplying it by the magnification factor passed as parameter</descr>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
