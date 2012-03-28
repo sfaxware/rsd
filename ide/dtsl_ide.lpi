@@ -47,7 +47,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="dtsl_ide.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -90,6 +90,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Configuration"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="graph/blockpropeties.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="BlockPropertiesDialog"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="BlockPropeties"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
