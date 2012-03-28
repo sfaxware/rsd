@@ -86,14 +86,12 @@ type
   end;
   TInputPort = class(TPort)
   protected
-    procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
   end;
   TOutputPort = class(TPort)
   protected
-    procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -610,6 +608,7 @@ end;
 procedure TPort.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
+  Triangle: array[0..2] of TPoint;
 begin
   PaintRect := ClientRect;
   Color := clBlack;
@@ -625,6 +624,14 @@ begin
       else
         Color:= clBlack;
     end;
+  end;
+  with PaintRect do begin
+    Triangle[0] := Point(Left, Top + Height div 2);
+    Triangle[1] := Point(Left + Width, Top);
+    Triangle[2] := Point(Left + Width, Top + Height - 1);
+  end;
+  with Canvas do begin
+    Polygon(Triangle);
   end;
 end;
 
@@ -660,23 +667,6 @@ begin
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
-procedure TInputPort.DoPaint(Sender: TObject);
-var
-  PaintRect: TRect;
-  Triangle: array[0..2] of TPoint;
-begin
-  inherited DoPaint(Sender);
-  PaintRect := ClientRect;
-  with PaintRect do begin
-    Triangle[0] := Point(Left, Top + Height div 2);
-    Triangle[1] := Point(Left + Width, Top);
-    Triangle[2] := Point(Left + Width, Top + Height - 1);
-  end;
-  with Canvas do begin
-    Polygon(Triangle);
-  end;
-end;
-
 procedure TInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   R: TRect;
@@ -710,23 +700,6 @@ begin
   FDeviceType := 'TOutputPort';
   SetAncestorType('TOutputPort');
   //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
-end;
-
-procedure TOutputPort.DoPaint(Sender: TObject);
-var
-  PaintRect: TRect;
-  Triangle: array[0..2] of TPoint;
-begin
-  inherited DoPaint(Sender);
-  PaintRect := ClientRect;
-  with PaintRect do begin
-    Triangle[0] := Point(Left, Top + Height div 2);
-    Triangle[1] := Point(Left + Width, Top);
-    Triangle[2] := Point(Left + Width, Top + Height - 1);
-  end;
-  with Canvas do begin
-    Polygon(Triangle);
-  end;
 end;
 
 procedure TOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
