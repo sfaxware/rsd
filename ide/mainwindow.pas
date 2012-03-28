@@ -336,35 +336,34 @@ end;
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 var
   CodeFileName: string;
+  GraphDevice: TIGraphDevice;
+  CodeTemplate: TCodeTemplateType;
+  CodeBuffer: TCodeBuffer;
+  DeviceName: string;
 begin
   with SynEdit1 do begin
-    if Assigned(EditorCodeBuffer) then begin
+    if Assigned(EditorCodeBuffer) and Modified then begin
        EditorCodeBuffer.Source := Text;
     end;
-    if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
-      try
-        CodeFileName := ProjectSettings.Path + PathDelim + Name + '.pas';
-        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Sender as TCGraphBlock);
-        UpdateUsedBlocks(Sender as TCGraphBlock, CodeBuffer[ctSource]);
-        EditorCodeBuffer := CodeBuffer[ctSource];
-      except
-        ShowMessage('Unable to save file')
-      end
+    if Sender is TCGraphBlock then begin
+      GraphDevice := Sender as TCGraphBlock;
+      CodeTemplate := cttBlock;
     end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
-      try
-        CodeFileName := ProjectSettings.Path + '/' + Name + '.pas';
-        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Sender as TCGraphDesign);
-        UpdateUsedBlocks(Sender as TCGraphDesign, CodeBuffer[ctSource]);
-        EditorCodeBuffer := CodeBuffer[ctSource];
-      except
-        ShowMessage('Unable to save file')
-      end;
+      GraphDevice := Sender as TCGraphDesign;
+      CodeTemplate := cttDesign;
     end;
-    Text := EditorCodeBuffer.Source;
+    if Assigned(GraphDevice) then with Sender as TComponent do begin
+      DeviceName := Name;
+      CodeFileName := SourceFileName(DeviceName);
+      CodeBuffer := GetCodeBuffer(CodeFileName, CodeTemplate, GraphDevice);
+      UpdateUsedBlocks(Sender as TComponent, CodeBuffer);
+    end;
+    if EditorCodeBuffer <> CodeBuffer then begin
+      EditorCodeBuffer := CodeBuffer;
+      Text := EditorCodeBuffer.Source;
+      CaretXY := GetUserCodePosition(DeviceName, EditorCodeBuffer);
+    end;
     TabControl.TabIndex := 1;
-    with Sender as TComponent do begin
-      CaretXY := GetUserCodePosition(Name, EditorCodeBuffer);
-    end;
     EnsureCursorPosVisible;
     SetFocus;
   end;
