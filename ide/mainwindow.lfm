@@ -59,6 +59,7 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -967,6 +968,17 @@ object IdeMainWindow: TIdeMainWindow
       object IdeConfigurationInstalledPackagesMenuItem: TMenuItem
         Caption = 'Installed &Packagess...'
         OnClick = UpdateInstalledPackages
+      end
+    end
+    object IdeHelpMenuItem: TMenuItem
+      Caption = '&Help'
+      object IdeHelpLocalHelpMenuItem: TMenuItem
+        Caption = '&Local help'
+        OnClick = IdeHelpLocalHelpMenuItemClick
+      end
+      object AboutMenuItem: TMenuItem
+        Caption = '&About...'
+        OnClick = AboutMenuItemClick
       end
     end
   end
