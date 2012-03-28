@@ -86,19 +86,18 @@ type
   IOutputPort = interface(IPort)
   end;
   TPort = class(TDevice, IPort)
-  private
-    FConnector: TConnector;
   protected
+    FConnector: TConnector;
     procedure HandleMouseEnterLeaveEvents(Sender: TObject); virtual;
     procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
-    function GetConnector: TConnector;
+    function GetConnector: TConnector; virtual;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
     function OwnerDevice: TDevice;
-    procedure SetConnector(AConnector: TConnector);
+    procedure SetConnector(AConnector: TConnector); virtual;
     property Connector: TConnector read GetConnector write SetConnector;
   end;
   TInputPort = class(TPort, IInputPort)
