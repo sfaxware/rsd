@@ -111,7 +111,8 @@ function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObje
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 
 implementation
-uses math, DesignGraph, CodeToolManager;
+uses
+  math, DesignGraph, CodeToolManager, CodeWriter;
 
 type
   TConnection = array of TPoint;
@@ -464,50 +465,18 @@ begin
 end;
 
 function TCGraphBlock.Save: boolean;
-  function WriteSourceTemplate: string;
-  var
-    f: System.Text;
-  begin
-    Result := DesignDir + '/' + Name + '.pas';
-    if not FileExists(Result) then begin
-      System.Assign(f, Result);
-      ReWrite(f);
-      WriteLn(f, 'unit ', Name, ';');
-      WriteLn(f);
-      WriteLn(f, '{$mode objfpc}{$H+}{$interfaces corba}');
-      WriteLn(f);
-      WriteLn(f, 'interface');
-      WriteLn(f, 'uses');
-      WriteLn(f, '  Blocks;');
-      WriteLn(f);
-      WriteLn(f, 'type');
-      WriteLn(f, '  T', Name, ' = class(TBlock)');
-      WriteLn(f, '    procedure Execute; override;');
-      WriteLn(f, '  end;');
-      WriteLn(f);
-      WriteLn(f, 'implementation');
-      WriteLn(f, 'procedure T', Name, '.Execute;');
-      WriteLn(f, 'begin;');
-      WriteLn(f, '  {Write here your code}');
-      WriteLn(f, 'end;');
-      WriteLn(f);
-      WriteLn(f, 'initialization');
-      WriteLn(f);
-      WriteLn(f, 'finalization');
-      WriteLn(f);
-      WriteLn(f, 'end.');
-      System.Close(f);
-    end;
-  end;
 var
   CodeType: TCodeType;
   f: System.Text;
+  CodeFileName: string;
 begin
   Result := true;
+  CodeFileName := DesignDir + '/' + Name + '.pas';
+  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
+  UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   for CodeType := Low(CodeType) To High(CodeType) do
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Save;
-  WriteSourceTemplate;
   System.Assign(f, DesignDir + '/' + Name + '.lfm');
   ReWrite(f);
   Save(f);
