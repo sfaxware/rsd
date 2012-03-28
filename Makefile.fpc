@@ -44,7 +44,7 @@ clean_packages:
 
 ide:build/bin/${TARGET_PROGRAMS}
 
-build/bin/%:ide/%.lpi
+build/bin/%:ide/%_ide.lpi
 	lazbuild $<
 
 packages:$(addprefix build/lib/rsd/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
