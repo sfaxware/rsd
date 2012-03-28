@@ -325,6 +325,9 @@ begin
   FSavedWindowState := WindowState;
   WindowState := wsMinimized;
   IdleTimer1.Enabled := True;
+  IdeFileSaveMenuItem.Enabled := False;
+  IdeEditMenuItem.Enabled := False;
+  IdeCompileMenuItem.Enabled := False;
 end;
 
 procedure TIdeMainWindow.BuilderProcessTerminate(Sender: TObject);
@@ -341,6 +344,9 @@ begin
       end;
     end;
   end;
+  IdeCompileMenuItem.Enabled := True;
+  IdeEditMenuItem.Enabled := True;
+  IdeFileSaveMenuItem.Enabled := True;
 end;
 
 procedure TIdeMainWindow.ConnectPorts(Sender: TObject);
