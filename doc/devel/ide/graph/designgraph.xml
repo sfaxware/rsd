@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<fpdoc-descriptions>
+  <package name="dtsl_ide">
+    <module name="DesignGraph">
+      <element name="TDesign">
+        <short>Class modeling a design board where blocks could be drown graphically and routed.</short>
+      </element>
+      <element name="TDesign.Cleanup">
+        <short>Cleans the drawing box removing all blocks and routes and resetting everything as at the program startup.</short>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
