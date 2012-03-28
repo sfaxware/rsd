@@ -192,7 +192,7 @@ begin
     DesignTreeView.Items.Delete(FTopDesign.TreeNode);
     FreeAndNil(FTopDesign);
   end;
-  CreateDevice(FTopDesign , 'Design', 'TTopDesign', 'TDesign', DesignLayout);
+  CreateDevice(TDevice(FTopDesign), 'Design', 'TTopDesign', 'TDesign', DesignLayout);
   with FTopDesign do begin
     TreeNode := DesignTreeView.Items.AddChildObject(nil, Name, FTopDesign);
     OnChildrenCreate := @SetupChildrenEvents;

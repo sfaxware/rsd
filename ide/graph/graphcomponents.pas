@@ -285,12 +285,12 @@ end;
 
 function CreateInputPort(DeviceName, DeviceType: string; AOwner: TComponent): TInputPort;
 begin
-  CreateDevice(Result, DeviceName, DeviceType, 'TInputPort', AOwner);
+  CreateDevice(TDevice(Result), DeviceName, DeviceType, 'TInputPort', AOwner);
 end;
 
 function CreateOutputPort(DeviceName, DeviceType: string; AOwner: TComponent): TOutputPort;
 begin
-  CreateDevice(Result, DeviceName, DeviceType, 'TOutputPort', AOwner);
+  CreateDevice(TDevice(Result), DeviceName, DeviceType, 'TOutputPort', AOwner);
 end;
 
 function CreateConnector(DeviceName, DeviceType: string; AOwner: TComponent): TConnector;
@@ -298,7 +298,7 @@ begin
   if DeviceType = '' then begin
     DeviceType := 'TConnector';
   end;
-  CreateDevice(Result, DeviceName, DeviceType, 'TConnector', AOwner);
+  CreateDevice(TDevice(Result), DeviceName, DeviceType, 'TConnector', AOwner);
 end;
 
 function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): TDeviceProperty;
@@ -1048,7 +1048,7 @@ end;
 
 function TBlock.AddNewPort(ADeviceName, ADeviceType: string): TPort;
 begin
-  if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+  if CreateDevice(TDevice(Result), ADeviceName, ADeviceType, '', Self) then begin
     if Assigned(FOnChildrenCreate) then begin
       FOnChildrenCreate(Result);
     end;
@@ -1296,7 +1296,7 @@ begin
     Result := c as TOutputPort;
   end;
   if not Assigned(Result) then begin
-    if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+    if CreateDevice(TDevice(Result), ADeviceName, ADeviceType, '', Self) then begin
       if Assigned(FOnChildrenCreate) then begin
         FOnChildrenCreate(Result);
       end;
@@ -1369,7 +1369,7 @@ begin
     Result := c as TInputPort;
   end;
   if not Assigned(Result) then begin
-    if CreateDevice(Result, ADeviceName, ADeviceType, '', Self) then begin
+    if CreateDevice(TDevice(Result), ADeviceName, ADeviceType, '', Self) then begin
       if Assigned(FOnChildrenCreate) then begin
         FOnChildrenCreate(Result);
       end;

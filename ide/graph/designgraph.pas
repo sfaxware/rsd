@@ -208,7 +208,7 @@ var
   R: TRect;
   w, h: Integer;
 begin
-  CreateDevice(Result, ADeviceName, ADeviceType, ADeviceAncestorType, Self);
+  CreateDevice(TDevice(Result), ADeviceName, ADeviceType, ADeviceAncestorType, Self);
   if ADeviceName = '' then begin
     with Result do begin
       R := OriginalBounds;
@@ -233,7 +233,7 @@ begin
   if Assigned(OnChildrenCreate) then begin
     OnChildrenCreate(Result);
   end;
-  InsertDevice(Result, Self);
+  InsertDevice(Result, TBlock(Self));
   if Result.Visible then begin
     SelectBlock(Result);
   end;
