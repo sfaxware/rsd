@@ -36,10 +36,13 @@ type
     dtslEditPastMenuItem: TMenuItem;
     dtslEditCutMenuItem: TMenuItem;
     dtslIdeFileSaveMenuItem: TMenuItem;
+    dtslIdeConfigurationMenuItem: TMenuItem;
+    dtslIdeConfigurationPathsMenuItem: TMenuItem;
     OpenDialog1: TOpenDialog;
     PopupMenu1: TPopupMenu;
     SaveDialog1: TSaveDialog;
     ScrollBox1: TScrollBox;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
     SynEdit1: TSynEdit;
@@ -49,6 +52,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
+    procedure SetCoreBlocksPath(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
@@ -147,6 +151,7 @@ begin
     Name := GetValue('name', 'Unnamed design');
     Path := 'settings/core/blocks/';
     Core.Blocks.Path := GetValue(Path + 'path', '');
+    WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
     Path :=  'design/blocks/';
     for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
       BlockPath := 'Block' + IntToStr(BlocksCount);
@@ -210,9 +215,9 @@ begin
       else
         Exit;
     Clear;
-    SetValue('design/name', Name);
-    Path := 'design/sttings/core/blocks/';
+    Path := 'settings/core/blocks/';
     SetValue(Path + 'path', Core.Blocks.Path);
+    SetValue('design/name', Name);
     SetValue('design/blocks/count', _Blocks.Count);
     _Blocks.ForEachCall(@StreamBlock, Project);
     Flush;
@@ -244,11 +249,12 @@ end;
 function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
 var
   FileName: string;
+  ProjectSettings: PProjectSettings absolute _ProjectSettings;
 begin
   WriteLn('SrcFilename = ', SrcFilename);
   WriteLn('TheUnitName = ', TheUnitName);
   WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  FileName := ExtractFileDir(ParamStr(0)) + '/../core/block/' + LowerCase(TheUnitName) + '.pas';
+  FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
   WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;
@@ -323,6 +329,15 @@ begin
     _selectedBlock := TCGraphBlock(Sender);
     _selectedBlock.Selected := True;
   end;
+end;
+
+procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
+var
+  ProjectSettings: PProjectSettings absolute _ProjectSettings;
+begin
+  with SelectDirectoryDialog1 do
+    if Execute then
+      ProjectSettings^.Core.Blocks.Path := FileName;
 end;
 
 initialization

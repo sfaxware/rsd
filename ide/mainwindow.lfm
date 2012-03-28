@@ -55,7 +55,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.RightOffset = 0
       Gutter.LeftOffset = 0
       Gutter.ShowCodeFolding = True
@@ -407,7 +406,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         '  Simulator.Done;'
         'end.'
       )
-      SelectedColor.OnChange = nil
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
     end
@@ -489,7 +487,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         OnClick = LoadProject
       end
       object dtslIdeFileOpenMenuItem: TMenuItem
-        Caption = '&Open'
+        Caption = '&Open...'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
           1800000000000003000064000000640000000000000000000000426EB12D84D1
@@ -521,7 +519,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         OnClick = LoadProject
       end
       object dtslIdeFileSaveMenuItem: TMenuItem
-        Caption = 'Save'
+        Caption = '&Save...'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000BA6A36FFB969
@@ -718,6 +716,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         Caption = 'New Item16'
       end
     end
+    object dtslIdeConfigurationMenuItem: TMenuItem
+      Caption = '&Configuration'
+      object dtslIdeConfigurationPathsMenuItem: TMenuItem
+        Caption = '&Paths...'
+        OnClick = SetCoreBlocksPath
+      end
+    end
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
@@ -753,9 +758,14 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     left = 96
   end
   object SaveDialog1: TSaveDialog
-    left = 128
+    top = 32
   end
   object OpenDialog1: TOpenDialog
-    left = 160
+    left = 32
+    top = 32
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 64
+    top = 32
   end
 end
