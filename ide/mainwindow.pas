@@ -220,10 +220,10 @@ begin
       if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
         DevicePropQty := PropQty;
         RowCount := DevicePropQty + 1;
-        for i := 1 to DevicePropQty do with Rows[i] do begin
-          Strings[0] := PropName[i - 1];
-          Strings[1] := 'string';
-          Strings[2] := PropVal[i - 1];
+        for i := 0 to DevicePropQty - 1 do with Rows[i + 1] do begin
+          Strings[0] := PropName[i];
+          Strings[1] := PropType[i];
+          Strings[2] := PropVal[i];
         end;
       end;
     end;

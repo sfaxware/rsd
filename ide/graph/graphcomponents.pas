@@ -37,6 +37,7 @@ type
     function GetProperty(const PropName: string): TDeviceProperty;
     function GetPropName(PropIndex: Integer): string;
     function GetPropQty: Integer;
+    function GetPropType(PropIndex: Integer): string;
     function SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean; virtual;
     function SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
     procedure SetAncestorType(const AncestorType: string);
@@ -52,6 +53,7 @@ type
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property PropQty: Integer read GetPropQty;
     property PropName[PropIndex: Integer]: string read GetPropName;
+    property PropType[PropIndex: Integer]: string read GetPropType;
     property PropVal[PropIndex: Integer]: TDeviceProperty read GetProperty;
   end;
   TDeviceClass = class of TDevice;
@@ -179,6 +181,8 @@ type
     Properties: array of TDevicePropertyInfo;
   end;
 
+const
+  DevicePropertyType: array[TDevicePropertyType] of string = ('', 'Integer', 'Float', 'String', 'Symbol', 'Set', 'List', 'Collection', 'Binary');
 var
   Devices: array of TDeviceInfo;
 
@@ -478,6 +482,17 @@ end;
 function TDevice.GetPropQty: Integer;
 begin
   Result := Length(FProperties);
+end;
+
+function TDevice.GetPropType(PropIndex: Integer): string;
+begin
+  with Devices[FDeviceId] do begin
+    if(PropIndex >= Low(Properties)) and (PropIndex <= High(Properties)) then begin
+      Result := DevicePropertyType[Properties[PropIndex].PropType];
+    end else begin
+      Result := '';
+    end;
+  end;
 end;
 
 function TDevice.SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean;
