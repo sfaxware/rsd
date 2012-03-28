@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -37,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="33">
+    <Units Count="34">
       <Unit0>
         <Filename Value="dtsl_ide.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -45,7 +45,7 @@
         <CursorPos X="62" Y="10"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="53"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -54,10 +54,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
-        <CursorPos X="38" Y="124"/>
-        <TopLine Value="100"/>
+        <CursorPos X="12" Y="119"/>
+        <TopLine Value="74"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="53"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -116,8 +116,8 @@
       </Unit9>
       <Unit10>
         <Filename Value="../../src/lazarus/lcl/include/winapih.inc"/>
-        <CursorPos X="10" Y="112"/>
-        <TopLine Value="97"/>
+        <CursorPos X="10" Y="280"/>
+        <TopLine Value="265"/>
         <UsageCount Value="10"/>
       </Unit10>
       <Unit11>
@@ -125,18 +125,14 @@
         <UnitName Value="Controls"/>
         <CursorPos X="13" Y="1461"/>
         <TopLine Value="1446"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <CursorPos X="22" Y="83"/>
-        <TopLine Value="67"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="3" Y="82"/>
+        <TopLine Value="87"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit12>
       <Unit13>
         <Filename Value="../../src/lazarus/ideintf/objectinspector.pp"/>
@@ -176,10 +172,10 @@
         <Filename Value="graph/graphcomponents.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="GraphComponents"/>
-        <CursorPos X="15" Y="43"/>
-        <TopLine Value="30"/>
+        <CursorPos X="1" Y="50"/>
+        <TopLine Value="29"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
@@ -242,9 +238,7 @@
         <Filename Value="../../src/fpcbuild-2.1.5/fpcsrc/rtl/objpas/classes/classesh.inc"/>
         <CursorPos X="3" Y="87"/>
         <TopLine Value="72"/>
-        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="../../src/lazarus/ideintf/imagelisteditor.pp"/>
@@ -257,14 +251,14 @@
       </Unit29>
       <Unit30>
         <Filename Value="../../src/lazarus/lcl/include/winapi.inc"/>
-        <CursorPos X="3" Y="311"/>
-        <TopLine Value="298"/>
+        <CursorPos X="21" Y="1217"/>
+        <TopLine Value="1206"/>
         <UsageCount Value="10"/>
       </Unit30>
       <Unit31>
         <Filename Value="../../src/lazarus/lcl/include/canvas.inc"/>
-        <CursorPos X="3" Y="1209"/>
-        <TopLine Value="1201"/>
+        <CursorPos X="3" Y="1111"/>
+        <TopLine Value="1079"/>
         <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
@@ -274,68 +268,35 @@
         <TopLine Value="177"/>
         <UsageCount Value="10"/>
       </Unit32>
+      <Unit33>
+        <Filename Value="../../src/lazarus/lcl/lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <CursorPos X="3" Y="591"/>
+        <TopLine Value="589"/>
+        <UsageCount Value="10"/>
+      </Unit33>
     </Units>
-    <JumpHistory Count="15" HistoryIndex="14">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="105" Column="20" TopLine="85"/>
+        <Caret Line="101" Column="9" TopLine="79"/>
       </Position1>
       <Position2>
         <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="62" Column="3" TopLine="47"/>
+        <Caret Line="75" Column="15" TopLine="69"/>
       </Position2>
       <Position3>
         <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="64" Column="18" TopLine="64"/>
+        <Caret Line="61" Column="19" TopLine="46"/>
       </Position3>
       <Position4>
-        <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
-        <Caret Line="83" Column="22" TopLine="67"/>
+        <Filename Value="graph/graphcomponents.pas"/>
+        <Caret Line="96" Column="15" TopLine="76"/>
       </Position4>
       <Position5>
         <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="103" Column="32" TopLine="86"/>
+        <Caret Line="59" Column="1" TopLine="53"/>
       </Position5>
-      <Position6>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="115" Column="1" TopLine="86"/>
-      </Position6>
-      <Position7>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="102" Column="9" TopLine="76"/>
-      </Position7>
-      <Position8>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="70" Column="73" TopLine="46"/>
-      </Position8>
-      <Position9>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="62" Column="15" TopLine="47"/>
-      </Position9>
-      <Position10>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="64" Column="1" TopLine="47"/>
-      </Position10>
-      <Position11>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="62" Column="15" TopLine="47"/>
-      </Position11>
-      <Position12>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="60" Column="20" TopLine="46"/>
-      </Position12>
-      <Position13>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="62" Column="15" TopLine="55"/>
-      </Position13>
-      <Position14>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="61" Column="3" TopLine="53"/>
-      </Position14>
-      <Position15>
-        <Filename Value="graph/graphcomponents.pas"/>
-        <Caret Line="45" Column="13" TopLine="30"/>
-      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
