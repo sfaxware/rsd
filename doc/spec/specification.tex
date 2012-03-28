@@ -18,10 +18,25 @@
 {\huge بسم الله الرحمان الرحيم}
 \end{center}
 \section{مقدمة}
-بحمد الله نقدم فيما يلي عرضا لإشكالية صنع برامج المحاكاة \textLR{(simultion programs)} و التي تعتمد على مجموعة من الوسائل الجاهزة
+بحمد الله نقدم فيما يلي عرضا لإشكالية صنع برامج المحاكاة \textLR{(simulation programs)} و التي تعتمد على مجموعة من الوسائل الجاهزة
+\subsection{المقصد}
+\begin{otherlanguage}{english}
+The objective of this document is to provide a specification of a design and simulation tool to be used during telecommunication system design.
+\end{otherlanguage}
+\subsection{القيود}
+\begin{otherlanguage}{english}
+The discussed tool should satisfy several constraints including :
+\begin{itemize}
+\item simplicity,
+\item natural block description method,
+\item a complete component library,
+\item data, spectrum, visualisation tools,
+\item block scheduler
+\end{itemize}
+\end{otherlanguage}
 \section{طرح الإشكالية}
 \begin{otherlanguage}{english}
-\par The main problem duscussed in this document is the creation of a set of tools easing creation of a simulator. Plese note that any system can be modeled as following
+The main problem discussed in this document is the creation of a set of tools easing creation of a simulator. Please note that any system can be modeled as following
 \begin{figure}[h]
 \begin{texdraw}
   \Vecteur{0.5}{0.0}{$\vec X$}
@@ -34,6 +49,12 @@
 \end{texdraw}
 \caption{example of draw}
 \end{figure}
+\end{otherlanguage}
+\subsection{\textLR{Scheduling}}
+\begin{otherlanguage}{english}
+The block scheduler should ensure efficient scheduling which means that only non blocked blocks should be scheduled.
+\par A block is blocked if it has no input (input FIFO is empty) or if it has no mean to stop its output (output FIFO is full) which could be caused by the block consuming its output not being scheduled.
+\par \underline{Please note} : a block could need to be scheduled several times to can produce a single output (eg. a packetizer).
 \end{otherlanguage}
 \par
 تم والحمد لله رب العالمين
