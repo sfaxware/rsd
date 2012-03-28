@@ -293,7 +293,7 @@ begin
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
-  CreateDevice(FTopDesign , 'Design', 'TCustomDesign', 'TDesign', DesignLayout);
+  CreateDevice(FTopDesign , 'Design', 'TCustomDesign', 'TTop', DesignLayout);
   with FTopDesign do begin
     OnChildrenCreate := @SetupChildrenEvents;
   end;
@@ -508,7 +508,7 @@ end;
 procedure TIdeMainWindow.SetupChildrenEvents(Sender: TObject);
 begin
   if Sender is TBlock then with Sender as TBlock do begin
-    if Sender is TBlock then with Sender as TBlock do begin
+    if Sender is TDesign then begin
       OnDblClick := @ViewDesign;
     end else begin
       OnDblClick := @ViewFile;
@@ -537,7 +537,7 @@ end;
 
 procedure TIdeMainWindow.ViewDesign(Sender: TObject);
 begin
-  with TDesign.GetViewed do begin
+  with Sender as TDesign do begin
     SetViewed(True);
   end;
 end;
