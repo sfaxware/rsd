@@ -5,12 +5,18 @@ unit Probes;
 interface
 
 uses
-  Classes, Blocks;
+  Classes, Blocks, BlockBasics;
 
 type
   TProbe = class(TBlock)
+  private
+    FSampleQty: Cardinal;
+  public
+    constructor Create(AOwner: TComponent); override;
+    procedure Execute; override;
   published
     Input: TInputPort;
+    property SampleQty: Cardinal write FSampleQty;
   end;
 
   TFileDumpProbe = class(TProbe)
@@ -29,7 +35,18 @@ type
 implementation
 
 uses
-  SysUtils, BlockBasics;
+  SysUtils;
+
+constructor TProbe.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FSampleQty := MaxUIntValue;
+end;
+
+procedure TProbe.Execute;
+begin
+  FSampleQty -= 1;
+end;
 
 procedure TFileDumpProbe.SetFileName(AFileName: string);
 var
@@ -61,13 +78,17 @@ procedure TFileDumpProbe.Execute;
 var
   Sample: Integer;
 begin
-  //WriteLn(FuncB('TFileDumpProbe.Execute'), 'IsEmpty = ', Input.IsEmpty);
-  with Input do while not IsEmpty do begin
+  WriteLn(FuncB('TFileDumpProbe.Execute'), 'IsEmpty = ', Input.IsEmpty, ', SampleQty = ', FSampleQty);
+  with Input do begin
     Pop(Sample);
-    //WriteLn(FuncC('TFileDumpProbe.Execute'), 'IsEmpty = ', IsEmpty, ', Sample = ', Sample);
-    WriteLn(FFile, Sample);
+    WriteLn(FuncC('TFileDumpProbe.Execute'), 'IsEmpty = ', IsEmpty, ', SampleQty = ', FSampleQty, ', Sample = ', Sample);
   end;
-  //WriteLn(FuncE('TFileDumpProbe.Execute'));
+  WriteLn(FFile, Sample);
+  FSampleQty -= 1;
+  if FSampleQty <= 0 then begin
+    Include(FRunStatus, drfTerminated);
+  end;
+  WriteLn(FuncE('TFileDumpProbe.Execute'));
 end;
 
 destructor TFileDumpProbe.Destroy;

@@ -37,7 +37,7 @@ procedure TDesign.Run;
 begin
   repeat
     Execute;
-  until False;
+  until drfTerminated in RunStatus;
 end;
 
 initialization
