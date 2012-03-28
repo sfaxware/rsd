@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Abou Al Montacir <abou.almontacir@sfr.fr>
 Uploaders: 
 DM-Upload-Allowed: yes
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1
 Build-Depends: debhelper (>= 7), quilt, lazarus-ide (>= 0.9.28.2-9), fp-compiler (>= 2.4.0-2), fp-utils, fp-units-multimedia
 
 Package: dtsl
