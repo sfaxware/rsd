@@ -21,7 +21,7 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'program Simulate' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACES CORBA}' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
       '  SysUtils, ' + Owner.DeviceIdentifier + ';' + LineEnding +
@@ -50,7 +50,7 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACES CORBA}' + LineEnding +
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
@@ -80,7 +80,7 @@ begin
   with Self do begin
     Clear;
     Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
-      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACE CORBA}' + LineEnding +
+      '{$MODE OBJFPC}{$LONGSTRINGS ON}{$INTERFACES CORBA}' + LineEnding +
       LineEnding +
       'interface' + LineEnding +
       LineEnding +
