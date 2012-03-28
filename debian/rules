@@ -237,6 +237,7 @@ ifeq (${DEB_BUILD},0)
 endif
 	dh_compress -i -X.pdf
 	dh_fixperms -i
+	dh_installdebconf -i
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
@@ -256,7 +257,8 @@ binary-arch: arrange-arch
 	dh_strip -s
 	dh_compress -a
 	dh_fixperms -a
-	dh_installdeb -s
+	dh_installdebconf -a
+	dh_installdeb -a
 	dh_shlibdeps -s
 	dh_gencontrol -s
 	dh_md5sums -s
