@@ -27,7 +27,7 @@ begin
       '  SysUtils, ' + Owner.DeviceIdentifier + ';' + LineEnding +
       LineEnding +
       'var' + LineEnding +
-      '  ' + Owner.DeviceIdentifier + 'Simulator: TCustom' + Owner.DeviceIdentifier + ';' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator: ' + Owner.DeviceType + ';' + LineEnding +
       '  ' + 'progPath, ProgDir, SimDir: string;' + LineEnding +
       LineEnding +
       'begin' + LineEnding +
@@ -38,7 +38,7 @@ begin
       '    MkDir(SimDir);' + LineEnding +
       '  end;' + LineEnding +
       '  ChDir(SimDir);' + LineEnding +
-      '  ' + Owner.DeviceIdentifier + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator := ' + Owner.DeviceType + '.Create(nil);' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator.Run;' + LineEnding +
       '  ' + Owner.DeviceIdentifier + 'Simulator.Free;' + LineEnding +
       'end.');
@@ -57,7 +57,7 @@ begin
       '  ' + Owner.DeviceAncestorUnitName + ';' + LineEnding +
       LineEnding +
       'type' + LineEnding +
-      '  TCustom' + Owner.DeviceIdentifier + ' = class(TDesign)' + LineEnding +
+      '  ' + Owner.DeviceType + ' = class(TDesign)' + LineEnding +
       '  end;' + LineEnding +
       LineEnding +
       'implementation' + LineEnding +
