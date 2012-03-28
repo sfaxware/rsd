@@ -976,11 +976,12 @@ object IdeMainWindow: TIdeMainWindow
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.*.lpi'
+    Filter = '*.lpi|*.lpi'
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
     top = 32
   end
   object OpenDialog1: TOpenDialog
-    Filter = '*.lpi'
+    Filter = '*.lpi|*.lpi'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
     left = 32
     top = 32
