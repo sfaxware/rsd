@@ -59,6 +59,7 @@ type
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
+    procedure SelectBlockName(Sender: TObject);
     procedure SetBlockColor(Sender: TObject);
     procedure SetCoreBlocksPath(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
@@ -141,6 +142,13 @@ end;
 procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
 begin
   ColorDialog1.Execute;
+end;
+
+procedure TdtslIdeMainWindow.SelectBlockName(Sender: TObject);
+begin
+  with Design.SelectedBlock do begin
+    Caption := InputBox('Change block name', 'Please type the new block name', Caption);
+  end;
 end;
 
 procedure TdtslIdeMainWindow.SetBlockColor(Sender: TObject);
