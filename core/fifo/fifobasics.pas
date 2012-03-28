@@ -13,6 +13,9 @@ type
     function Pop:Pointer;
     function GetPendingQty:Integer;
     function GetAvailableQty:Integer;
+    property RdIdx: Integer;
+    property WrIdx: Integer;
+    property Size: Integer;
   end;
 
   TCFifo = class(TIFifo)
@@ -22,25 +25,35 @@ type
     Wr:Integer;
     Buffer:Array Of Pointer;
   public
-    constructor Init(Size:Integer);
+    constructor Create(Size:Integer);
     function Push(p:Pointer):Boolean;
     function Pop:Pointer;
     function GetPendingQty:Integer;
     function GetAvailableQty:Integer;
+    destructor Destroy;
+    property RdIdx: Integer read Rd;
+    property WrIdx: Integer read Wr;
+    property Size: Integer read Sz;
   end;
   
 implementation
 
-constructor TCFifo.Init(Size:Integer);
+constructor TCFifo.Create(Size:Integer);
 var
   i:Integer;
 begin
   Sz := Size;
-  SetLength(Buffer, Sz);
+  {Usally allocate Sz elements as fifo is full when Wr = Rd + 1 mod Sz}
+  SetLength(Buffer, Sz + 1);
   Rd := 0;
   Wr := 0;
-  For i := 0 to Sz - 1 Do
+  For i := 0 to Sz Do
     Buffer[i] := Nil;
+end;
+
+destructor TCFifo.Destroy;
+begin
+  SetLength(Buffer, 0);
 end;
 
 function TCFifo.Push(p:Pointer):Boolean;
@@ -48,7 +61,7 @@ var
   nWr:Integer;
 begin
   nWr := Wr + 1;
-  if nWr >= Sz then
+  if nWr > Sz then
      nWr := 0;
   if nWr = Rd then
     Result := False
@@ -69,7 +82,7 @@ begin
     Result := Buffer[Rd];
     Buffer[Rd] := Nil;
     Rd := Rd + 1;
-    if Rd >= Sz then
+    if Rd > Sz then
       Rd := 0;
   end;
 end;
@@ -78,12 +91,12 @@ function TCFifo.GetPendingQty:Integer;
 begin
   Result := Wr - Rd;
   if Result < 0 then
-    Result := Result + Sz;
+    Result := Result + Sz + 1;
 end;
 
 function TCFifo.GetAvailableQty:Integer;
 begin
-  Result := Sz - GetPendingQty - 1;
+  Result := Sz - GetPendingQty;
 end;
 
 end.

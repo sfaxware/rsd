@@ -16,18 +16,27 @@ var
 begin
   Sz := Random(1024);
   WriteLn('Allocating Fifo with Sz = ', Sz);
-  Fifo := TCFifo.Init(Sz);
+  Fifo := TCFifo.Create(Sz);
+  WriteLn('Pushing entries');
   With Fifo Do begin
     For i := 1 to Random(Sz) Do
       Push(Pointer(i));
-    WriteLn(GetPendingQty);
-    WriteLn(GetAvailableQty);
+    WriteLn('Number of pending entries = ', GetPendingQty);
+    WriteLn('Number of available entries = ', GetAvailableQty);
+    WriteLn('Poping elements');
     For i := 1 to Random(Sz) Do
-      Write(Integer(Pop):4);
-    WriteLn;
-    WriteLn(GetPendingQty);
-    WriteLn(GetAvailableQty);
+      if Integer(Pop) <> i then
+        WriteLn('Error @ i = ', i);
+    WriteLn('Number of pending entries = ', GetPendingQty);
+    WriteLn('Number of available entries = ', GetAvailableQty);
+    WriteLn('Saturating FIFO');
+    For i := 1 to Sz Do
+      if not Push(Pointer(i)) then
+        WriteLn('Can not push element i = ', i);
+    WriteLn('Number of pending entries = ', GetPendingQty);
+    WriteLn('Number of available entries = ', GetAvailableQty);
   end;
+  Fifo.Destroy;
 end;
 
 begin
