@@ -564,7 +564,7 @@ var
   PropValue: TDeviceProperty;
 begin
   Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding;
-  if Indent <> '' then begin
+  if(Indent <> '') and (Self is TBlock)then begin
     Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding;
   end;
   with Devices[FDeviceId] do begin
