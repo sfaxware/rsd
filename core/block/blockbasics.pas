@@ -42,9 +42,10 @@ type
   protected
     FConnector: TCConnector;
     function GetConnector: TCConnector;
-    procedure SetConnector(Value: TCConnector);
+    procedure SetConnector(Value: TCConnector); virtual;
+    property Connector: TCConnector write SetConnector;
   end;
-  TCInputPort = class(TCPort)
+  TCInputPort = class(TCPort, IInputPort)
   protected
     function GetIsEmpty: Boolean;
   public
@@ -53,7 +54,7 @@ type
     function Pop(out Sample: Integer): Boolean; inline;
     property IsEmpty: Boolean read GetIsEmpty;
   end;
-  TCOutputPort = class(TCPort)
+  TCOutputPort = class(TCPort, IOutputPort)
   protected
     function GetIsFull: Boolean;
   public
@@ -70,7 +71,7 @@ type
     function Push(P: Pointer): Boolean;
     function Push(const Samples; Qty: Word): Boolean;
     function Push(Sample: Integer): Boolean;
-   //procedure SetConnector(Value: TCConnector); override;
+    procedure SetConnector(Value: TCConnector); override;
   end;
   TCOutputPortRef = class(TCOutputPort, IInputPort)
   private
@@ -80,7 +81,7 @@ type
     function Pop(out P: Pointer): Boolean;
     function Pop(out Samples; Qty: Word): Boolean;
     function Pop(out Sample: Integer): Boolean;
-    //procedure SetConnector(Value: TCConnector); override;
+    procedure SetConnector(Value: TCConnector); override;
   end;
 
   TCBlock = class(TCDevice)
@@ -353,6 +354,17 @@ begin
   Result := Push(Sample, SizeOf(Sample));
 end;
 
+procedure TCInputPortRef.SetConnector(Value: TCConnector);
+begin
+  if Assigned(Value) then begin
+    if Value.Owner = Owner then begin
+      FInternalConnector := Value;
+    end else begin
+      FConnector := Value;
+    end;
+  end;
+end;
+
 function TCOutputPortRef.GetIsEmpty: Boolean;
 begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
@@ -390,6 +402,20 @@ end;
 function TCOutputPortRef.Pop(out Sample: Integer): Boolean;
 begin
   Result := Pop(Sample, SizeOf(Sample));
+end;
+
+procedure TCOutputPortRef.SetConnector(Value: TCConnector);
+begin
+  //WriteLn(FuncB('TCOutputPortRef.SetConnector'), 'Name = ', Owner.Name, '.', Name, ', Connector = ', HexStr(Value));
+  if Assigned(Value) then begin
+    //WriteLn(FuncC('TCOutputPortRef.SetConnector'), 'Connector = ', Value.Owner, '.', Value.Name);
+    if Value.Owner = Owner then begin
+      FInternalConnector := Value;
+    end else begin
+      FConnector := Value;
+    end;
+  end;
+  //WriteLn(FuncE('TCOutputPortRef.SetConnector'), 'Name = ', Owner.Name, '.', Name);
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -549,13 +575,13 @@ end;
 procedure TCConnector.SetOutputPort(Output:TCOutputPort);
 begin
   FOutputPort := Output;
-  Output.FConnector := Self;
+  Output.Connector := Self;
 end;
 
 procedure TCConnector.SetInputPort(Input: TCInputPort);
 begin
   FInputPort := Input;
-  Input.FConnector := Self;
+  Input.Connector := Self;
 end;
 
 function TCConnector.Push(const Sample): Boolean;
