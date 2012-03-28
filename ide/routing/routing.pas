@@ -138,8 +138,21 @@ begin
 end;
 
 procedure RemoveRoute(const R: TRoute; var Routes: TRoutes);
+var
+  i, l, h: Integer;
 begin
-
+  l := Length(Routes);
+  if l > 0 then begin
+    i := Low(Routes);
+    h := High(Routes);
+    while (i <= h) and (R <> Routes[i]) do begin
+      i += 1;
+    end;
+    while i < h do begin
+      Routes[i] := Routes[i+1];
+    end;
+    SetLength(Routes, l - 1);
+  end;
 end;
 
 function Intersection(out I: TArea; const A: TArea; const P: TPoint): TIndexes;
@@ -217,7 +230,6 @@ end;
 procedure RemoveRect(var A: TArea; n: TIndex; const R: TRect);
 var
   B, S: TRect;
-  RectQty: Integer;
 begin
   B := A[n];
   if IntersectRect(S, R, B) then begin
