@@ -1,8 +1,11 @@
 rsd (0.0.1-0) unstable; urgency=low
 
   * Support of simple design (no sub designs).
-  * Basic block scheduler (no support of loops).
+  * Basic block scheduler (no support for loops).
   * Control code auto generated.
   * VCS friendly changes.
+  * Basic support for hierarchical design (sub designs) with infinite inclusion
+    levels. Sub design ports could not yet be routed automatically inside sub
+    designs, but can be referenced manually.
 
  -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 08 Nov 2010 19:59:00 +0100
