@@ -15,6 +15,7 @@ function InsertDevice(Device: TDevice; var Block: TBlock): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetCodeBuffer(template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
+procedure GuessNewDeviceNameAndType(var DeviceName, DeviceType, DeviceAncestorType: string);
 procedure ResetDeviceQty;
 
 implementation
@@ -210,6 +211,43 @@ begin
     end;
   end;
   Result.Y := l;
+end;
+
+procedure GuessNewDeviceNameAndType(var DeviceName, DeviceType, DeviceAncestorType: string);
+var
+  CodeFile: string;
+  ACodeBuffer: TCodeBuffer;
+begin
+  if DeviceAncestorType = '' then begin
+    if DeviceType = '' then begin
+    end else begin
+    end;
+  end else begin
+    if DeviceName = '' then begin
+      if Pos('T', DeviceAncestorType) = 1 then begin
+        DeviceName := Copy(DeviceAncestorType, 2, Length(DeviceAncestorType));
+      end else begin
+        DeviceName := 'A' + DeviceAncestorType;
+      end;
+      DeviceName := GetDeviceRandomName(DeviceName);
+      if DeviceType = '' then begin
+        DeviceType := 'T' + DeviceName;
+      end;
+    end else begin
+      if DeviceType = '' then begin
+        DeviceType := 'T' + DeviceName;
+      end else begin
+      end;
+    end;
+  end;
+  if DeviceAncestorType = '' then begin
+    CodeFile := SourceFileName(DeviceName);
+    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
+    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
+    if Assigned(ACodeBuffer) then begin
+      CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
+    end;
+  end;
 end;
 
 procedure ResetDeviceQty;
