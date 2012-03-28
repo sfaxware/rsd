@@ -135,7 +135,6 @@ begin
     Units.Count := 0;
     Units.SourceExt := 'pas';
     Units.ResourceExt := 'lfm';
-    Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core/');
     //WriteLn('Core.Path = "', Core.Path, '"');
     Self.Caption := 'R.S.D. IDE (' +  Name + ')';
   end;
@@ -160,7 +159,6 @@ begin
       Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
     end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
-    WriteLn('Core.Path = "', Core.Path, '"');
     BuildDir := GetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', 'build');
   end;
   with Design do begin
@@ -266,6 +264,12 @@ begin
   with Design do begin
     OnChildrenCreate := @SetupChildrenEvents;
   end;
+  with OpenDialog1, AppCfg do begin
+    InitialDir := User.Home.Path;
+  end;
+  with SaveDialog1, AppCfg do begin
+    InitialDir := User.Home.Path;
+  end;
   NewProject(Sender);
 end;
 
@@ -357,8 +361,8 @@ begin
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  DirList := ProjectSettings.Core.Path + 'block' + PathSep + ProjectSettings.Core.Path + 'fifo';
-  //WriteLn('DirList = ', DirList);
+  DirList := AppCfg.Lib.Path + 'block' + PathSep + AppCfg.Lib.Path + 'fifo';
+  WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
     FileName := LowerCase(TheUnitName) + '.pas';

@@ -59,20 +59,17 @@ end;
 procedure TPackagesManagerForm.FormCreate(Sender: TObject);
   function BuildPackagesList: TFPList;
   var
-    ProgPath, ProgDir, LibDir: string;
     SearchRec: TSearchRec;
     SearchPath, PackagePath: string;
   begin
-    ProgPath := ParamStr(0);
-    ProgDir := ExtractFileDir(ProgPath);
-    LibDir := ExtractFileDir(ProgDir) + '/lib/' + ExtractFileNameOnly(ProgPath);
-    //WriteLn('LibDir = "', LibDir, '"');
-    SearchPath := LibDir + '/*';
+    SearchPath := AppCfg.Lib.Path + '*';
+    //WriteLn('AppCfg.Lib.Path = "', AppCfg.Lib.Path, '"');
     Result := TFPList.Create;
     if FindFirst(SearchPath, faDirectory, SearchRec) = 0 then with Result do begin
       repeat
         with SearchRec do begin
-          PackagePath := LibDir + '/' + Name + '/rsd' + Name + '.lpk';
+          PackagePath := AppCfg.Lib.Path + Name + PathDelim + 'rsd' + Name + '.lpk';
+          //WriteLn('PackagePath = ', PackagePath);
           if(Attr and faDirectory) = faDirectory then begin
             if FileExists(PackagePath) then begin
               Add(NewStr(PackagePath));

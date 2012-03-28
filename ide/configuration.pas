@@ -8,7 +8,7 @@ uses
   Classes, SysUtils;
 
 type
-  PProjectSettings = ^ TProjectSettings;
+  PProjectSettings = ^TProjectSettings;
   TProjectSettings = record
     Name: string;
     Path: string;
@@ -18,10 +18,30 @@ type
       SourceExt: string;
       ResourceExt:string;
     end;
-    Core: record
+  end;
+  TAppCfg = record
+    Prefix: string;
+    Exec: record
+      Name: string;
       Path: string;
     end;
+    Lib: record
+      Path: string;
+    end;
+    User: record
+      Home: record
+        Path: string
+      end;
+    end;
   end;
+
+const
+  AppCfg: TAppCfg = (
+    Prefix: '';
+    Exec: (Name: ''; Path: 'bin' + PathDelim);
+    Lib: (Path: 'lib' + PathDelim);
+    User: (Home: (Path: ''));
+  );
 
 var
   ProjectSettings: TProjectSettings;
@@ -30,6 +50,9 @@ function ReSourceFileName(BlockName: string): string;
 function SourceFileName(BlockName: string): string;
 
 implementation
+
+uses
+  FileUtil;
 
 function ReSourceFileName(BlockName: string): string;
 begin
@@ -49,5 +72,14 @@ begin
   //WriteLn('SourceFileName = ', Result);
 end;
 
+initialization
+  with AppCfg do begin
+    Exec.Name := ParamStr(0);
+    Prefix := ExtractFileDir(ExtractFileDir(Exec.Name));
+    Exec.Name := ExtractFileNameOnly(Exec.Name);
+    Lib.Path += Exec.Name + PathDelim;
+    ChDir(Prefix);
+    User.Home.Path := AppendPathDelim(GetEnvironmentVariable('HOME'));
+  end;
 end.
 
