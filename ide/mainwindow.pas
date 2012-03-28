@@ -120,6 +120,8 @@ type
     procedure RunCompiler(ExecName: string);
     procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure HandleDragDropEvents(Sender, Source: TObject; X, Y: Integer);
+    procedure HandleDragOverEvents(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure SetupChildrenEvents(Sender: TObject);
   public
     destructor Destroy; override;
@@ -326,6 +328,32 @@ begin
   NewProject(Sender);
 end;
 
+procedure TIdeMainWindow.HandleDragDropEvents(Sender, Source: TObject; X, Y: Integer);
+begin
+  //WriteLn('TIdeMainWindow.FormDragDrop');
+  with TDesign.GetViewed do begin
+    SelectedInputPort := nil;
+    if Assigned(SelectedOutputPort) then begin
+      if Sender is TOutputPortRef then begin
+        SelectedInputPort := Sender as TOutputPortRef;
+        //WriteLn(SelectedInputPort.DeviceIdentifier);
+      end else if Sender is TInputPort then begin
+        SelectedInputPort := Sender as TInputPort;
+        //WriteLn(SelectedInputPort.DeviceIdentifier);
+      end;
+    end;
+    if Assigned(SelectedInputPort) then begin
+      Self.AddNewConnector('TConnector');
+    end;
+  end;
+end;
+
+procedure TIdeMainWindow.HandleDragOverEvents(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  //WriteLn('TIdeMainWindow.FormDragOver( Sender.Name = ', TComponent(Sender).Name, ', Source.Name = ', TComponent(Source).Name, ')');
+  Accept := (Sender is TInputPort) or (Sender is TOutputPortRef);
+end;
+
 procedure TIdeMainWindow.IdeHelpLocalHelpMenuItemClick(Sender: TObject);
 var
   HelpPath: string;
@@ -508,7 +536,7 @@ end;
 
 procedure TIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('HandleMouseDownEvents');
+  //WriteLn('HandleMouseDownEvents(Sender.Name = ', TComponent(Sender).Name, ')');
   case Button of
     mbLeft: with TDesign.GetViewed do begin
       SelectedOutputPort := nil;
@@ -519,29 +547,19 @@ begin
         SelectedOutputPort := Sender as TOutputPort;
         //WriteLn(SelectedOutputPort.DeviceIdentifier);
       end;
+      if Assigned(SelectedOutputPort) then with Sender as TDevice do begin
+        BeginDrag(False);
+      end;
     end;
   end;
 end;
 
 procedure TIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('HandleMouseUpEvents');
-  case Button of
-    mbLeft: with TDesign.GetViewed do begin
-      SelectedInputPort := nil;
-      if Assigned(SelectedOutputPort) then begin
-        if Sender is TOutputPortRef then begin
-          SelectedInputPort := Sender as TOutputPortRef;
-          //WriteLn(SelectedInputPort.DeviceIdentifier);
-        end else if Sender is TInputPort then begin
-          SelectedInputPort := Sender as TInputPort;
-          //WriteLn(SelectedInputPort.DeviceIdentifier);
-        end;
-      end;
-      if Assigned(SelectedInputPort) then begin
-        Self.AddNewConnector('TConnector');
-      end;
-    end;
+  //WriteLn('HandleMouseUpEvents(Sender.Name = ', TComponent(Sender).Name, ')');
+  with TDesign.GetViewed do begin
+    SelectedOutputPort := nil;
+    SelectedInputPort := nil;
   end;
 end;
 
@@ -567,6 +585,8 @@ begin
     //WriteLn('SetupChildrenEvents for ', DeviceIdentifier, ': ', ClassName);
     OnMouseUp := @HandleMouseUpEvents;
     OnMouseDown := @HandleMouseDownEvents;
+    OnDragOver := @HandleDragOverEvents;
+    OnDragDrop := @HandleDragDropEvents;
   end;
 end;
 
