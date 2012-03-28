@@ -5,7 +5,7 @@ unit DesignGraph;
 interface
 
 uses
-  Classes, SysUtils, Forms, XMLCfg,GraphComponents;
+  Classes, SysUtils, Forms, XMLCfg, CodeCache, GraphComponents;
 
 type
   TCGraphDesign = class(TScrollBox)
@@ -13,12 +13,14 @@ type
     _Blocks:TFPList;
     procedure StreamBlock(Block: TCGraphBlock;var Project: TXMLConfig);
   public
+    CodeBuffer: array[TCodeType] of TCodeBuffer;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
     constructor Create(AOwner: TComponent); override;
     function BlockCount: Integer; inline;
     function CreateNewBlock: TCGraphBlock; virtual;
+    function Load: Boolean;
     function Load(Path: string; const Project: TXMLConfig): Boolean;
     function Save(DesignName: string; var Project: TXMLConfig): Boolean;
     procedure ConnectPorts(Sender: TObject);
@@ -31,6 +33,32 @@ type
 implementation
 uses
   Graphics, LFMTrees;
+
+function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+var
+  PropertyNode: TLFMPropertyNode;
+  ValueNode: TLFMTreeNode;
+  c: char;
+  p: integer;
+begin
+  Result := '';
+  PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
+  ValueNode := PropertyNode.Next;
+  if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
+    case ValueType of
+      lfmvString: Result := ReadString;
+      lfmvInteger: begin
+        p := StartPos;
+        c := Tree.LFMBuffer.Source[p];
+        while c in ['0'..'9'] do begin
+          Result += c;
+          p += 1;
+          c := Tree.LFMBuffer.Source[p]
+        end;
+      end;
+    end;
+  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+end;
 
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
@@ -114,32 +142,24 @@ begin
   end;
 end;
 
-function TCGraphDesign.Load(Path: string; const Project: TXMLConfig): Boolean;
-  function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
-  var
-    PropertyNode: TLFMPropertyNode;
-    ValueNode: TLFMTreeNode;
-    c: char;
-    p: integer;
-  begin
-    Result := '';
-    PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
-    ValueNode := PropertyNode.Next;
-    if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
-      case ValueType of
-        lfmvString: Result := ReadString;
-        lfmvInteger: begin
-          p := StartPos;
-          c := Tree.LFMBuffer.Source[p];
-          while c in ['0'..'9'] do begin
-            Result += c;
-            p += 1;
-            c := Tree.LFMBuffer.Source[p]
-          end;
-        end;
-      end;
-    WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+function TCGraphDesign.Load: boolean;
+var
+  CodeFile: array[TCodeType] of string;
+  CodeType: TCodeType;
+begin
+  codeFile[ctSource] := '/tmp/' + Name + '.pas';
+  codeFile[ctDescription] := '/tmp/' + Name + '.lfm';
+  for CodeType := Low(CodeType) To High(CodeType) do begin
+    if Assigned(CodeBuffer[CodeType]) then
+      CodeBuffer[CodeType].Reload
+    else begin
+      CodeBuffer[CodeType] := TCodeCache.Create.LoadFile(CodeFile[CodeType]);
+    end;
   end;
+  Result := true;
+end;
+
+function TCGraphDesign.Load(Path: string; const Project: TXMLConfig): Boolean;
 var
   BlockPath: string;
   BlocksCount: integer;
@@ -199,7 +219,7 @@ begin
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
       Save(f);
     end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      //Save();
+      Save(f);
       StreamBlock(Component as TCGraphBlock, Project);
     end; 
   end;

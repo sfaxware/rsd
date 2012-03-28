@@ -51,11 +51,12 @@ type
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure MouseLeaved(Sender: TObject);
   public
-    constructor Create(AOwner: TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
+    constructor Create(AOwner: TComponent);override;
     function GetDescription: TLFMTree;
     function Load: boolean;
     function Save: boolean;
+    function Save(var f: Text): boolean;
   protected
     FSelected: Boolean;
     FType: string;
@@ -339,39 +340,39 @@ function TCGraphBlock.Save: boolean;
       System.Close(f);
     end;
   end;
-  function WriteDescriptionTemplate: string;
-  var
-    f: System.Text;
-    i: Integer;
-  begin
-    Result := '/tmp/' + Name + '.lfm';
-    System.Assign(f, Result);
-    ReWrite(f);
-    WriteLn(f, 'object ', Name, ': T' + Name);
-    WriteLn(f, '  Name = ''', Name, '''');
-    WriteLn(f, '  Typ = ''', Typ, '''');
-    WriteLn(f, '  Left = ', Left);
-    WriteLn(f, '  Top = ', Top);
-    WriteLn(f, '  Width = ', Width);
-    WriteLn(f, '  Height = ', Height);
-    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-      Save(f);
-    end;
-    WriteLn(f, 'end');
-    System.Close(f);
-  end;
 var
   CodeType: TCodeType;
+  f: System.Text;
 begin
   Result := true;
   for CodeType := Low(CodeType) To High(CodeType) do
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Save;
   WriteSourceTemplate;
-  WriteDescriptionTemplate;
+  System.Assign(f, '/tmp/' + Name + '.lfm');
+  ReWrite(f);
+  Save(f);
+  System.Close(f);
   for CodeType := Low(CodeType) To High(CodeType) do
     if not Assigned(CodeBuffer[CodeType]) then
       Result := Load;
+end;
+
+function TCGraphBlock.Save(var f:Text): boolean;
+var
+  i: Integer;
+begin
+  WriteLn(f, 'object ', Name, ': T' + Name);
+  WriteLn(f, '  Name = ''', Name, '''');
+  WriteLn(f, '  Typ = ''', Typ, '''');
+  WriteLn(f, '  Left = ', Left);
+  WriteLn(f, '  Top = ', Top);
+  WriteLn(f, '  Width = ', Width);
+  WriteLn(f, '  Height = ', Height);
+  for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+    Save(f);
+  end;
+  WriteLn(f, 'end');
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
