@@ -38,7 +38,7 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
     Result := True;
     for i := 0 to Block.ComponentCount - 1 do begin
       Component := Block.Components[i];
-      if Component is TCGraphDevice then with Component as TCGraphDevice do begin
+      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
         CodeToolBoss.AddPublishedVariable(Self, OwnerType, DeviceIdentifier, DeviceType);
       end;
     end;
