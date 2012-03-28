@@ -204,7 +204,7 @@ begin
     //WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
     //WriteLn('DesignDir = ', DesignDir);
     SetValue('ProjectOptions/RequiredPackages/Count', 1);
-    SetValue('ProjectOptions/RequiredPackages/Item1/PackageName/Value', 'dtslcore');
+    SetValue('ProjectOptions/RequiredPackages/Item1/PackageName/Value', 'rsdcore');
     SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Minor', 1);
     SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Valid', True);
     SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Minor', 1);
