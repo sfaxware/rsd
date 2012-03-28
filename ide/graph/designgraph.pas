@@ -184,7 +184,7 @@ begin
   with Project do begin
     SetValue('design/name', DesignName);
   end;
-  WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
+  //WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
   System.Assign(f, DesignDir + '/' + Name + '.lfm');
   ReWrite(f);
   WriteLn(f, 'object ', Name, ': TDesign');
@@ -202,6 +202,8 @@ begin
   System.Assign(f, DesignDir + '/' + Name + '.pas');
   ReWrite(f);
   WriteLn(f, 'unit ', Name, ';');
+  WriteLn(f);
+  WriteLn(f, '{$mode objfpc}{$H+}{$interfaces corba}');
   WriteLn(f);
   WriteLn(f, 'interface');
   WriteLn(f);
