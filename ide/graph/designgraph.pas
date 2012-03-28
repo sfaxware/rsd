@@ -130,15 +130,7 @@ begin
   if Assigned(OnChildrenCreate) then begin
     OnChildrenCreate(Result);
   end;
-  if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
-  end;
-  CodeBuffer[ctSource].LockAutoDiskRevert;
-  with CodeToolBoss do begin
-    AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
-    AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
-  end;
-  CodeBuffer[ctSource].UnlockAutoDiskRevert;
+  InsertDevice(Result, Self);
 end;
 
 function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;
