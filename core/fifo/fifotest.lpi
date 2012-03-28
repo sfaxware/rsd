@@ -6,14 +6,12 @@
       <Flags>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -27,111 +25,18 @@
         <LaunchingApplication Use="True" PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <Units Count="5">
+    <Units Count="2">
       <Unit0>
         <Filename Value="fifotest.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="fifotest"/>
-        <CursorPos X="15" Y="33"/>
-        <TopLine Value="13"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="fifotest.pas"/>
-        <UnitName Value="fifotest"/>
-        <CursorPos X="7" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="20"/>
-      </Unit1>
-      <Unit2>
         <Filename Value="fifobasics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FifoBasics"/>
-        <CursorPos X="20" Y="73"/>
-        <TopLine Value="70"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="26"/>
-        <Loaded Value="True"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="../math/mathbasics.pas"/>
-        <UnitName Value="MathBasics"/>
-        <CursorPos X="40" Y="3"/>
-        <TopLine Value="4"/>
-        <UsageCount Value="10"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="../math/mathmatrices.pas"/>
-        <UnitName Value="MathMatrices"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit4>
+      </Unit1>
     </Units>
-    <JumpHistory Count="15" HistoryIndex="14">
-      <Position1>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="31" Column="54" TopLine="10"/>
-      </Position1>
-      <Position2>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="50" Column="6" TopLine="21"/>
-      </Position2>
-      <Position3>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="41" Column="9" TopLine="35"/>
-      </Position3>
-      <Position4>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="31" Column="54" TopLine="10"/>
-      </Position4>
-      <Position5>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="16" Column="29" TopLine="7"/>
-      </Position5>
-      <Position6>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="53" Column="21" TopLine="26"/>
-      </Position6>
-      <Position7>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="31" Column="34" TopLine="16"/>
-      </Position7>
-      <Position8>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="21" Column="19" TopLine="4"/>
-      </Position8>
-      <Position9>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="23" Column="12" TopLine="8"/>
-      </Position9>
-      <Position10>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="28" Column="13" TopLine="11"/>
-      </Position10>
-      <Position11>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="31" Column="16" TopLine="16"/>
-      </Position11>
-      <Position12>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="23" Column="12" TopLine="8"/>
-      </Position12>
-      <Position13>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="36" Column="35" TopLine="11"/>
-      </Position13>
-      <Position14>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="33" Column="20" TopLine="18"/>
-      </Position14>
-      <Position15>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="36" Column="39" TopLine="32"/>
-      </Position15>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
@@ -142,14 +47,4 @@
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <Exceptions Count="2">
-      <Item1>
-        <Name Value="ECodetoolError"/>
-      </Item1>
-      <Item2>
-        <Name Value="EFOpenError"/>
-      </Item2>
-    </Exceptions>
-  </Debugging>
 </CONFIG>
