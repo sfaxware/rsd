@@ -17,9 +17,8 @@ type
     FWidth: Cardinal;
     FHeight: Cardinal;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TBlock); virtual;
   published
-    property Caption;
     property Color: Cardinal read FColor write FColor;
     property Width: Cardinal read FWidth write FWidth;
     property Height: Cardinal read FHeight write FHeight;
@@ -29,16 +28,16 @@ implementation
 uses
   LResources;
 
-constructor TBlock.Create(AOwner: TComponent);
+constructor TBlock.Create(AOwner: TBlock);
 begin
   inherited Create(AOwner);
-  WriteLn('>>TBlock.Create: ClassName = ', ClassName, ', Caption = ', Caption, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  WriteLn('>>TBlock.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
   if Assigned(AOwner) then begin
     WriteLn('AOwner.Name = ', AOwner.Name);
   end;
   if not InitResourceComponent(Self, TBlock) then
     WriteLn('Failure');
-  WriteLn('<<TBlock.Create: ClassName = ', ClassName, ', Caption = ', Caption, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  WriteLn('<<TBlock.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
 end;
 
 initialization
