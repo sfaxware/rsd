@@ -139,6 +139,7 @@ begin
     ContextNode := Parent as TLFMObjectNode;
   end;
   Result := '';
+  WriteLn('GetPropertyValue: PropertyName = ', PropertyName);
   PropertyNode := Self.FindProperty(PropertyName, nil);
   ValueNode := PropertyNode.Next;
   //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
