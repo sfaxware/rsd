@@ -51,20 +51,29 @@ end;
 procedure TFileDumpProbe.SetFileName(AFileName: string);
 var
   Size: LongInt;
+  e: Word;
 begin
   //WriteLn(FuncB('TFileDumpProbe.SetFileName'), 'AFileNAme = ', AFileNAme);
   if FFileName = AFileNAme then
     Exit;
   if FFileName <> '' then begin
-    Close(FFile);
     Size := FileSeek(GetFileHandle(FFile), 0, fsFromEnd);
+    Close(FFile);
     if Size <= 0 then begin
       Erase(FFile);
     end;
   end;
   FFileName := AFileName;
   System.Assign(FFile, FFileName);
+  WriteLn(AFileName);
+  {$IOCHECKS OFF}
   ReWrite(FFile);
+  {$IOCHECKS ON}
+  e := IOResult;
+  if e <> 0 then begin
+    WriteLn('Can not open file "', AFileName, '"');
+    Halt(1);
+  end;
   //WriteLn(FuncE('TFileDumpProbe.SetFileName'), 'FFileName = ', FFileName);
 end;
 
