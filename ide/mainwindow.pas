@@ -78,6 +78,7 @@ type
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
     Project: TXMLConfig;
+    DesignTreeView: TTreeView;
     procedure AboutMenuItemClick(Sender: TObject);
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
@@ -185,10 +186,12 @@ begin
     Filename := '';
   end;
   if Assigned(FTopDesign) then begin
+    DesignTreeView.Items.Delete(FTopDesign.TreeNode);
     FreeAndNil(FTopDesign);
   end;
   CreateDevice(FTopDesign , 'Design', 'TTopDesign', 'TDesign', DesignLayout);
   with FTopDesign do begin
+    TreeNode := DesignTreeView.Items.AddChild(nil, Name);
     OnChildrenCreate := @SetupChildrenEvents;
   end;
 end;
@@ -579,6 +582,7 @@ begin
     end else if Sender is TProbe then with Sender as TProbe do begin
        SetupChildrenEvents(FindComponent('Input'));
     end;
+    TreeNode := DesignTreeView.Items.AddChild(TBlock(Owner).TreeNode, Name);
   end else if Sender is TConnector then with Sender as TConnector do begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;

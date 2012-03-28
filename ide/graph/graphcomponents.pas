@@ -5,7 +5,7 @@ unit GraphComponents;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees, Routing, Magnifier;
+  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees, Routing, Magnifier, ComCtrls;
 
 const
   DefaultBlockWidth = 100;
@@ -150,6 +150,7 @@ type
     procedure ValidateInsert(AComponent: TComponent); override;
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
+    TreeNode: TTreeNode;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
     function AddNewConnector(ADeviceName, ADeviceType: string; AOutputPort: IOutputPort; AInputPort: IInputPort): TConnector;

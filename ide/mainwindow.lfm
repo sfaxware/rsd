@@ -703,6 +703,18 @@ object IdeMainWindow: TIdeMainWindow
       end>
     SimplePanel = False
   end
+  object DesignTreeView: TTreeView
+    Left = 0
+    Height = 793
+    Top = 2
+    Width = 192
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    AutoExpand = True
+    DefaultItemHeight = 19
+    ScrollBars = ssAutoBoth
+    TabOrder = 2
+    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+  end
   object IdeMainMenu: TMainMenu
     object IdeFileMenuItem: TMenuItem
       Caption = '&File'
