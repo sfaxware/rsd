@@ -186,6 +186,42 @@ begin
 end;
 
 constructor TCDevice.Create(AOwner: TComponent);
+  function InitComponentFromResource(Instance: TComponent; ClassType: TClass): Boolean;
+  var
+    FPResource: TFPResourceHandle;
+    ResName: String;
+    Stream: TStream;
+    Reader: TReader;
+    DestroyDriver: Boolean;
+    Driver: TAbstractObjectReader;
+  begin
+    Result := False;
+    Stream := nil;
+    ResName := ClassType.ClassName;
+    if Stream = nil then
+    begin
+      FPResource := FindResource(HInstance, PChar(ResName), RT_RCDATA);
+      if FPResource <> 0 then
+        Stream := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource);
+    end;
+    if Stream = nil then
+      Exit;
+    DestroyDriver:=false;
+    try
+      Reader := CreateLRSReader(Stream, DestroyDriver);
+      try
+        Reader.ReadRootComponent(Instance);
+      finally
+        Driver := Reader.Driver;
+        Reader.Free;
+        if DestroyDriver then
+          Driver.Free;
+      end;
+    finally
+      Stream.Free;
+    end;
+    Result := True;
+  end;
 var
   cn: string;
 begin
@@ -201,7 +237,7 @@ begin
   //end;
   WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
   inherited Create(AOwner);
-  if not InitResourceComponent(Self, TCDevice) then
+  if not InitComponentFromResource(Self, ClassType) then
     WriteLn(FuncC('TCDevice.Create'), 'Failure');
   WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
