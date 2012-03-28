@@ -5,7 +5,7 @@ unit GraphComponents;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees, Routing;
+  Classes, SysUtils, Graphics, Controls, Types, CodeCache, LFMTrees, Routing, Magnifier;
 
 const
   DefaultBlockWidth = 100;
@@ -20,7 +20,7 @@ var
 type
   TCodeType = (ctSource, ctDescription);
   TCGraphConnector = class;
-  TCGraphPort = class(TGraphicControl)
+  TCGraphPort = class(TMagnifier)
   private
     FConnector: TCGraphConnector;
   protected
@@ -46,7 +46,7 @@ type
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TPortType = class of TCGraphPort;
-  TCGraphBlock = class(TGraphicControl)
+  TCGraphBlock = class(TMagnifier)
   private
     _MouseDown: Boolean;
     _MousePos: TPoint;
@@ -64,6 +64,7 @@ type
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
+    procedure Magnify(m: Real); override;
   protected
     FSelected: Boolean;
     procedure SetSeleted(AValue: Boolean);
@@ -89,7 +90,7 @@ type
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
-  TCGraphConnector = class(TGraphicControl)
+  TCGraphConnector = class(TMagnifier)
   private
     FInputPort: TCGraphInputPort;
     FOutputPort: TCGraphOutputPort;
@@ -337,19 +338,26 @@ end;
 procedure TCGraphInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   PortTop, PortLeft: Integer;
+  R: TRect;
 begin
   with Owner as TCGraphBlock do begin
-    if Interval <= 0 then begin
-      Interval := Height div FInputComponentCount;
+     R := OriginalBounds;
+   if Interval <= 0 then begin
+      Interval := (R.Bottom - R.Top) div FInputComponentCount;
     end;
     if idx < 0 then begin
       idx := FInputComponentCount - 1;
     end;
-    PortTop := Top + idx * Interval + Interval div 2 - DefaultPortHeight div 2;
-    PortLeft := Left + Width;
   end;
   //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
-  ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
+  with R do begin
+    Left := Right;
+    Top := Top + Idx * Interval + Interval div 2 - DefaultPortHeight div 2;
+    Right := Left + DefaultPortWidth;
+    Bottom := Top + DefaultPortHeight;
+    //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
+  end;
+  OriginalBounds := R;
   if Assigned(FConnector) then with FConnector do begin
     UpdatePoints;
   end;
@@ -375,19 +383,26 @@ end;
 procedure TCGraphOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   PortTop, PortLeft: Integer;
+  R: TRect;
 begin
   with Owner as TCGraphBlock do begin
+    R := OriginalBounds;
     if Interval <= 0 then begin
-      Interval := Height div FOutputComponentCount;
+      Interval := (R.Bottom - R.Top) div FOutputComponentCount;
     end;
     if Idx < 0 then begin
       Idx := FOutputComponentCount - 1;
     end;
-    PortTop := Top + Idx * Interval + Interval div 2 - DefaultPortHeight div 2;
-    PortLeft := Left - DefaultPortWidth;
   end;
   //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
-  ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
+  with R do begin
+    Left := Left - DefaultPortWidth;
+    Top := Top + Idx * Interval + Interval div 2 - DefaultPortHeight div 2;
+    Right := Left + DefaultPortWidth;
+    Bottom := Top + DefaultPortHeight;
+    //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
+  end;
+  OriginalBounds := R;
   if Assigned(FConnector) then with FConnector do begin
     UpdatePoints;
   end;
@@ -422,10 +437,17 @@ var
   ChildNode: TLFMTreeNode;
   PortDescription: TLFMObjectNode;
   Port: TCGraphPort;
+  R: TRect;
 begin
   ChildNode := ContextNode.FirstChild;
-  Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
-  Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
+  with R do begin
+    Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
+    Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
+    Right := Left + StrToInt(GetPropertyValue(ContextNode, 'Width', DesignDescription));;
+    Bottom := Top + StrToInt(GetPropertyValue(ContextNode, 'Height', DesignDescription));
+    //WriteLn('loaded bounds (', Name, ') = ((', Left, ', ', Top, '), (', Right, ', ', Bottom, '))');
+  end;
+  OriginalBounds := R;
   Canvas.Brush.Color := StrToInt(GetPropertyValue(ContextNode, 'Color', DesignDescription));
   Caption := GetPropertyValue(ContextNode, 'Name', DesignDescription);
   Selected := True;
@@ -484,17 +506,26 @@ begin
       Result := Load;
 end;
 
+procedure TCGraphBlock.Magnify(m: Real);
+begin
+  inherited Magnify(m);
+  UpdatePortsBounds(TCGraphInputPort);
+  UpdatePortsBounds(TCGraphOutputPort);
+end;
+
 function TCGraphBlock.GetUpdatedDescription: string;
 var
   i: Integer;
 begin
-  Result := '  object ' + Name + ': T' + Name + LineEnding +
-    '    Name = ''' + Caption + '''' + LineEnding +
-    '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-    '    Left = ' + IntToStr(Left) + LineEnding +
-    '    Top = ' + IntToStr(Top) + LineEnding +
-    '    Width = ' + IntToStr(Width) + LineEnding +
-    '    Height = ' + IntToStr(Height) + LineEnding;
+  with OriginalBounds do begin
+    Result := '  object ' + Name + ': T' + Name + LineEnding +
+      '    Name = ''' + Caption + '''' + LineEnding +
+      '    Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+      '    Left = ' + IntToStr(Left) + LineEnding +
+      '    Top = ' + IntToStr(Top) + LineEnding +
+      '    Width = ' + IntToStr(Right - Left) + LineEnding +
+      '    Height = ' + IntToStr(Bottom - Top) + LineEnding;
+    end;
   for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
     Result += GetUpdatedDescription;
   end;
@@ -532,6 +563,7 @@ end;
 procedure TCGraphBlock.Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   dx, dy: Integer;
+  R: TRect;
 begin
   if(Sender = Self)and _MouseDown then begin
     X += Left;
@@ -540,7 +572,14 @@ begin
     dy := Y - _MousePos.y;
     _MousePos.x := X;
     _MousePos.y := Y;
-    ChangeBounds(Left + dx, Top + dy, Width, Height);
+    R := OriginalBounds;
+    with R do begin
+      Left += dx;
+      Top += dy;
+      Right += dx;
+      Bottom += dy;
+    end;
+    OriginalBounds := R;
     UpdatePortsBounds(TCGraphInputPort);
     UpdatePortsBounds(TCGraphOutputPort);
   end;
@@ -594,11 +633,13 @@ var
   Idx: Integer;
   dy: Integer;
   Component: TComponent;
+  R: TRect;
 begin
+  R := OriginalBounds;
   if (PortType = TCGraphInputPort) and (FInputComponentCount > 0) then
-    dy := Height div FInputComponentCount
+    dy := (R.Bottom - R.Top) div FInputComponentCount
   else if (PortType = TCGraphOutputPort) and (FOutputComponentCount > 0) then
-    dy := Height div FOutputComponentCount
+    dy := (R.Bottom - R.Top) div FOutputComponentCount
   else
     Exit;
   Idx := 0;
