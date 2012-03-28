@@ -59,7 +59,6 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -1073,8 +1072,8 @@ object IdeMainWindow: TIdeMainWindow
     end
     object DesignPropertiesMenuItem: TMenuItem
       Caption = '&Properties'
-      object DesignNameMenuItem: TMenuItem
-        Caption = 'Name...'
+      object DesignCaptionMenuItem: TMenuItem
+        Caption = 'Caption...'
         OnClick = SelectBlockName
       end
       object DesignColorMenuItem: TMenuItem
@@ -1100,8 +1099,8 @@ object IdeMainWindow: TIdeMainWindow
         Caption = 'Connect ports...'
       end
     end
-    object BlockNameMenuItem: TMenuItem
-      Caption = 'Name...'
+    object BlockCaptionMenuItem: TMenuItem
+      Caption = 'Caption...'
       OnClick = SelectBlockName
     end
     object BlockColorMenuItem: TMenuItem

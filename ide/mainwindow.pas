@@ -22,8 +22,8 @@ type
     BuilderProcess: TAsyncProcess;
     DesignColorMenuItem: TMenuItem;
     BlockColorMenuItem: TMenuItem;
-    DesignNameMenuItem: TMenuItem;
-    BlockNameMenuItem: TMenuItem;
+    DesignCaptionMenuItem: TMenuItem;
+    BlockCaptionMenuItem: TMenuItem;
     DesignPropertiesMenuItem: TMenuItem;
     BlockPropertiesMenuItem: TMenuItem;
     BlocksSubMenu: TMenuItem;
