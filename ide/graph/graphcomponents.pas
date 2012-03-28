@@ -43,7 +43,7 @@ type
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure MouseLeaved(Sender: TObject);
   public
-    constructor Create(AOwner:TComponent);override;
+    constructor Create(AOwner: TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     function Load: boolean;
     function Save: boolean;
@@ -72,6 +72,18 @@ type
     property Typ: string read FType;
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
+  end;
+  TCGraphConnector = class(TGraphicControl)
+  private
+    FInput: TCGraphInputPort;
+    FOutput: TCGraphOutputPort;
+  public
+    constructor Create(AOwner: TComponent);
+  protected
+    procedure paint; override;
+  published
+    property Input: TCGraphInputPort read FInput write FInput;
+    property Output: TCGraphOutputPort read Foutput write FOutput;
   end;
 
 implementation
@@ -366,6 +378,42 @@ begin
       end;
     end;
   end;
+end;
+
+constructor TCGraphConnector.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+Procedure TCGraphConnector.Paint;
+begin
+  {with Canvas do begin
+    //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
+    if FSelected then begin
+      Color := clBlack;
+      Brush.Color := clGray;
+      Rectangle();
+      InflateRect(PaintRect, -2, -2);
+    end;
+    If not Enabled then
+      Brush.Color := clBtnShadow
+    else
+      Brush.Color:= clRed;
+    Rectangle(PaintRect);
+    if Caption <> '' then begin
+      TXTStyle := Canvas.TextStyle;
+      with TXTStyle do begin
+        Opaque := False;
+        Clipping := True;
+        ShowPrefix := False;
+        Alignment := taCenter;
+        Layout := tlCenter;
+      end;
+    // set color here, otherwise SystemFont is wrong if the button was disabled before
+      Font.Color := Self.Font.Color;
+    end;
+  end;}
+  inherited Paint;
 end;
 
 end.
