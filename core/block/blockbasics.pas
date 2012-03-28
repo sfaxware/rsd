@@ -79,12 +79,14 @@ type
     FOutputPort: TCOutputPort;
     FInputPort: TCInputPort;
     FSamples: TCFifo;
+    FDepth: Integer;
     procedure SetOutputPort(Output: TCOutputPort);
     procedure SetInputPort(Input:TCInputPort);
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
     function Push(Sample: Integer): Boolean;
     function Pop(out Sample: Integer): Boolean;
+    procedure SetDepth(ADepth: Integer);
   public
     constructor Create(AOwner: TComponent); override;
     property IsEmpty: Boolean read GetIsEmpty;
@@ -92,7 +94,8 @@ type
   published
     property OutputPort: TCOutputPort read FOutputPort write SetOutputPort;
     property InputPort: TCInputPort read FInputPort write SetInputPort;
- end;
+    property Depth: Integer read FDepth write SetDepth;
+  end;
 
   TFuncName = string[31];
   TFuncPrefix = string[63];
@@ -233,15 +236,15 @@ end;
 
 function  TCOutputPort.Push(Sample: Integer): Boolean;
 begin
-  WriteLn(FuncB('TCOutputPort.Push'));
+  //WriteLn(FuncB('TCOutputPort.Push'));
   if Assigned(FConnector) then begin
-    WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
     Result := FConnector.Push(Sample);
   end else begin
-    WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
     Result := False;
   end;
-  WriteLn(FuncE('TCOutputPort.Push'));
+  //WriteLn(FuncE('TCOutputPort.Push'));
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -329,7 +332,7 @@ var
   BlockRunStatus: TDeviceRunStatus;
   RunBlock: Boolean;
 begin
-  WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
   BlockRunStatus := [drfTerminated];
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     RunBlock := False;
@@ -345,13 +348,13 @@ begin
       Include(BlockRunStatus, drfBlockedByOutput);
       RunBlock := False;
     end;
-    WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '].DeviceName = ', DeviceName, ', Terminated = ', drfTerminated in RunStatus, ', BlockedByInput = ', drfBlockedByInput in RunStatus, ', BlockedByOutput = ', drfBlockedByOutput in RunStatus);
+    //WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '].DeviceName = ', DeviceName, ', Terminated = ', drfTerminated in RunStatus, ', BlockedByInput = ', drfBlockedByInput in RunStatus, ', BlockedByOutput = ', drfBlockedByOutput in RunStatus);
     if RunBlock then begin
       Execute;
     end;
   end;
   FRunStatus := BlockRunStatus;
-  WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
 end;
 
 function TCConnector.GetIsEmpty: Boolean;
@@ -364,6 +367,24 @@ begin
   Result := FSamples.GetAvailableQty = 0;
 end;
 
+procedure TCConnector.SetDepth(ADepth: Integer);
+var
+  OldSamples: TCFifo;
+  p: Pointer;
+begin
+  if FDepth <> ADepth then begin
+    FDepth := ADepth;
+    OldSamples := FSamples;
+    FSamples := TCFifo.Create(FDepth);
+    if Assigned(OldSamples) then begin
+      while oldSamples.Pop(p) do begin
+        FSamples.Push(p);
+      end;
+      OldSamples.Free;
+    end;
+  end;
+end;
+
 constructor TCConnector.Create(AOwner: TComponent);
 var
   cn: string;
@@ -373,12 +394,12 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn(FuncC('TCConnector.Create'), Name, '.InputPort = $', HexStr(PtrInt(FInputPort), 8));
-  WriteLn(FuncC('TCConnector.Create'), Name, '.OutputPort = $', HexStr(PtrInt(FOutputPort), 8));
-  FSamples := TCFifo.Create(2);
-  WriteLn(FuncE('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncC('TCConnector.Create'), Name, '.InputPort = $', HexStr(PtrInt(FInputPort), 8));
+  //WriteLn(FuncC('TCConnector.Create'), Name, '.OutputPort = $', HexStr(PtrInt(FOutputPort), 8));
+  Depth := 127;
+  //WriteLn(FuncE('TCConnector.Create'), 'AOwner.ClassName = ', cn);
 end;
 
 procedure TCConnector.SetOutputPort(Output:TCOutputPort);
@@ -395,14 +416,14 @@ end;
 
 function TCConnector.Push(Sample: Integer): Boolean;
 begin
-  WriteLn(FuncB('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
+  //WriteLn(FuncB('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
   repeat
     Result := FSamples.Push(Pointer(Sample));
-    WriteLn(FuncC('TCConnector.Push'), 'Could push = ', Result);
+    //WriteLn(FuncC('TCConnector.Push'), 'Could push = ', Result);
     if Result then with InputPort.Owner as TCBlock do begin
       Exclude(FRunStatus, drfBlockedByInput);
     end else with FInputPort.Owner as TCBlock do begin
-      WriteLn(FuncC('TCConnector.Push'), Owner.Name, '.', Name, ' connected to ', FInputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
+      //WriteLn(FuncC('TCConnector.Push'), Owner.Name, '.', Name, ' connected to ', FInputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
       if drfTerminated in FRunStatus then with FOutputPort.Owner as TCBlock do begin
         Include(FRunStatus, drfTerminated);
         Break;
@@ -411,19 +432,19 @@ begin
       end;
     end;
   until Result;
-  WriteLn(FuncE('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.Qty = ', FSamples.GetPendingQty);
+  //WriteLn(FuncE('TCConnector.Push'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.Qty = ', FSamples.GetPendingQty);
 end;
 
 function TCConnector.Pop(out Sample: Integer): Boolean;
 begin
-  WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.Qty = ', FSamples.GetPendingQty);
+  WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Samples.Qty = ', FSamples.GetPendingQty);
   repeat
     Result := FSamples.Pop(Pointer(Sample));
-    WriteLn(FuncC('TCConnector.Pop'), 'Could pop = ', Result);
+    //WriteLn(FuncC('TCConnector.Pop'), 'Could pop = ', Result);
     if Result then with OutputPort.Owner as TCBlock do begin
       Exclude(FRunStatus, drfBlockedByOutput);
     end else with FOutputPort.Owner as TCBlock do begin
-      WriteLn(FuncC('TCConnector.Pop'), Owner.Name, '.', Name, ' connected to ', FOutputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
+      //WriteLn(FuncC('TCConnector.Pop'), Owner.Name, '.', Name, ' connected to ', FOutputPort.Name, ' (Terminated = ', drfTerminated in RunStatus, ')');
       if drfTerminated in FRunStatus then with FInputPort.Owner as TCBlock do begin
         Include(FRunStatus, drfTerminated);
         Break;

@@ -66,17 +66,17 @@ end;
 
 procedure TSource.Execute;
 begin
-  WriteLn(FuncB('TSource.Execute'), 'IsFull = ', Output.IsFull, ', SampleQty = ', FSampleQty);
+  //WriteLn(FuncB('TSource.Execute'), 'IsFull = ', Output.IsFull, ', SampleQty = ', FSampleQty);
   UpdateCurrentSeed;
   with Output do begin
-    WriteLn(FuncC('TSource.Execute'), 'IsFull = ', IsFull, ', SampleQty = ', FSampleQty, ', Sample = ', FCurrentSeed);
+    //WriteLn(FuncC('TSource.Execute'), 'IsFull = ', IsFull, ', SampleQty = ', FSampleQty, ', Sample = ', FCurrentSeed);
     Push(FCurrentSeed)
   end;
   FSampleQty -= 1;
   if FSampleQty <= 0 then begin
     Include(FRunStatus, drfTerminated);
   end;
-  WriteLn(FuncE('TSource.Execute'));
+  //WriteLn(FuncE('TSource.Execute'));
 end;
 
 {----------------------------------------------------------------------
