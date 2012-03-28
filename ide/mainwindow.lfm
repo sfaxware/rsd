@@ -56,7 +56,6 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -976,6 +975,8 @@ object IdeMainWindow: TIdeMainWindow
     left = 96
   end
   object SaveDialog1: TSaveDialog
+    DefaultExt = '.*.lpi'
+    Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
     top = 32
   end
   object OpenDialog1: TOpenDialog
