@@ -1025,7 +1025,9 @@ begin
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
   with Result do begin
-    Name := PortName;
+    if PortName <> '' then begin
+      Name := PortName;
+    end;
     CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
   end;
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
