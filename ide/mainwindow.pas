@@ -141,6 +141,7 @@ begin
       FileName := OpenDialog1.FileName
     else
       Exit;
+    BuilderProcess.CommandLine := 'lazbuild ' + FileName;
     Path := ExtractFilePath(FileName);
     Units.Count := GetValue('ProjectOptions/Units/Count', 0);
     if Units.Count > 1 then begin
@@ -255,7 +256,20 @@ end;
 
 procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
 begin
-
+  SaveProject(Sender);
+  with BuilderProcess do begin
+    try
+      Execute;
+    except
+      ShowMessage('Could not find Lazarus builder, please ensure "lazbuild" is in your ${PATH}');
+    end;
+    case ExitStatus of
+      0: ShowMessage('Design compiled successfully');
+      2: ShowMessage('Design failed to compile, please check compiler error message');
+    else
+      ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
+    end;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.ConnectPorts(Sender: TObject);
