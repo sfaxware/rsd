@@ -63,7 +63,7 @@ type
     IdeConfigurationInstalledPackagesMenuItem: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
-    Design: TScrollBox;
+    DesignLayout: TScrollBox;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
@@ -101,6 +101,7 @@ type
     procedure IdeEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure ExitApplication(Sender: TObject);
   private
+    Design: TDesign;
     FSavedWindowState: TWindowState;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
@@ -187,7 +188,7 @@ begin
     Cleanup;
     Load;
   end;
-  ViewFile(Design);
+  ViewFile(DesignLayout);
   TabControl.TabIndex := 0;
 end;
 
@@ -272,7 +273,7 @@ end;
 procedure TIdeMainWindow.SetBlockColor(Sender: TObject);
 begin
   if Sender is TColorDialog then with Sender as TColorDialog do begin
-    //WriteLn('Change Color from ', hexStr(Design.PointedDevice.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
+    //WriteLn('Change Color from ', hexStr(DesignLayout.PointedDevice.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
     Design.PointedDevice.Canvas.Brush.Color := Color;
     Invalidate;
   end;
@@ -283,14 +284,15 @@ begin
   with CodeToolBoss do begin
     OnSearchUsedUnit := @SearchUsedUnit;
   end;
-  with Design do begin
-    OnChildrenCreate := @SetupChildrenEvents;
-  end;
   with OpenDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
+  end;
+  Design := TDesign.Create(DesignLayout);
+  with Design do begin
+    OnChildrenCreate := @SetupChildrenEvents;
   end;
   NewProject(Sender);
 end;
@@ -411,10 +413,10 @@ begin
     case TabIndex of
       0:begin
         SynEdit1.Visible := False;
-        Design.Visible := True;
+        DesignLayout.Visible := True;
       end;
       1:begin
-        Design.Visible := False;
+        DesignLayout.Visible := False;
         SynEdit1.Visible := True;
       end;
     end;
@@ -430,7 +432,7 @@ begin
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   DirList := AppCfg.Lib.Path + 'block' + PathSep + AppCfg.Lib.Path + 'fifo';
-  WriteLn('DirList = ', DirList);
+  //WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
     FileName := LowerCase(TheUnitName) + '.pas';

@@ -639,7 +639,7 @@ object IdeMainWindow: TIdeMainWindow
         end
       end
     end
-    object Design: TScrollBox
+    object DesignLayout: TScrollBox
       Left = 2
       Height = 757
       Top = 30
