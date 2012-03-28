@@ -5,11 +5,17 @@
     <AddToProjectUsesSection Value="False"/>
     <AutoUpdate Value="Manually"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <SearchPaths>
-        <OtherUnitFiles Value="fifo/;block/;num/"/>
+        <OtherUnitFiles Value="fifo;block;num"/>
         <UnitOutputDirectory Value="../build/lib/rsd/core/units/$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="fifo;block;num"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <UseAnsiStrings Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
