@@ -11,6 +11,7 @@ object IdeMainWindow: TIdeMainWindow
   Menu = IdeMainMenu
   OnCreate = FormCreate
   LCLVersion = '0.9.28.2'
+  Visible = True
   object TabControl: TTabControl
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter

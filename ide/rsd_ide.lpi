@@ -89,6 +89,9 @@
       <Unit7>
         <Filename Value="configuration.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="SplashWindow"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="Configuration"/>
       </Unit7>
       <Unit8>

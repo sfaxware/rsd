@@ -5,9 +5,17 @@ unit Configuration;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, LResources, Forms, XMLCfg;
 
 type
+
+  { TSplashWindow }
+
+  TSplashWindow = class(TForm)
+    UserConfig: TXMLConfig;
+    procedure SaveUserConfiguration(Sender: TObject);
+    procedure UpdateConfiguration(Sender: TObject);
+  end;
   PProjectSettings = ^TProjectSettings;
   TProjectSettings = record
     Name: string;
@@ -19,6 +27,11 @@ type
       ResourceExt:string;
     end;
   end;
+  TAppCfgProject = record
+    Name: string;
+    Path: string;
+  end;
+
   TAppCfg = record
     Prefix: string;
     Exec: record
@@ -32,6 +45,10 @@ type
       Home: record
         Path: string
       end;
+      Lang: string;
+      Projects: record
+        Last: TAppCfgProject;
+      end;
     end;
   end;
 
@@ -40,10 +57,17 @@ const
     Prefix: '';
     Exec: (Name: ''; Path: 'bin' + PathDelim);
     Lib: (Path: 'lib' + PathDelim);
-    User: (Home: (Path: ''));
+    User: (
+      Home: (Path: '');
+      Lang: 'C';
+      Projects: (
+        Last: (Name: ''; Path: '')
+      );
+    );
   );
 
 var
+  SplashWindow: TSplashWindow;
   ProjectSettings: TProjectSettings;
 
 function ReSourceFileName(BlockName: string): string;
@@ -72,14 +96,32 @@ begin
   //WriteLn('SourceFileName = ', Result);
 end;
 
-initialization
-  with AppCfg do begin
+{ TSplashWindow }
+
+procedure TSplashWindow.UpdateConfiguration(Sender: TObject);
+begin
+  with AppCfg, UserConfig do begin
     Exec.Name := ParamStr(0);
     Prefix := ExtractFileDir(ExtractFileDir(Exec.Name));
     Exec.Name := ExtractFileNameOnly(Exec.Name);
     Lib.Path += Exec.Name + PathDelim;
     ChDir(Prefix);
     User.Home.Path := AppendPathDelim(GetEnvironmentVariable('HOME'));
+    Filename := User.Home.Path + '.' + Exec.Name;
+    User.Projects.Last.Path := GetValue('AppCfg/User/Projects/Last/Path', '');
   end;
-end.
+  Sleep(500);
+end;
 
+procedure TSplashWindow.SaveUserConfiguration(Sender: TObject);
+begin
+  with AppCfg, UserConfig do begin
+    SetValue('AppCfg/User/Lang', User.Lang);
+    SetValue('AppCfg/User/Projects/Last/Path', User.Projects.Last.Path);
+    Flush;
+  end;
+end;
+
+initialization
+  {$R *.lfm}
+end.
