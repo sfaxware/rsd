@@ -276,14 +276,14 @@ end;
 
 procedure TCOutputPort.Push(Sample: Integer);
 begin
-  WriteLn(FuncB('TCInputPort.Push'));
+  //WriteLn(FuncB('TCInputPort.Push'));
   if Assigned(FConnector) then begin
-    WriteLn(FuncC('TCInputPort.Push'), 'Connector assigned');
+    //WriteLn(FuncC('TCInputPort.Push'), 'Connector assigned');
     FConnector.Push(Sample);
   end else begin
-    WriteLn(FuncC('TCInputPort.Push'), 'Connector not assigned');
+    //WriteLn(FuncC('TCInputPort.Push'), 'Connector not assigned');
   end;
-  WriteLn(FuncE('TCInputPort.Push'));
+  //WriteLn(FuncE('TCInputPort.Push'));
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
@@ -295,9 +295,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn(FuncB('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncB('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn(FuncE('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncE('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
 end;
 
 function TCBlock.GetInputQty: Integer;

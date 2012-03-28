@@ -33,12 +33,14 @@ type
     function random(l:int64): int64;
     procedure SetInitialSeed(Seed: TSourceSeed); override;
     procedure UpdateCurrentSeed; override;
+  public
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
 
 uses
-  BlockBasics;
+  SysUtils, BlockBasics;
 
 procedure TSource.SetInitialSeed(Seed: TSourceSeed);
 begin
@@ -210,6 +212,12 @@ end;
 procedure TRandomSource.UpdateCurrentSeed;
 begin
   FCurrentSeed := random(MaxUIntValue);
+end;
+
+constructor TRandomSource.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  InitialSeed := Trunc(Now * 123456789);
 end;
 
 end.

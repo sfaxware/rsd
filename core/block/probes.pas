@@ -5,7 +5,7 @@ unit Probes;
 interface
 
 uses
-  BlocKs;
+  Classes, Blocks;
 
 type
   TProbe = class(TBlock)
@@ -19,8 +19,9 @@ type
     FFileName:string;
     procedure SetFileName(AFileName: string);
   public
-    procedure Execute; override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Execute; override;
   published
     property FileName: string read FFileName write SetFileName;
   end;
@@ -28,20 +29,32 @@ type
 implementation
 
 uses
-  BlockBasics;
+  SysUtils, BlockBasics;
 
 procedure TFileDumpProbe.SetFileName(AFileName: string);
+var
+  Size: LongInt;
 begin
   //WriteLn(FuncB('TFileDumpProbe.SetFileName'), 'AFileNAme = ', AFileNAme);
   if FFileName = AFileNAme then
     Exit;
   if FFileName <> '' then begin
     Close(FFile);
+    Size := FileSeek(GetFileHandle(FFile), 0, fsFromEnd);
+    if Size <= 0 then begin
+      Erase(FFile);
+    end;
   end;
   FFileName := AFileName;
   System.Assign(FFile, FFileName);
   ReWrite(FFile);
   //WriteLn(FuncE('TFileDumpProbe.SetFileName'), 'FFileName = ', FFileName);
+end;
+
+constructor TFileDumpProbe.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FileName := GetTempFileName;
 end;
 
 procedure TFileDumpProbe.Execute;
