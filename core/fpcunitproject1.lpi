@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="5"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+      <ActiveEditorIndexAtStart Value="5"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="FPCUnitConsoleRunner"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="17">
+      <Unit0>
+        <Filename Value="fpcunitproject1.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="fpcunitproject1"/>
+        <CursorPos X="59" Y="24"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="testcase1.pas"/>
+        <UnitName Value="TestCase1"/>
+        <CursorPos X="43" Y="26"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../../src/lazarus/components/fpcunit/console/consoletestrunner.pas"/>
+        <UnitName Value="consoletestrunner"/>
+        <CursorPos X="26" Y="84"/>
+        <TopLine Value="55"/>
+        <UsageCount Value="9"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="math/mathbasics.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MathBasics"/>
+        <CursorPos X="29" Y="21"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../src/fpcbuild-2.1.3/fpcsrc/rtl/inc/objpash.inc"/>
+        <CursorPos X="8" Y="216"/>
+        <TopLine Value="183"/>
+        <UsageCount Value="9"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../src/fpc/compiler/tokens.pas"/>
+        <UnitName Value="tokens"/>
+        <CursorPos X="27" Y="45"/>
+        <TopLine Value="16"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../src/fpcbuild-2.1.3/fpcsrc/compiler/tokens.pas"/>
+        <UnitName Value="tokens"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../src/fpc/rtl/linux/si_prc.pp"/>
+        <UnitName Value="si_prc"/>
+        <CursorPos X="24" Y="26"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_prc.inc"/>
+        <CursorPos X="1" Y="42"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_c21g.inc"/>
+        <CursorPos X="66" Y="40"/>
+        <TopLine Value="16"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_c21.inc"/>
+        <CursorPos X="60" Y="34"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_c.inc"/>
+        <CursorPos X="72" Y="37"/>
+        <TopLine Value="11"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_dll.inc"/>
+        <CursorPos X="1" Y="42"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../src/fpc/rtl/linux/i386/si_g.inc"/>
+        <CursorPos X="67" Y="35"/>
+        <TopLine Value="11"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="math/mathvectors.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MathVectors"/>
+        <CursorPos X="28" Y="8"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="math/mathmatrices.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MathMatrices"/>
+        <CursorPos X="74" Y="6"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="math/mathsetn.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MathSetN"/>
+        <CursorPos X="9" Y="7"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit16>
+    </Units>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="math/mathsetn.pas"/>
+        <Caret Line="12" Column="28" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="math/mathsetn.pas"/>
+        <Caret Line="19" Column="60" TopLine="1"/>
+      </Position2>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <SearchPaths>
+      <OtherUnitFiles Value="math/"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="2">
+      <Item1>
+        <Name Value="ECodetoolError"/>
+      </Item1>
+      <Item2>
+        <Name Value="EFOpenError"/>
+      </Item2>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
