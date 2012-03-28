@@ -12,17 +12,19 @@ type
   TRoute = array of TPoint;
   TRoutes = array of TRoute;
 
-function Bounds(Route: TRoute): TRect;
+function Bounds(R: TRoute): TRect;
 function Intersect(const S1, S2: TSegment): Boolean;
 function Intersect(const S1: TSegment; S: array of TSegment): Boolean;
 function Intersect(const S1: TSegment; S: TRoute): Boolean;
 function Segment(const P1, P2: TPoint): TSegment;
 function RectCenter(Rect: TRect): TPoint;
 function Route(const P1, P2: TPoint; const Routes: TRoutes): TRoute;
+procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
+procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
 
 implementation
 
-function Bounds(Route: TRoute): TRect;
+function Bounds(R: TRoute): TRect;
 var
   i: Integer;
 begin
@@ -31,7 +33,7 @@ begin
     Left := MaxInt;
     Bottom := 0;
     Right := 0;
-    for i := Low(Route) to High(Route) do with Route[i] do begin
+    for i := Low(R) to High(R) do with R[i] do begin
       if Left > x then
         Left := x;
       if Right < x then
@@ -108,6 +110,16 @@ begin
   Result[3] := P2;
   Result[1] := Point((Result[0].x + Result[3].x) div 2, Result[0].y);
   Result[2] := Point((Result[0].x + Result[3].x) div 2, Result[3].y);
+end;
+
+procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
+begin
+  SetLength(Routes, Length(Routes) + 1);
+  Routes[Length(Routes) - 1] := R;
+end;
+
+procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
+begin
 end;
 
 end.
