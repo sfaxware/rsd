@@ -59,6 +59,7 @@ type
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
+    destructor Destroy; override;
     function GetDescription: TLFMTree;
     function GetUpdatedDescription: string;
     function Load: boolean;
@@ -430,6 +431,11 @@ begin
   Canvas.Brush.Color := clRed;
 end;
 
+destructor TCGraphBlock.Destroy;
+begin
+  inherited Destroy;
+end;
+
 function TCGraphBlock.GetDescription: TLFMTree;
 begin
   if Load then with CodeToolBoss do begin
@@ -488,7 +494,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
-      CodeBuffer[CodeType] := TCodeCache.Create.LoadFile(CodeFile[CodeType]);
+      GetCodeBuffer(CodeFile[CodeType], cttBlock, Self, CodeBuffer[CodeType]);
     end;
   end;
   Result := true;

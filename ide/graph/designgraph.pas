@@ -45,18 +45,7 @@ begin
 end;
 
 destructor TCGraphDesign.Destroy;
-var
-  CodeType: TCodeType;
-  CodeCache: TCodeCache;
 begin
-  for CodeType := Low(CodeType) to High(CodeType) do begin
-    if Assigned(CodeBuffer[CodeType]) then begin
-      CodeCache := CodeBuffer[CodeType].CodeCache;
-      if Assigned(CodeCache) then begin
-        FreeAndNil(CodeCache);
-      end;
-    end;
-  end;
   inherited Destroy;
 end;
 
