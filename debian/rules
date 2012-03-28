@@ -15,6 +15,7 @@ FPCVER=$(shell ${FPC} -iV)
 DEB_VERSION:=$(shell dpkg-parsechangelog | egrep '^Version:' | cut -f 2 -d ' ')
 DEB_UPSTREAM_VERSION:=$(shell echo $(DEB_VERSION) | cut -f 1 -d -)
 DEB_UPSTREAM_MAIN_VERSION:=$(shell echo ${DEB_UPSTREAM_VERSION} | sed -e 's/^\([0-9\.]*\).*/\1/')
+DEB_BUILD=$(lastword $(subst -, ,${DEB_VERSION}))
 # Get directories
 CURDIR:=$(shell pwd)
 BUILD_DIR=$(CURDIR)/debian/build
@@ -123,6 +124,16 @@ install-arch-stamp:
 	      ../$${PACKAGE}/usr/share/lintian/overrides/$${PACKAGE} ; \
 	  fi ; \
 	done
+ifeq (${DEB_BUILD},0)
+	# We are building upstream debs, install override files for build = 0
+	set -x -e ; cd debian ; for PACKAGE in `sed -n -e 's/Package: \(.*\)/\1/p' control` ; do \
+	  if [ -d $${PACKAGE} ] ; \
+	  then \
+	    ${MKDIR} $${PACKAGE}/usr/share/lintian/overrides ; \
+	    echo "$${PACKAGE}: debian-revision-should-not-be-zero" >> $${PACKAGE}/usr/share/lintian/overrides/$${PACKAGE} ; \
+	  fi ; \
+	done
+endif
 	find ${INSTALL_DIR} -empty -delete
 	touch install-arch-stamp
 
@@ -206,6 +217,16 @@ binary-indep: clean-patched build-doc install-doc install-source debian-files
 	      ../$${PACKAGE}/usr/share/lintian/overrides/$${PACKAGE} ; \
 	  fi ; \
 	done
+ifeq (${DEB_BUILD},0)
+	# We are building upstream debs, install override files for build = 0
+	set -x -e ; cd debian ; for PACKAGE in `sed -n -e 's/Package: \(.*\)/\1/p' control` ; do \
+	  if [ -d $${PACKAGE} ] ; \
+	  then \
+	    ${MKDIR} $${PACKAGE}/usr/share/lintian/overrides ; \
+	    echo "$${PACKAGE}: debian-revision-should-not-be-zero" >> $${PACKAGE}/usr/share/lintian/overrides/$${PACKAGE} ; \
+	  fi ; \
+	done
+endif
 	dh_compress -i -X.pdf
 	dh_fixperms -i
 	dh_installdeb -i
