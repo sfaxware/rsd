@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, CodeCache, GraphComponents;
 
 type
-  TCGraphDesign = class(TScrollBox, TIGraphDevice)
+  TDesign = class(TScrollBox, TIGraphDevice)
   private
     FMagnification: Real;
     FOnChildrenCreate: TNotifyEvent;
@@ -18,47 +18,47 @@ type
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SimCodeBuffer: TCodeBuffer;
-    PointedDevice : TCGraphDevice;
-    SelectedBlock:TCGraphBlock;
-    SelectedInputPort: TCGraphInputPort;
-    SelectedOutputPort: TCGraphOutputPort;
+    PointedDevice : TDevice;
+    SelectedBlock:TBlock;
+    SelectedInputPort: TInputPort;
+    SelectedOutputPort: TOutputPort;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function AddNewBlock(ADeviceName, ADeviceType: string): TCGraphBlock; virtual;
-    function AddNewConnector(ADeviceName, ADeviceType: string): TCGraphConnector; virtual;
+    function AddNewBlock(ADeviceName, ADeviceType: string): TBlock; virtual;
+    function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
-    procedure DeleteConnector(var Connector: TCGraphConnector);
-    procedure DestroyBlock(var Block: TCGraphBlock);
+    procedure DeleteConnector(var Connector: TConnector);
+    procedure DestroyBlock(var Block: TBlock);
     procedure SelectBlock(Sender: TObject);
     property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   end;
-  TScrollBox = class(TCGraphDesign);
+  TScrollBox = class(TDesign);
 
 implementation
 uses
   Controls, Graphics, LFMTrees, CodeToolManager, CodeWriter,
   Magnifier, Configuration;
                         
-constructor TCGraphDesign.Create(AOwner: TComponent);
+constructor TDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  //WriteLn('Created new TCGraphDesign class instance');
+  //WriteLn('Created new TDesign class instance');
   OnMouseWheel := @MouseWheele;
   FMagnification := 1;
 end;
 
-destructor TCGraphDesign.Destroy;
+destructor TDesign.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TCGraphDesign.Cleanup;
+procedure TDesign.Cleanup;
 var
   CodeType: TCodeType;
 begin
@@ -78,7 +78,7 @@ begin
     SelectedOutputPort := nil;
 end;
 
-function TCGraphDesign.AddNewBlock(ADeviceName, ADeviceType: string):TCGraphBlock;
+function TDesign.AddNewBlock(ADeviceName, ADeviceType: string):TBlock;
 var
   R: TRect;
   w, h: Integer;
@@ -117,7 +117,7 @@ begin
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
-function TCGraphDesign.AddNewConnector(ADeviceName, ADeviceType: string): TCGraphConnector;
+function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;
 begin
   Result := CreateConnector(ADeviceName, ADeviceType, Self);
   with Result do begin
@@ -134,22 +134,22 @@ begin
   end;
 end;
 
-function TCGraphDesign.DeviceIdentifier: string;
+function TDesign.DeviceIdentifier: string;
 begin
   Result := Name;
 end;
 
-function TCGraphDesign.DeviceType: string;
+function TDesign.DeviceType: string;
 begin
   Result := 'TCustomDesign';
 end;
 
-function TCGraphDesign.DeviceAncestorType: string;
+function TDesign.DeviceAncestorType: string;
 begin
   Result := 'TDesign';
 end;
 
-function TCGraphDesign.DeviceDescription(Indent: string): string;
+function TDesign.DeviceDescription(Indent: string): string;
 var
   Component: TComponent;
   i: Integer;
@@ -157,38 +157,38 @@ begin
   Result := Indent + 'object ' + Name + 'Simulator: TCustomDesign' + LineEnding;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
-    if Component is TCGraphConnector then with Component as TCGraphConnector do begin
+    if Component is TConnector then with Component as TConnector do begin
       Result += DeviceDescription(Indent + '  ');
-    end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+    end else if Component is TBlock then with Component as TBlock do begin
       Result += DeviceDescription(Indent + '  ');
     end;
   end;
   Result += Indent + 'end' + LineEnding;
 end;
 
-procedure TCGraphDesign.DeleteConnector(var Connector: TCGraphConnector);
+procedure TDesign.DeleteConnector(var Connector: TConnector);
 begin
   FreeAndNil(Connector);
 end;
 
-procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
+procedure TDesign.DestroyBlock(var Block: TBlock);
 begin
   FreeAndNil(Block);
 end;
 
-procedure TCGraphDesign.HandleMouseEnter(Sender: TObject);
+procedure TDesign.HandleMouseEnter(Sender: TObject);
 begin
-  PointedDevice := Sender as TCGraphDevice;
+  PointedDevice := Sender as TDevice;
 end;
 
-procedure TCGraphDesign.HandleMouseLeave(Sender: TObject);
+procedure TDesign.HandleMouseLeave(Sender: TObject);
 begin
   if Sender = PointedDevice then begin
     PointedDevice := nil;
   end;
 end;
 
-procedure TCGraphDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+procedure TDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
   i: Integer;
   Control: TControl;
@@ -215,7 +215,7 @@ begin
     end;
     for i := 0 to ControlCount - 1 do begin
       Control := Controls[i];
-      if Control is TCGraphBlock then with Control as TMagnifier do begin
+      if Control is TBlock then with Control as TMagnifier do begin
         Magnify(m);
       end;
     end;
@@ -224,17 +224,17 @@ begin
   end;
 end;
 
-procedure TCGraphDesign.SelectBlock(Sender: TObject);
+procedure TDesign.SelectBlock(Sender: TObject);
 begin
-  if Sender is TCGraphBlock then begin
+  if Sender is TBlock then begin
      if Assigned(SelectedBlock) then
        SelectedBlock.Selected := False;
-    SelectedBlock := Sender as TCGraphBlock;
+    SelectedBlock := Sender as TBlock;
     SelectedBlock.Selected := True;
   end;
 end;
 
-function TCGraphDesign.Load: Boolean;
+function TDesign.Load: Boolean;
 var
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
@@ -260,8 +260,8 @@ begin
     Exit(False);
   end;
   with CodeToolBoss do begin
-    //WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
-    //WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
+    //WriteLn('TDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
+    //WriteLn('TDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
     if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
       if not Assigned(DesignDescription) then begin
@@ -271,7 +271,7 @@ begin
       end;
     end;
   end;
-  //WriteLn('TCGraphDesign.Load : LFM created');
+  //WriteLn('TDesign.Load : LFM created');
   BlockDescription := FindObjectProperty(nil, DesignDescription);
   while Assigned(BlockDescription) do begin
     //WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
@@ -286,7 +286,7 @@ begin
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       Component := Component.FindComponent(PortName);
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedOutputPort := Component as TCGraphOutputPort;
+      SelectedOutputPort := Component as TOutputPort;
       PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
@@ -296,7 +296,7 @@ begin
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       Component := Component.FindComponent(PortName);
       //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedInputPort := Component as TCGraphInputPort;
+      SelectedInputPort := Component as TInputPort;
       AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
     end else begin
       if Assigned(SelectedBlock) then
@@ -309,7 +309,7 @@ begin
   end;
 end;
 
-function TCGraphDesign.Save: Boolean;
+function TDesign.Save: Boolean;
 var
   Component: TComponent;
   i: Integer;
@@ -324,7 +324,7 @@ begin
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
-    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+    if Component is TBlock then with Component as TBlock do begin
       Result := Result and Save;
     end; 
   end;
@@ -335,9 +335,9 @@ end;
 
 {procedure Register;
 begin
-  RegisterComponents('GraphDesign', [TCGraphDesign]);
+  RegisterComponents('GraphDesign', [TDesign]);
 end;
 
 initialization
-  RegisterClass(TCGraphDesign);}
+  RegisterClass(TDesign);}
 end.
