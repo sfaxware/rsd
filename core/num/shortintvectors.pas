@@ -7,16 +7,16 @@
 // Bug report             : mazen.neifer@supaero.org
 //*****************************************************************************
 unit ShortIntVectors;
-{$MODE FPC}
+{$MODE OBJFPC}
 interface
-{$DEFINE Interface}
+{$DEFINE INTERFACE}
 
 uses
   Reals;
 
 type
-  TVectorBase=ShortInt;
-  TVectorIndex=Word;{This allows us to use huge vectors}
+  TVectorBase = ShortInt;
+  TVectorIndex = Word;{This allows us to use huge vectors}
   {The upper part (just up to this line) is used to define the types that will
   be used to generate executable code. All pascal code that is written before
   this line will compile with more than base type. Independent implementation
@@ -26,7 +26,7 @@ type
 {$I vectors.inc}
 
 implementation
-{$UNDEF Interface}
+{$UNDEF INTERFACE}
 
 {$I vectors.inc}
 end.

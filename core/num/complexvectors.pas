@@ -7,7 +7,7 @@
 // Bug report             : mazen.neifer@supaero.org
 //*****************************************************************************
 unit ComplexVectors;
-{$MODE FPC}
+{$MODE OBJFPC}
 interface
 {$DEFINE INTERFACE}
 
@@ -15,8 +15,8 @@ uses
   Reals, Complex;
 
 type
-  TVectorBase=TComplex;{If you want more precision you can chage to extended/...}
-  TVectorIndex=DWord;{This allows us to use huge vectors}
+  TVectorBase = TComplex;{If you want more precision you can chage to extended/...}
+  TVectorIndex = DWord;{This allows us to use huge vectors}
   {The upper part (just up to this line) is used to define the types that will
   be used to generate executable code. All pascal code that is written before
   this line will compile with more than base type. Independent implementation
