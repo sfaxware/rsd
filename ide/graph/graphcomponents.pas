@@ -17,7 +17,7 @@ const
 type
   TCodeType = (ctSource, ctDescription);
   TCodeTemplateType = (cttNone, cttDescription, cttSimulator, cttDesign, cttBlock, cttSource, cttProbe);
-  TIGraphDevice = interface
+  IDevice = interface
     function DeviceAncestorType: string;
     function DeviceAncestorUnitName: string;
     function DeviceDescription(Indent: string): string;
@@ -32,7 +32,7 @@ type
     PropType: TDevicePropertyType;
     DefaultValue: TDeviceProperty;
   end;
-  TDevice = class(TMagnifier, TIGraphDevice)
+  TDevice = class(TMagnifier, IDevice)
   private
     FOnCreate: TNotifyEvent;
     FDeviceType: string;
@@ -72,16 +72,16 @@ type
   end;
   TDeviceClass = class of TDevice;
   TConnector = class;
-  TIPort = interface(TIGraphDevice)
+  IPort = interface(IDevice)
     function GetConnector: TConnector;
     procedure SetConnector(AConnector: TConnector);
     property Connector: TConnector read GetConnector write SetConnector;
   end;
-  TIInputPort = interface(TIPort)
+  IInputPort = interface(IPort)
   end;
-  TIOutputPort = interface(TIPort)
+  IOutputPort = interface(IPort)
   end;
-  TPort = class(TDevice, TIPort)
+  TPort = class(TDevice, IPort)
   private
     FConnector: TConnector;
   protected
@@ -96,13 +96,13 @@ type
     procedure SetConnector(AConnector: TConnector);
     property Connector: TConnector read GetConnector write SetConnector;
   end;
-  TInputPort = class(TPort, TIInputPort)
+  TInputPort = class(TPort, IInputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
   end;
-  TOutputPort = class(TPort, TIOutputPort)
+  TOutputPort = class(TPort, IOutputPort)
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   public

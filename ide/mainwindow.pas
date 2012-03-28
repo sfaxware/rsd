@@ -593,7 +593,7 @@ end;
 procedure TIdeMainWindow.ViewFile(Sender: TObject);
 var
   CodeFileName: string;
-  GraphDevice: TIGraphDevice;
+  GraphDevice: IDevice;
   CodeTemplate: TCodeTemplateType;
   CodeBuffer: TCodeBuffer;
   DeviceName: string;
