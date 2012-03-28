@@ -531,16 +531,21 @@ var
   CodeBuffer: TCodeBuffer;
   DeviceName: string;
 begin
+  if Sender = DesignLayout then begin
+    Sender := Design;
+  end;
+  if Sender is TTop then with Sender as TDesign do begin
+    GraphDevice := Sender as TDevice;
+    CodeTemplate := cttDesign;
+  end else if Sender is TBlock then begin
+    GraphDevice := Sender as TDevice;
+    CodeTemplate := cttBlock;
+  end else begin
+    GraphDevice := nil;
+  end;
   with SynEdit1 do begin
     if Assigned(EditorCodeBuffer) and Modified then begin
        EditorCodeBuffer.Source := Text;
-    end;
-    if Sender is TBlock then begin
-      GraphDevice := Sender as TBlock;
-      CodeTemplate := cttBlock;
-    end else if Sender is TDesign then with Sender as TDesign do begin
-      GraphDevice := Sender as TDesign;
-      CodeTemplate := cttDesign;
     end;
     if Assigned(GraphDevice) then with Sender as TComponent do begin
       DeviceName := Name;
