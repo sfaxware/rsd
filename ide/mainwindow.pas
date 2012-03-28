@@ -342,11 +342,11 @@ begin
       else
         ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
       end;
+      IdeCompileMenuItem.Enabled := True;
+      IdeEditMenuItem.Enabled := True;
+      IdeFileSaveMenuItem.Enabled := True;
     end;
   end;
-  IdeCompileMenuItem.Enabled := True;
-  IdeEditMenuItem.Enabled := True;
-  IdeFileSaveMenuItem.Enabled := True;
 end;
 
 procedure TIdeMainWindow.ConnectPorts(Sender: TObject);
