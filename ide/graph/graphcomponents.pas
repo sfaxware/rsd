@@ -594,9 +594,6 @@ var
   i: Integer;
   PropValue: TDeviceProperty;
 begin
-  if(Indent <> '') and (Self is TBlock)then begin
-    Result += Indent + '  Caption = ''' + Caption + '''' + LineEnding;
-  end;
   with Devices[FDeviceId] do begin
     for i := Low(Properties) to High(Properties) do begin;
       case Properties[i].PropType of
@@ -606,13 +603,6 @@ begin
       end;
       Result += Indent + '  ' + Properties[i].PropName + ' = ' + PropValue + LineEnding;
     end;
-  end;
-  if Self is TBlock then with OriginalBounds do begin
-    Result += Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
-              Indent + '  Left = ' + IntToStr(Left) + LineEnding +
-              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
-              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
-              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
 end;
 
@@ -1079,12 +1069,19 @@ function TBlock.DevicePropertiesDescription(Indent: string): string;
 var
   i: Integer;
 begin
+  Result := '';
   if Indent = '' then begin
     for i := 0 to ComponentCount - 1 do with Components[i] as TDevice do begin
       Result += DeviceDescription(Indent + '  ');
     end;
-  end else begin
-    Result := inherited;
+  end else with OriginalBounds do begin
+    Result += Indent + '  Caption = ''' + Caption + '''' + LineEnding;
+    Result += inherited;
+    Result += Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+              Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
   end;
 end;
 
