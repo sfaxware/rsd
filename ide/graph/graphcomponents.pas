@@ -48,7 +48,6 @@ type
     function SetProperty(PropIndex: Integer; PropVal: TDeviceProperty): Boolean; virtual;
     function SetProperty(const PropName: string; PropVal: TDeviceProperty): Boolean;
     procedure SetAncestorType(const AncestorType: string);
-    procedure SetName(const Value: TComponentName); override;
     procedure SetPropVal(PropIndex: Integer; PropVal: TDeviceProperty);
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
@@ -518,24 +517,6 @@ begin
       SetProperty(PropIndex, Properties[PropIndex].DefaultValue);
     end;
   end;
-end;
-
-procedure TDevice.SetName(const Value: TComponentName);
-var
-  i: Integer;
-  AName: TComponentName;
-begin
-  i := 0;
-  AName := Value;
-  repeat
-    try
-      inherited SetName(AName);
-      i := MaxInt;
-    except
-      AName := Value + IntToStr(i);
-      i += 1;
-    end;
-  until i = MaxInt;
 end;
 
 procedure TDevice.SetPropVal(PropIndex: Integer; PropVal: TDeviceProperty);
