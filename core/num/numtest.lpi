@@ -30,9 +30,9 @@
     </RunParams>
     <Units Count="1">
       <Unit0>
-        <Filename Value="testnum.lpr"/>
+        <Filename Value="numtest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="testnum"/>
+        <UnitName Value="numtest"/>
       </Unit0>
     </Units>
   </ProjectOptions>
