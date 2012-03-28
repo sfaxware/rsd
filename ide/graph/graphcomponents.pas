@@ -505,7 +505,7 @@ begin
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
   Result := CodeBuffer[ctDescription].Save;}
   CodeFileName := DesignDir + PathDelim + Name + '.pas';
-  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
+  GetCodeBuffer(CodeFileName, cttBlock, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
   for CodeType := Low(CodeType) To High(CodeType) do

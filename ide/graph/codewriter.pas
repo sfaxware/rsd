@@ -7,8 +7,11 @@ interface
 uses
   Classes, SysUtils, ComCtrls,CodeCache, CodeTree;
 
+type
+  TCodeTemplateType = (cttNone, cttSimulator, cttDesign, cttBlock);
+
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-procedure GetCodeBuffer(FileName: string; Owner: TComponent; var Self: TCodeBuffer);
+procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent; var Self: TCodeBuffer);
 
 implementation
 
@@ -76,9 +79,8 @@ procedure WriteDesignSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
-    Insert(SourceLength, 'program Simulate' + Owner.Name + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' +
-      LineEnding +
+    Insert(SourceLength, 'unit ' + Owner.Name + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
       'interface' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
@@ -89,30 +91,47 @@ begin
       '  end;' + LineEnding +
       LineEnding +
       'var' + LineEnding +
-      '  ' + Owner.Name + ': TCustom' + Owner.Name + LineEnding +
+      '  ' + Owner.Name + ': TCustom' + Owner.Name + ';' + LineEnding +
       LineEnding +
-      'begin' + LineEnding +
+      'implementation' + LineEnding +
+      LineEnding +
+      'initialization' + LineEnding +
       '  {$R *.lfm}' + LineEnding +
-      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(' + Owner.Name + ');' + LineEnding +
-      '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
+      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(''' + Owner.Name + ''');' + LineEnding +
+      LineEnding +
+      'finalization' + LineEnding +
       '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
       'end.');
   end;
 end;
 
-procedure GetCodeBuffer(FileName: string; Owner: TComponent; var Self: TCodeBuffer);
+procedure WriteSimulatorSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
+begin
+  with Self do begin
+    Clear;
+    Insert(SourceLength, 'program Simulate' + Owner.Name + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  ' + Owner.Name + ';' + LineEnding +
+      LineEnding +
+      'begin' + LineEnding +
+      '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
+      'end.');
+  end;
+end;
+
+procedure GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent; var Self: TCodeBuffer);
 begin
   if not Assigned(Self) then begin
     Self := TCodeCache.Create.LoadFile(FileName);
   end;
   if not Assigned(Self) then begin
     Self := TCodeCache.Create.CreateFile(FileName);
-    with Self do begin
-      if Owner is TCGraphDesign then begin
-        WriteDesignSourceTemplate(Owner, Self);
-      end else if Owner is TCGraphBlock then begin
-        WriteBlockSourceTemplate(Owner, Self);
-      end;
+    case template of
+      cttSimulator: WriteSimulatorSourceTemplate(Owner, Self);
+      cttDesign: WriteDesignSourceTemplate(Owner, Self);
+      cttBlock: WriteBlockSourceTemplate(Owner, Self);
     end;
   end;
 end;

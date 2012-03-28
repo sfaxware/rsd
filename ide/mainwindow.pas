@@ -58,6 +58,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
+    procedure ViewFile(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
     procedure SelectBlockName(Sender: TObject);
     procedure SetBlockColor(Sender: TObject);
@@ -72,7 +73,6 @@ type
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
     destructor Destroy; override;
-    procedure ViewFile(Sender: TObject);
   end;
 
 var
@@ -126,6 +126,8 @@ begin
     Path :=  'design/blocks/';
     Design.Load(Path);
   end;
+  ViewFile(Design);
+  TabControl.TabIndex := 0;
 end;
 
 procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
@@ -167,7 +169,7 @@ begin
      EditorCodeBuffer.Source := Text;
      MarkTextAsSaved;
   end;
-  Design.Save(Name);
+  Design.Save;
 end;
 
 procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
@@ -245,14 +247,14 @@ var
   ProjectSettings: PProjectSettings;
 begin
   ProjectSettings := _ProjectSettings;
-  //WriteLn('SrcFilename = ', SrcFilename);
-  //WriteLn('TheUnitName = ', TheUnitName);
-  //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  WriteLn('SrcFilename = ', SrcFilename);
+  WriteLn('TheUnitName = ', TheUnitName);
+  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   if TheUnitName = 'Blocks' then
-    FileName := ProjectSettings^.Core.Blocks.Path + '../../ide/graph/' + LowerCase(TheUnitName) + '.pas'
+    FileName := ProjectSettings^.Core.Blocks.Path + '/../../ide/graph/' + LowerCase(TheUnitName) + '.pas'
   else
     FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
-  //WriteLn('FileName = ', FileName);
+  WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;
 
@@ -270,21 +272,28 @@ end;
 
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 begin
-  if Sender is TCGraphBlock then begin
-    with Sender as TCGraphBlock do begin
-      if Save then with SynEdit1 do begin
-        if Assigned(EditorCodeBuffer) then begin
-           EditorCodeBuffer.Source := Text;
-        end;
-        EditorCodeBuffer := CodeBuffer[ctSource];
-        Text := EditorCodeBuffer.Source;
-        TabControl.TabIndex := 1;
-        CaretXY := Point(3, 17);
-        EnsureCursorPosVisible;
-        SetFocus;
-      end else
-        ShowMessage('False');
+  with SynEdit1 do begin
+    if Assigned(EditorCodeBuffer) then begin
+       EditorCodeBuffer.Source := Text;
     end;
+    if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
+      if Save then begin
+        EditorCodeBuffer := CodeBuffer[ctSource];
+      end else begin
+        ShowMessage('Unable to save file')
+      end
+    end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
+      if Save then begin
+        EditorCodeBuffer := CodeBuffer[ctSource];
+      end else begin
+        ShowMessage('Unable to save file')
+      end;
+    end;
+    Text := EditorCodeBuffer.Source;
+    TabControl.TabIndex := 1;
+    CaretXY := Point(3, 17);
+    EnsureCursorPosVisible;
+    SetFocus;
   end;
 end;
 
@@ -308,9 +317,12 @@ var
   ProjectSettings: PProjectSettings;
 begin
   ProjectSettings := _ProjectSettings;
-  with SelectDirectoryDialog1 do
-    if Execute then
-      ProjectSettings^.Core.Blocks.Path := FileName;
+  with ProjectSettings^, SelectDirectoryDialog1 do begin
+    if Execute then begin
+      Core.Blocks.Path := FileName;
+    end;
+    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+  end;
 end;
 
 initialization

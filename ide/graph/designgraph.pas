@@ -14,6 +14,7 @@ type
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
+    SimCodeBuffer: TCodeBuffer;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
@@ -23,7 +24,7 @@ type
     function GetUpdatedDescription: string;
     function Load: Boolean;
     function Load(Path: string): Boolean;
-    function Save(DesignName: string): Boolean;
+    function Save: Boolean;
     procedure ConnectPorts(Sender: TObject);
     procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
@@ -243,7 +244,7 @@ begin
   DesignDescription.Free;
 end;
 
-function TCGraphDesign.Save(DesignName: string): Boolean;
+function TCGraphDesign.Save: Boolean;
 var
   Component: TComponent;
   i: Integer;
@@ -258,11 +259,13 @@ begin
     end; 
   end;
   CodeFileName := DesignDir + '/' + Name + '.lfm';
-  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctDescription]);
+  GetCodeBuffer(CodeFileName, cttNone,Self, CodeBuffer[ctDescription]);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
   Result := CodeBuffer[ctDescription].Save;
+  CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
+  GetCodeBuffer(CodeFileName, cttSimulator, Self, SimCodeBuffer);
   CodeFileName := DesignDir + '/' + Name + '.pas';
-  GetCodeBuffer(CodeFileName, Self, CodeBuffer[ctSource]);
+  GetCodeBuffer(CodeFileName, cttDesign, Self, CodeBuffer[ctSource]);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
 end;
