@@ -380,12 +380,12 @@ end;
 
 function TCConnector.GetIsEmpty: Boolean;
 begin
-  Result := False;
+  Result := FSamples.GetPendingQty <= 0;
 end;
 
 function TCConnector.GetIsFull: Boolean;
 begin
-  Result := False;
+  Result := FSamples.GetPendingQty > 0;
 end;
 
 constructor TCConnector.Create(AOwner: TComponent);
@@ -440,12 +440,14 @@ end;
 procedure TCConnector.Push(Sample: Integer);
 begin
   WriteLn(FuncB('TCConnector.Push'), 'Sample = ', Sample);
+  FSamples.Push(Pointer(Sample));
   WriteLn(FuncE('TCConnector.Push'), 'Sample = ', Sample);
 end;
 
 procedure TCConnector.Pop(out Sample: Integer);
 begin
   WriteLn(FuncB('TCConnector.Pop'), 'Sample = ', Sample);
+  Sample := Integer(FSamples.Pop);
   WriteLn(FuncE('TCConnector.Pop'), 'Sample = ', Sample);
 end;
 
