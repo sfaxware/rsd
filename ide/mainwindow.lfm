@@ -7,16 +7,14 @@ object IdeMainWindow: TIdeMainWindow
   Caption = 'Rapid Simulators Designer IDE'
   ClientHeight = 814
   ClientWidth = 1036
-  Font.Color = clDefault
   Menu = IdeMainMenu
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = ExitApplication
-  LCLVersion = '0.9.28.2'
+  LCLVersion = '0.9.29'
   Visible = True
   object TabControl: TTabControl
     AnchorSideLeft.Control = Owner
-    AnchorSideLeft.Side = asrCenter
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -31,7 +29,6 @@ object IdeMainWindow: TIdeMainWindow
     BorderSpacing.Top = 2
     BorderSpacing.Right = 2
     BorderSpacing.Bottom = 2
-    Font.Color = clDefault
     Font.Height = 12
     Font.Name = 'Arial 12'
     OnChange = TabControlChange
@@ -43,13 +40,12 @@ object IdeMainWindow: TIdeMainWindow
       'Source'
     )
     TabStop = False
-    object SynEdit1: TSynEdit
+    inline SynEdit1: TSynEdit
       Left = 2
       Height = 757
       Top = 30
       Width = 838
       Align = alClient
-      Font.Color = clDefault
       Font.Height = -15
       Font.Name = 'courier'
       Font.Pitch = fpFixed
@@ -58,9 +54,32 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
+        item
+          Shift = []
+          ShiftMask = []
+          Button = mbLeft
+          ClickCount = ccAny
+          ClickDir = cdDown
+          Command = 13
+          MoveCaret = False
+          Option = 0
+          Priority = 0
+        end      
+        item
+          Shift = []
+          ShiftMask = []
+          Button = mbRight
+          ClickCount = ccSingle
+          ClickDir = cdUp
+          Command = 12
+          MoveCaret = False
+          Option = 0
+          Priority = 0
+        end>
+      RightGutter.Width = 0
+      RightGutter.MouseActions = <      
         item
           Shift = []
           ShiftMask = []
@@ -530,9 +549,9 @@ object IdeMainWindow: TIdeMainWindow
         end>
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
-      object TSynGutterPartList
+      inline TSynGutterPartList
         object TSynGutterMarks
-          Width = 23
+          Width = 24
         end
         object TSynGutterLineNumber
           Width = 19
@@ -648,14 +667,12 @@ object IdeMainWindow: TIdeMainWindow
       Align = alClient
       AutoScroll = False
       Color = clCream
-      Font.Color = clDefault
       Font.Height = 12
       Font.Name = 'Arial 12'
       ParentColor = False
       ParentFont = False
       PopupMenu = DesignPopupMenu
       TabOrder = 2
-      OnClick = DesignLayoutClick
       OnDblClick = ViewFile
     end
   end
@@ -997,6 +1014,17 @@ object IdeMainWindow: TIdeMainWindow
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
+    AsmAttri.FrameEdges = sfeAround
+    CommentAttri.FrameEdges = sfeAround
+    IDEDirectiveAttri.FrameEdges = sfeAround
+    IdentifierAttri.FrameEdges = sfeAround
+    KeyAttri.FrameEdges = sfeAround
+    NumberAttri.FrameEdges = sfeAround
+    SpaceAttri.FrameEdges = sfeAround
+    StringAttri.FrameEdges = sfeAround
+    SymbolAttri.FrameEdges = sfeAround
+    CaseLabelAttri.FrameEdges = sfeAround
+    DirectiveAttri.FrameEdges = sfeAround
     CompilerMode = pcmDelphi
     NestedComments = False
     left = 32

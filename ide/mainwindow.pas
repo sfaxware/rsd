@@ -85,7 +85,6 @@ type
     procedure BuilderProcessTerminate(Sender: TObject);
     procedure CompileProject(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
-    procedure DesignLayoutClick(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
@@ -428,13 +427,6 @@ begin
     if Assigned(PointedDevice) and (PointedDevice is TConnector) then  begin
       DeleteConnector(TConnector(PointedDevice));
     end;
-  end;
-end;
-
-procedure TIdeMainWindow.DesignLayoutClick(Sender: TObject);
-begin
-  if Sender is TWinControl then with Sender as TWinControl do begin
-    SetFocus;
   end;
 end;
 
