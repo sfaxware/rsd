@@ -1084,7 +1084,7 @@ begin
   if Sender <> Self then begin
     PointedDevice := nil;
   end;
-  if PointedDevice = self then begin
+  if PointedDevice = Self then begin
     X += Left;
     Y += Top;
     dx := X - _MousePos.x;
