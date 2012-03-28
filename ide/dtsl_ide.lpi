@@ -45,7 +45,7 @@
         <CursorPos X="63" Y="11"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -54,10 +54,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
-        <CursorPos X="13" Y="74"/>
-        <TopLine Value="48"/>
+        <CursorPos X="42" Y="9"/>
+        <TopLine Value="9"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -115,7 +115,7 @@
         <UsageCount Value="13"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="13" HistoryIndex="12">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="mainwindow.pas"/>
         <Caret Line="16" Column="36" TopLine="1"/>
@@ -168,6 +168,14 @@
         <Filename Value="mainwindow.pas"/>
         <Caret Line="81" Column="39" TopLine="39"/>
       </Position13>
+      <Position14>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="46" Column="31" TopLine="44"/>
+      </Position14>
+      <Position15>
+        <Filename Value="mainwindow.pas"/>
+        <Caret Line="10" Column="10" TopLine="1"/>
+      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

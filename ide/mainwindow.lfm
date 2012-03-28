@@ -7,13 +7,14 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   VertScrollBar.Page = 946
   Caption = 'D.T.S.L. IDE'
   Menu = dtslIdeMainMenu
-  object TabControl2: TTabControl
+  object TabControl: TTabControl
     Left = 328
     Height = 926
     Width = 748
     Anchors = [akTop, akLeft, akRight, akBottom]
-    OnChange = TabControl2Change
-    TabIndex = 0
+    DockSite = True
+    OnChange = TabControlChange
+    TabIndex = 3
     TabOrder = 0
     Tabs.Strings = (
       'editor'

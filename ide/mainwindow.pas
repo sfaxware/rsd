@@ -6,8 +6,8 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
-  ExtCtrls, ComCtrls, SynHighlighterPas, SynHighlighterMulti, SynCompletion,
-  SynEdit, Grids, RTTICtrls;
+  ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion,
+  SynEdit, RTTICtrls;
 
 type
 
@@ -41,9 +41,9 @@ type
     SynAutoComplete1: TSynAutoComplete;
     SynEdit1: TSynEdit;
     SynPasSyn1: TSynPasSyn;
-    TabControl2: TTabControl;
+    TabControl: TTabControl;
     procedure Notebook1ChangeBounds(Sender: TObject);
-    procedure TabControl2Change(Sender: TObject);
+    procedure TabControlChange(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
   private
     { private declarations }
@@ -68,7 +68,7 @@ begin
 
 end;
 
-procedure TdtslIdeMainWindow.TabControl2Change(Sender: TObject);
+procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
 begin
   with TTabControl(Sender) do begin
     case TabIndex of

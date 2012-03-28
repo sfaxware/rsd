@@ -4,22 +4,22 @@ LazarusResources.Add('TdtslIdeMainWindow','FORMDATA',[
   'TPF0'#18'TdtslIdeMainWindow'#17'dtslIdeMainWindow'#4'Left'#3#196#0#6'Height'
   +#3#205#3#3'Top'#2#25#5'Width'#3'4'#4#18'HorzScrollBar.Page'#3'3'#4#18'VertSc'
   +'rollBar.Page'#3#178#3#7'Caption'#6#12'D.T.S.L. IDE'#4'Menu'#7#15'dtslIdeMai'
-  +'nMenu'#0#11'TTabControl'#11'TabControl2'#4'Left'#3'H'#1#6'Height'#3#158#3#5
+  +'nMenu'#0#11'TTabControl'#10'TabControl'#4'Left'#3'H'#1#6'Height'#3#158#3#5
   +'Width'#3#236#2#7'Anchors'#11#5'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#8
-  +'OnChange'#7#17'TabControl2Change'#8'TabIndex'#2#0#8'TabOrder'#2#0#12'Tabs.S'
-  +'trings'#1#6#6'editor'#6#5'image'#6#4'tab3'#6#4'tab4'#0#7'TabStop'#8#0#9'TPa'
-  +'intBox'#9'PaintBox1'#6'Height'#3':'#3#3'Top'#2'8'#7'Anchors'#11#5'akTop'#6
-  +'akLeft'#7'akRight'#8'akBottom'#0#9'PopupMenu'#7#10'PopupMenu1'#0#0#8'TSynEd'
-  +'it'#8'SynEdit1'#4'Left'#2#2#6'Height'#3'~'#3#3'Top'#2#30#5'Width'#3#232#2#5
-  +'Align'#7#8'alClient'#11'Font.Height'#2#241#9'Font.Name'#6#7'courier'#11'Par'
-  +'entColor'#8#9'PopupMenu'#7#10'PopupMenu1'#8'TabOrder'#2#1#23'Gutter.CodeFol'
-  +'dingWidth'#2#14#11'Highlighter'#7#10'SynPasSyn1'#10'Keystrokes'#14#1#7'Comm'
-  +'and'#2#3#8'ShortCut'#2'&'#0#1#7'Command'#2'g'#8'ShortCut'#3'& '#0#1#7'Comma'
-  +'nd'#3#211#0#8'ShortCut'#3'&@'#0#1#7'Command'#2#4#8'ShortCut'#2'('#0#1#7'Com'
-  +'mand'#2'h'#8'ShortCut'#3'( '#0#1#7'Command'#3#212#0#8'ShortCut'#3'(@'#0#1#7
-  +'Command'#2#1#8'ShortCut'#2'%'#0#1#7'Command'#2'e'#8'ShortCut'#3'% '#0#1#7'C'
-  +'ommand'#2#5#8'ShortCut'#3'%@'#0#1#7'Command'#2'i'#8'ShortCut'#3'%`'#0#1#7'C'
-  +'ommand'#2#2#8'ShortCut'#2''''#0#1#7'Command'#2'f'#8'ShortCut'#3''' '#0#1#7
+  +'DockSite'#9#8'OnChange'#7#16'TabControlChange'#8'TabIndex'#2#3#8'TabOrder'#2
+  +#0#12'Tabs.Strings'#1#6#6'editor'#6#5'image'#6#4'tab3'#6#4'tab4'#0#7'TabStop'
+  +#8#0#9'TPaintBox'#9'PaintBox1'#6'Height'#3':'#3#3'Top'#2'8'#7'Anchors'#11#5
+  +'akTop'#6'akLeft'#7'akRight'#8'akBottom'#0#9'PopupMenu'#7#10'PopupMenu1'#0#0
+  +#8'TSynEdit'#8'SynEdit1'#4'Left'#2#2#6'Height'#3'~'#3#3'Top'#2#30#5'Width'#3
+  +#232#2#5'Align'#7#8'alClient'#11'Font.Height'#2#241#9'Font.Name'#6#7'courier'
+  +#11'ParentColor'#8#9'PopupMenu'#7#10'PopupMenu1'#8'TabOrder'#2#1#23'Gutter.C'
+  +'odeFoldingWidth'#2#14#11'Highlighter'#7#10'SynPasSyn1'#10'Keystrokes'#14#1#7
+  +'Command'#2#3#8'ShortCut'#2'&'#0#1#7'Command'#2'g'#8'ShortCut'#3'& '#0#1#7'C'
+  +'ommand'#3#211#0#8'ShortCut'#3'&@'#0#1#7'Command'#2#4#8'ShortCut'#2'('#0#1#7
+  +'Command'#2'h'#8'ShortCut'#3'( '#0#1#7'Command'#3#212#0#8'ShortCut'#3'(@'#0#1
+  +#7'Command'#2#1#8'ShortCut'#2'%'#0#1#7'Command'#2'e'#8'ShortCut'#3'% '#0#1#7
+  +'Command'#2#5#8'ShortCut'#3'%@'#0#1#7'Command'#2'i'#8'ShortCut'#3'%`'#0#1#7
+  +'Command'#2#2#8'ShortCut'#2''''#0#1#7'Command'#2'f'#8'ShortCut'#3''' '#0#1#7
   +'Command'#2#6#8'ShortCut'#3'''@'#0#1#7'Command'#2'j'#8'ShortCut'#3'''`'#0#1#7
   +'Command'#2#10#8'ShortCut'#2'"'#0#1#7'Command'#2'n'#8'ShortCut'#3'" '#0#1#7
   +'Command'#2#14#8'ShortCut'#3'"@'#0#1#7'Command'#2'r'#8'ShortCut'#3'"`'#0#1#7
