@@ -129,6 +129,7 @@ begin
   end;
   HorzScrollBar.Position := HorzScrollBar.Position + dx;
   VertScrollBar.Position := VertScrollBar.Position + dy;
+  //ScrollBy(dx, dy);
   for i := 0 to ControlCount - 1 do begin
     Control := Controls[i];
     if Control is TCGraphBlock then with Control as TMagnifier do begin
