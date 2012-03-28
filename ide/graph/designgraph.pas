@@ -316,7 +316,7 @@ var
   CodeFileName: string;
 begin
   CodeFileName := ResourceFileName(Name);
-  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
+  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttAny,Self);
   CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := SourceFileName(Name);
