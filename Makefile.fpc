@@ -17,7 +17,7 @@ exampledirs=
 [compiler]
 
 [clean]
-files=$(wildcard build/lib/dtsl/*$(OEXT) build/lib/dtsl/*$(PPUEXT) build/lib/dtsl/*$(RSTEXT) build/lib/dtsl/*.compiled build/lib/dtsl/*.lrs) ${MO_FILES}
+files=$(wildcard build/lib/dtsl/*/*$(OEXT) build/lib/dtsl/*/*$(PPUEXT) build/lib/dtsl/*/*$(RSTEXT) build/lib/dtsl/*/*.compiled build/lib/dtsl/*/*.lrs) ${MO_FILES}
 
 [install]
 fpcpackage=n
@@ -38,17 +38,32 @@ all:mo_files
 
 mo_files:${MO_FILES}
 
-build/share/locale/%/LC_MESSAGES/dtsl.mo:locale/dtsl_%.po
+build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 	${MKDIR} $(dir $@)
 	msgfmt -o $@ $<
 #-----------------------------------------------------------------------------
 # Many C expect 'make install' to copy the binaries to somewhere
 # Copy the fptc tree to the install directory and set a link
 install:
-	$(COPYTREE) -t $(INSTALL_PREFIX) \
-		build/bin \
-		build/share \
-		core/dtslcore.lpk
+	# copy dtsl to /usr
+	${MKDIR} $(INSTALL_PREFIX)/usr/bin
+	${COPYTREE} -t $(INSTALL_PREFIX)/usr/bin \
+		build/bin/dtsl_ide
+	${MKDIR} $(INSTALL_PREFIX)/usr/lib
+	${COPYTREE} -t $(INSTALL_PREFIX)/usr/lib \
+		build/lib/${PACKAGE_NAME}
+	$(COPYTREE) -t $(INSTALL_PREFIX)/usr/lib/${PACKAGE_NAME}/core \
+		core/${PACKAGE_NAME}core.lpk \
+		core/${PACKAGE_NAME}core.pas
+	# copy images, sounds, icons and menu entries for the GNOME menu
+	${MKDIR} $(INSTALL_PREFIX)/usr/share
+	${COPYTREE} -t $(INSTALL_PREFIX)/usr/share \
+		build/share/applications \
+		build/share/icons \
+		build/share/images \
+		build/share/locale \
+		build/share/man \
+		build/share/sounds
 
 ##########################################################################
 # Debian
