@@ -132,6 +132,7 @@ type
     function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual; abstract;
     procedure HandleMouseEnter(Sender: TObject); virtual; abstract;
     procedure HandleMouseLeave(Sender: TObject); virtual; abstract;
+    procedure SetControlsVisibility(Visibility: Boolean); virtual;
     procedure SetSelected(AValue: Boolean);
     procedure DoPaint(Sender: TObject); override;
     procedure UpdatePortsBounds(PortType: TPortType);
@@ -1157,6 +1158,22 @@ begin
     OriginalBounds := R;
     UpdatePortsBounds(TInputPort);
     UpdatePortsBounds(TOutputPort);
+  end;
+end;
+
+procedure TBlock.SetControlsVisibility(Visibility: Boolean);
+var
+  i: Integer;
+  Component: TComponent;
+begin
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TControl then with Component as TControl do begin
+      Visible := Visibility;
+      if Component is TBlock then with Component as TBlock do begin
+        SetControlsVisibility(Visibility);
+      end;
+    end;
   end;
 end;
 
