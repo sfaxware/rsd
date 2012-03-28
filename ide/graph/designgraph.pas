@@ -217,6 +217,8 @@ begin
   end;
   WriteLn(f, 'Blocks;');
   WriteLn(f);
+  WriteLn(f, '{$mode objfpc}{$H+}{$interfaces corba}');
+  WriteLn(f);
   WriteLn(f, 'type');
   WriteLn(f, '  TDesign = class(TBlock)');
   WriteLn(f, '  end;');
@@ -228,13 +230,13 @@ begin
   Close(f);
   System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
   ReWrite(f);
-  WriteLn(f, 'program ', Name, ';');
+  WriteLn(f, 'program Simulate', Name, ';');
   WriteLn(f);
   WriteLn(f, 'uses');
   Write(f, '  ', Name, ';');
   WriteLn(f);
   WriteLn(f, 'var');
-  Write(f, '  ', Name, 'Simulator;');
+  Write(f, '  ', Name, 'Simulator: TDesign;');
   WriteLn(f);
   WriteLn(f, 'begin');
   WriteLn(f, '  ', Name, 'Simulator := TDesign.Create;');
