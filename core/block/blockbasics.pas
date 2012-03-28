@@ -175,14 +175,14 @@ end;
 
 procedure TCDevice.ValidateContainer(AComponent: TComponent);
 begin
-  WriteLn(FuncB('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
-  with AComponent do begin
-    WriteLn(FuncC('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
-  end;
+  //WriteLn(FuncB('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  //with AComponent do begin
+  //  WriteLn(FuncC('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  //end;
   if AComponent is TCBlock then with AComponent as TCBlock do begin
     ValidateInsert(Self);
   end;
-  WriteLn(FuncE('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  //WriteLn(FuncE('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
 
 constructor TCDevice.Create(AOwner: TComponent);
@@ -235,11 +235,12 @@ begin
   //end else begin
   //  Fail;
   //end;
-  WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
+  //WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
   inherited Create(AOwner);
-  if not InitComponentFromResource(Self, ClassType) then
-    WriteLn(FuncC('TCDevice.Create'), 'Failure');
-  WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  if not InitComponentFromResource(Self, ClassType) then begin
+    WriteLn('Failed to initilize component ', AOwner.Name, '.', Name, ': ', ClassName);
+  end;
+  //WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
 
 function TCPort.GetConnector: TIConnector;
@@ -259,14 +260,14 @@ end;
 
 procedure TCInputPort.Pop(out Sample: Integer);
 begin
-  WriteLn(FuncB('TCInputPort.Pop'));
+  //WriteLn(FuncB('TCInputPort.Pop'));
   if Assigned(FConnector) then begin
-    WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
+    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
     FConnector.Pop(Sample);
   end else begin
-    WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
+    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
   end;
-  WriteLn(FuncE('TCInputPort.Pop'));
+  //WriteLn(FuncE('TCInputPort.Pop'));
 end;
 
 function TCOutputPort.GetIsFull: Boolean;
@@ -338,9 +339,9 @@ procedure TCBlock.ValidateInsert(AComponent: TComponent);
 var
   l: Integer;
 begin
-  WriteLn(FuncB('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
-  WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
-  WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent.ClassName = ', AComponent.ClassName);
+  //WriteLn(FuncB('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  //WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
+  //WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent.ClassName = ', AComponent.ClassName);
   if AComponent is TCInputPort then begin
     l := Length(FInputPorts);
     SetLength(FInputPorts, l + 1);
@@ -354,15 +355,15 @@ begin
     SetLength(FBlocks, l + 1);
     FBlocks[l] := AComponent as TCBlock;
   end;
-  WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
-  WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  //WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
+  //WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
 end;
 
 procedure TCBlock.Execute;
 var
   i: Integer;
 begin
-  WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
   for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i] do begin
     if IsEmpty then
       Exit;
@@ -372,10 +373,10 @@ begin
       Exit;
   end;
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
-    WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '] = ', PtrInt(FBlocks[i]), ', DeviceName = ', DeviceName);
+    //WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '] = ', PtrInt(FBlocks[i]), ', DeviceName = ', DeviceName);
     Execute;
   end;
-  WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
 end;
 
 function TCConnector.GetIsEmpty: Boolean;
@@ -397,9 +398,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn(FuncE('TCConnector.Create'), 'AOwner.ClassName = ', cn);
+  //WriteLn(FuncE('TCConnector.Create'), 'AOwner.ClassName = ', cn);
   FSamples := TCFifo.Create(128);
 end;
 
@@ -439,16 +440,16 @@ end;
 
 procedure TCConnector.Push(Sample: Integer);
 begin
-  WriteLn(FuncB('TCConnector.Push'), 'Sample = ', Sample);
+  //WriteLn(FuncB('TCConnector.Push'), 'Sample = ', Sample);
   FSamples.Push(Pointer(Sample));
-  WriteLn(FuncE('TCConnector.Push'), 'Sample = ', Sample);
+  //WriteLn(FuncE('TCConnector.Push'), 'Sample = ', Sample);
 end;
 
 procedure TCConnector.Pop(out Sample: Integer);
 begin
-  WriteLn(FuncB('TCConnector.Pop'), 'Sample = ', Sample);
+  //WriteLn(FuncB('TCConnector.Pop'), 'Sample = ', Sample);
   Sample := Integer(FSamples.Pop);
-  WriteLn(FuncE('TCConnector.Pop'), 'Sample = ', Sample);
+  //WriteLn(FuncE('TCConnector.Pop'), 'Sample = ', Sample);
 end;
 
 end.
