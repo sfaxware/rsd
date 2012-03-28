@@ -27,7 +27,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function AddNewBlock(ADeviceName, ADeviceType: string): TBlock; virtual;
+    function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
     function DeviceIdentifier: string;
     function DeviceType: string;
@@ -81,12 +81,12 @@ begin
     SelectedOutputPort := nil;
 end;
 
-function TDesign.AddNewBlock(ADeviceName, ADeviceType: string):TBlock;
+function TDesign.AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string):TBlock;
 var
   R: TRect;
   w, h: Integer;
 begin
-  Result := CreateBlock(ADeviceName, ADeviceType, Self);
+  Result := CreateBlock(ADeviceName, ADeviceType, ADeviceAncestorType, Self);
   if ADeviceName = '' then begin
     R := Result.OriginalBounds;
     with R do begin
@@ -312,7 +312,7 @@ begin
       Device := AddNewConnector(BlockDescription.Name, BlockDescription.TypeName);
       Device.Load(DesignDescription, BlockDescription);
     end else begin
-      SelectBlock(AddNewBlock(BlockDescription.Name, BlockDescription.TypeName));
+      SelectBlock(AddNewBlock(BlockDescription.Name, BlockDescription.TypeName, ''));
       SelectedBlock.Load(DesignDescription, BlockDescription);
       //WriteLn('++++++++++++++');
     end;

@@ -381,7 +381,7 @@ begin
     EditorCodeBuffer.Source := SynEdit1.Text;
   end;
   with Design do begin
-    SelectBlock(AddNewBlock('', ADeviceType));
+    SelectBlock(AddNewBlock('', '', ADeviceType));
   end;
 
   if SameBuffer then begin
@@ -494,7 +494,7 @@ end;
 
 procedure TIdeMainWindow.IdeEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  AddNewBlock('');
+  AddNewBlock('TBlock');
 end;
 
 procedure TIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
