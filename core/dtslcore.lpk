@@ -3,6 +3,7 @@
   <Package Version="3">
     <Name Value="dtslcore"/>
     <AddToProjectUsesSection Value="False"/>
+    <AutoUpdate Value="Manually"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
