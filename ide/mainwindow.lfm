@@ -4,11 +4,11 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   Top = 140
   Width = 1036
   Caption = 'D.T.S.L. IDE'
-  ClientHeight = 818
+  ClientHeight = 822
   ClientWidth = 1036
   Menu = dtslIdeMainMenu
   OnCreate = FormCreate
-  LCLVersion = '0.9.26.3'
+  LCLVersion = '0.9.26.2'
   object TabControl: TTabControl
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -17,7 +17,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 192
-    Height = 793
+    Height = 797
     Top = 2
     Width = 842
     Align = alCustom
@@ -42,10 +42,12 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 761
+      Height = 765
       Top = 30
       Width = 838
       Align = alClient
+      CFDividerDrawLevel = 0
+      Ctl3D = False
       Font.Height = -15
       Font.Name = 'courier'
       Font.Pitch = fpFixed
@@ -55,13 +57,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       PopupMenu = PopupMenu1
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.RightOffset = 0
       Gutter.LeftOffset = 0
       Gutter.ShowCodeFolding = True
       Gutter.CodeFoldingWidth = 10
       Gutter.ShowChanges = True
       Gutter.ShowLineNumbers = True
+      Gutter.ZeroStart = False
       Highlighter = SynPasSyn1
       Keystrokes = <      
         item
@@ -407,17 +409,19 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         '  Simulator.Done;'
         'end.'
       )
-      SelectedColor.OnChange = nil
+      SelectedColor.StartX = 0
+      SelectedColor.EndX = 0
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
     end
     object ScrollBox1: TScrollBox
       Left = 2
-      Height = 761
+      Height = 765
       Top = 30
       Width = 838
       Align = alClient
       Color = clCream
+      Ctl3D = False
       Font.CharSet = ANSI_CHARSET
       Font.Color = clBtnText
       Font.Height = 12
@@ -428,8 +432,9 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
   end
   object StatusBar1: TStatusBar
+    Left = 0
     Height = 21
-    Top = 797
+    Top = 801
     Width = 1036
     AutoSize = False
     Color = clBlue
@@ -738,14 +743,16 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     SymbolAttri.FrameColor = clNone
     DirectiveAttri.FrameColor = clNone
     CompilerMode = pcmDelphi
+    NestedComments = False
     left = 32
   end
   object PopupMenu1: TPopupMenu
     left = 64
-    object MenuItem1: TMenuItem
-      Caption = 'New Item1'
-      object MenuItem4: TMenuItem
-        Caption = 'New Item4'
+    object PortsSubMenu: TMenuItem
+      Caption = 'Ports'
+      object AddPortMenuItem: TMenuItem
+        Caption = 'Add Port...'
+        OnClick = AddPortMenuItemClick
       end
     end
     object MenuItem2: TMenuItem
@@ -756,6 +763,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     end
   end
   object Project: TXMLConfig
+    StartEmpty = False
     RootName = 'project'
     left = 96
   end

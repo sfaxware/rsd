@@ -16,6 +16,7 @@
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
     </General>
+    <LazDoc Paths="../doc/devel/ide/;../doc/devel/ide/graph/"/>
     <VersionInfo>
       <ProjectVersion Value=""/>
     </VersionInfo>
@@ -77,6 +78,11 @@
       <OtherUnitFiles Value="graph/"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
     <Linking>
       <Options>
         <Win32>

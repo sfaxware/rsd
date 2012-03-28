@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<fpdoc-descriptions>
+  <package name="dtsl_ide">
+    <module name="GraphComponents">
+      <element name="TCGraphPort.Paint">
+        <short>Paints the graphical port on the attached component canvas</short>
+        <descr>This function will paint the graphical port. A graphical port is just a black rectangle with a position and a direction : input/output
+</descr>
+      </element>
+      <element name="TCGraphPort.Create">
+        <short>Create a port for a given block</short>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
