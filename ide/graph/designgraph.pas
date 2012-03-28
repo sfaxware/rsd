@@ -33,6 +33,7 @@ type
     function Load: Boolean;
     function Save: Boolean;
     procedure ConnectPorts(Sender: TObject);
+    procedure DeleteConnector(var Connector: TCGraphConnector);
     procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
     property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
@@ -155,6 +156,11 @@ begin
     end;
   end;
   Result += Indent + 'end' + LineEnding;
+end;
+
+procedure TCGraphDesign.DeleteConnector(var Connector: TCGraphConnector);
+begin
+  FreeAndNil(Connector);
 end;
 
 procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);

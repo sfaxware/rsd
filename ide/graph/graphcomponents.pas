@@ -30,6 +30,7 @@ type
     FOnCreate: TNotifyEvent;
     FDeviceType: string;
     FDeviceAncestorType: string;
+    procedure SetName(const Value: TComponentName); override;
   protected
     procedure DoPaint(Sender: TObject); virtual; abstract;
   public
@@ -106,6 +107,7 @@ type
     FPoints: TRoute;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     function GetUpdatedDescription(Indent: string): string;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   protected
@@ -309,6 +311,24 @@ begin
     end;
   end;
   OnPaint := @DoPaint;
+end;
+
+procedure TCGraphDevice.SetName(const Value: TComponentName);
+var
+  i: Integer;
+  AName: TComponentName;
+begin
+  i := 0;
+  AName := Value;
+  repeat
+    try
+      inherited SetName(AName);
+      i := MaxInt;
+    except
+      AName := Value + IntToStr(i);
+      i += 1;
+    end;
+  until i = MaxInt;
 end;
 
 function TCGraphDevice.DeviceIdentifier: string;
@@ -847,6 +867,19 @@ constructor TCGraphConnector.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Name := 'Connector' + IntToStr(AOwner.ComponentCount);
+end;
+
+destructor TCGraphConnector.Destroy;
+begin
+  if Assigned(FOutputPort) then begin
+    FOutputPort.FConnector := nil;
+    FOutputPort := nil;
+  end;
+  if Assigned(FInputPort) then begin
+    FInputPort.FConnector := nil;
+    FInputPort := nil;
+  end;
+  inherited Destroy;
 end;
 
 function TCGraphConnector.GetUpdatedDescription(Indent: string): string;

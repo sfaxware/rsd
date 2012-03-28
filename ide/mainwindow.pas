@@ -68,6 +68,7 @@ type
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
     procedure CompileProject(Sender: TObject);
+    procedure DeleteConnector(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -160,8 +161,8 @@ begin
     if p > 0 then begin
       Delete(Path, p, Length(Path));
     end;
-    Core.Path := DesignDir + Path;
-    //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
+    Core.Path := ExpandFileName(ExtractFilePath(DesignDir + Path));
+    WriteLn('Core.Path = "', Core.Path, '"');
   end;
   with Design do begin
     Cleanup;
@@ -203,7 +204,7 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
 //    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
 //    WriteLn('DesignDir = ', DesignDir);
-    path := ExtractRelativepath(DesignDir, Core.Path) + '/block;' + ExtractRelativepath(DesignDir, Core.Path) + '/fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
+    path := ExtractRelativepath(DesignDir, Core.Path) + 'block;' + ExtractRelativepath(DesignDir, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
 //    WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
     Flush;
@@ -272,6 +273,15 @@ begin
 
 end;
 
+procedure TdtslIdeMainWindow.DeleteConnector(Sender: TObject);
+begin
+  with Design do begin
+    if Assigned(PointedDevice) and (PointedDevice is TCGraphConnector) then  begin
+      DeleteConnector(TCGraphConnector(PointedDevice));
+    end;
+  end;
+end;
+
 procedure TdtslIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TFileDumpProbe');
@@ -308,7 +318,7 @@ begin
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  DirList := ProjectSettings^.Core.Path + '/block' + PathSep + ProjectSettings^.Core.Path + '/fifo';
+  DirList := ProjectSettings^.Core.Path + 'block' + PathSep + ProjectSettings^.Core.Path + 'fifo';
   WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
