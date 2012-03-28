@@ -276,6 +276,7 @@ begin
       Execute;
     except
       ShowMessage('Could not find Lazarus builder, please ensure "lazbuild" is in your ${PATH}');
+      Exit;
     end;
     case ExitStatus of
       0: ShowMessage('Design compiled successfully');
