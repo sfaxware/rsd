@@ -29,7 +29,9 @@ begin
   p := System.Pos(usedBlocks, Self.Source);
   if p = 0 then
     Exit(False);
-  e := System.Pos('Blocks;' + LineEnding, Self.Source);
+  //WriteLn(Self.source);
+  e := System.Pos('Designs;' + LineEnding, Self.Source);
+  //WriteLn('p = ', p, ', e = ', e);
   if e < p then
     Exit(False);
   for i := 0 to Block.ComponentCount - 1 do begin
@@ -41,6 +43,23 @@ begin
   //WriteLn('p = ', p, ', e = ', e);
   //WriteLn(usedBlocks);
   Self.Replace(p, e - p, usedBlocks);
+  usedBlocks := 'class(TDesign)' + LineEnding;
+  p := System.Pos(usedBlocks, Self.Source);
+  if p = 0 then
+    Exit(False);
+  e := System.Pos('end;' + LineEnding, Self.Source);
+  //WriteLn('p = ', p, ', e = ', e);
+  if e < p then
+    Exit(False);
+  for i := 0 to Block.ComponentCount - 1 do begin
+    Component := Block.Components[i];
+    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+      usedBlocks += '    ' + Name + ': ' + 'T' + Name + ';' + LineEnding;
+    end;
+  end;
+  //WriteLn('p = ', p, ', e = ', e);
+  //WriteLn(usedBlocks);
+  Self.Replace(p, e - p, usedBlocks + '  ');
   Result := True;
 end;
 
