@@ -11,12 +11,13 @@ type
   TDesign = class(TBlock)
   private
     FMagnification: Real;
-    FOnChildrenCreate: TNotifyEvent;
     FMousePos: TPoint;
-    procedure HandleMouseEnter(Sender: TObject);
-    procedure HandleMouseLeave(Sender: TObject);
     procedure HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  protected
+    function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; override;
+    procedure HandleMouseEnter(Sender: TObject); override;
+    procedure HandleMouseLeave(Sender: TObject); override;
   public
     SimCodeBuffer: TCodeBuffer;
     PointedDevice : TDevice;
@@ -34,12 +35,10 @@ type
     function DeviceAncestorType: string;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
-    function Load: Boolean;
     function Save: Boolean;
     procedure DeleteConnector(var Connector: TConnector);
     procedure DestroyBlock(var Block: TBlock);
     procedure SelectBlock(Sender: TObject);
-    property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   end;
 
 implementation
@@ -86,6 +85,11 @@ begin
     SelectedOutputPort := nil;
 end;
 
+function TDesign.AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock;
+begin
+  Result := AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType);
+end;
+
 function TDesign.AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock;
 var
   R: TRect;
@@ -110,11 +114,11 @@ begin
   with Result do begin
     Selected := True;
     OnClick := @SelectBlock;
-    OnMouseEnter := @HandleMouseEnter;
-    OnMouseLeave := @HandleMouseLeave;
+    OnMouseEnter := @Self.HandleMouseEnter;
+    OnMouseLeave := @Self.HandleMouseLeave;
   end;
-  if Assigned(FOnChildrenCreate) then begin
-    FOnChildrenCreate(Result);
+  if Assigned(OnChildrenCreate) then begin
+    OnChildrenCreate(Result);
   end;
   if not Assigned(CodeBuffer[ctSource]) then begin
     CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
@@ -127,18 +131,10 @@ end;
 
 function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;
 begin
-  Result := CreateConnector(ADeviceName, ADeviceType, Self);
+  Result := inherited AddNewConnector(ADeviceName, ADeviceType, SelectedOutputPort, SelectedInputPort);
   with Result do begin
-    Parent := Self.Parent;
-    Connect(SelectedOutputPort, SelectedInputPort);
-    OnMouseEnter := @HandleMouseEnter;
-    OnMouseLeave := @HandleMouseLeave;
-  end;
-  if Assigned(FOnChildrenCreate) then begin
-    FOnChildrenCreate(Result);
-  end;
-  if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
+    OnMouseEnter := @Self.HandleMouseEnter;
+    OnMouseLeave := @Self.HandleMouseLeave;
   end;
 end;
 
@@ -260,80 +256,6 @@ begin
        SelectedBlock.Selected := False;
     SelectedBlock := Sender as TBlock;
     SelectedBlock.Selected := True;
-  end;
-end;
-
-function TDesign.Load: Boolean;
-var
-  DesignDescription: TLFMTree;
-  DeviceDescriptionNode: TLFMObjectNode;
-  PortName: string;
-  BlockName: string;
-  p: Integer;
-  CodeFile: array[TCodeType] of string;
-  CodeType: TCodeType;
-  Device: TDevice;
-begin
-  Result := true;
-  codeFile[ctSource] := SourceFileName(Name);
-  codeFile[ctDescription] := ResourceFileName(Name);
-  for CodeType := Low(CodeType) To High(CodeType) do begin
-    if Assigned(CodeBuffer[CodeType]) then
-      Result := Result and CodeBuffer[CodeType].Reload
-    else begin
-        CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone, Self);
-      Result := Result and Assigned(CodeBuffer[CodeType]);
-    end;
-  end;
-  if not Result then begin
-    Exit(False);
-  end;
-  with CodeToolBoss do begin
-    //WriteLn('TDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
-    //WriteLn('TDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
-    GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
-      if not Assigned(DesignDescription) then begin
-        Exit(False);
-      end else begin
-        WriteLn('Errors encountered while loading design');
-      end;
-    end;
-  end;
-  //WriteLn('TDesign.Load : LFM created');
-  DeviceDescriptionNode := FindObjectProperty(nil, DesignDescription);
-  while Assigned(DeviceDescriptionNode) do begin
-    //WriteLn('BlockDescription.TypeName = ', DeviceDescriptionNode.TypeName);
-    if DeviceDescriptionNode.TypeName = 'TConnector' then begin
-      PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
-      p := Pos('.', PortName);
-      BlockName := Copy(PortName, 1, p - 1);
-      //WriteLn('BlockName = ', BlockName);
-      PortName := Copy(PortName, p + 1, length(PortName));
-      //WriteLn('OutputPortName = ', PortName);
-      Device := FindComponent(BlockName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      Device := Device.FindComponent(PortName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedOutputPort := Device as TOutputPort;
-      PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
-      p := Pos('.', PortName);
-      BlockName := Copy(PortName, 1, p - 1);
-      PortName := Copy(PortName, p + 1, length(PortName));
-      //WriteLn('InputPortName = ', PortName);
-      Device := FindComponent(BlockName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      Device := Device.FindComponent(PortName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      SelectedInputPort := Device as TInputPort;
-      Device := AddNewConnector(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName);
-      Device.Load(DesignDescription, DeviceDescriptionNode);
-    end else begin
-      SelectBlock(AddNewBlock(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, ''));
-      SelectedBlock.Load(DesignDescription, DeviceDescriptionNode);
-      //WriteLn('++++++++++++++');
-    end;
-    DeviceDescriptionNode := FindObjectProperty(DeviceDescriptionNode, DesignDescription);
   end;
 end;
 
