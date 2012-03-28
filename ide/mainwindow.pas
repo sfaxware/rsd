@@ -241,14 +241,14 @@ procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
-    AddNewPort(TInputPort);
+    AddNewPort(TInputPort, '');
   end;
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
-    AddNewPort(TOutputPort);
+    AddNewPort(TOutputPort, '');
   end;
 end;
 

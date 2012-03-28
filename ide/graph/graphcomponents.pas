@@ -112,7 +112,7 @@ type
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
-    function AddNewPort(PortType: TPortType): TPort; virtual;
+    function AddNewPort(PortType: TPortType; PortName: string): TPort; virtual;
     function DeviceDescription(Indent: string): string; override;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
@@ -132,7 +132,7 @@ type
     InitialSeed: Integer;
     Amplitude: Integer;
     constructor Create(AOwner: TComponent);override;
-    function AddNewPort(PortType: TPortType): TPort; override;
+    function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DeviceDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
@@ -143,7 +143,7 @@ type
     FileName: string;
     SampleQty: Integer;
     constructor Create(AOwner: TComponent);override;
-    function AddNewPort(PortType: TPortType): TPort; override;
+    function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DeviceDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
@@ -786,11 +786,9 @@ begin
   while Assigned(DeviceDescriptionNode) do begin
     //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
     if DeviceDescriptionNode.TypeName = 'TOutputPort' then begin
-      Port := AddNewPort(TOutputPort);
-      Port.Name := DeviceDescriptionNode.Name;
+      Port := AddNewPort(TOutputPort, DeviceDescriptionNode.Name);
     end else if DeviceDescriptionNode.TypeName = 'TInputPort' then begin
-      Port := AddNewPort(TInputPort);
-      Port.Name := DeviceDescriptionNode.Name;
+      Port := AddNewPort(TInputPort, DeviceDescriptionNode.Name);
     end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
@@ -852,7 +850,7 @@ begin
   UpdatePortsBounds(TOutputPort);
 end;
 
-function TBlock.AddNewPort(PortType: TPortType): TPort;
+function TBlock.AddNewPort(PortType: TPortType; PortName: string): TPort;
 begin
   Result := PortType.Create(Self);
   if not Assigned(CodeBuffer[ctSource]) then begin
@@ -862,8 +860,10 @@ begin
     FOnChildrenCreate(Result);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
-  CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
-  CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
+  with Result do begin
+    Name := PortName;
+    CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
+  end;
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
@@ -1020,7 +1020,7 @@ end;
 constructor TSource.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort(TInputPort);
+  AddNewPort(TInputPort, '');
 end;
 
 procedure TSource.DoPaint(Sender: TObject);
@@ -1056,7 +1056,7 @@ begin
   end;
 end;
 
-function TSource.AddNewPort(PortType: TPortType): TPort;
+function TSource.AddNewPort(PortType: TPortType; PortName: string): TPort;
 var
   c: TComponent;
 begin
@@ -1105,7 +1105,7 @@ end;
 constructor TProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  AddNewPort(TOutputPort);
+  AddNewPort(TOutputPort, '');
 end;
 
 procedure TProbe.DoPaint(Sender: TObject);
@@ -1141,7 +1141,7 @@ begin
   end;
 end;
 
-function TProbe.AddNewPort(PortType: TPortType): TPort;
+function TProbe.AddNewPort(PortType: TPortType; PortName: string): TPort;
 var
   c: TComponent;
 begin
