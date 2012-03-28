@@ -25,9 +25,10 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Cleanup;
-    function AddNewBlock(BlockType: TCGraphBlockClass; DeviceName: string): TCGraphBlock; virtual;
+    function AddNewBlock(DeviceName, DeviceType: string): TCGraphBlock; virtual;
     function DeviceIdentifier: string;
     function DeviceType: string;
+    function DeviceAncestorType: string;
     function GetUpdatedDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
@@ -92,18 +93,13 @@ begin
   end;
 end;
 
-function TCGraphDesign.AddNewBlock(BlockType: TCGraphBlockClass; DeviceName: string):TCGraphBlock;
+function TCGraphDesign.AddNewBlock(DeviceName, DeviceType: string):TCGraphBlock;
 var
-  BlockQuantity: integer = 0;
   R: TRect;
   w, h: Integer;
 begin
-  Result := BlockType.Create(Self);
-  if DeviceName <> '' then begin
-    with Result do begin
-      Name := DeviceName;
-    end;
-  end else begin
+  Result := CreateBlock(DeviceName, DeviceType, Self);
+  if DeviceName = '' then begin
     R := Result.OriginalBounds;
     with R do begin
       w := Right - Left;
@@ -116,16 +112,6 @@ begin
     with Result do begin
       OriginalBounds := R;
       Parent := Self;
-      BlockQuantity += 1;
-      repeat
-        try
-          Name := 'Block' + IntToStr(BlockQuantity);
-          break;
-        except
-          BlockQuantity += 1;
-        end;
-      until false;
-      Caption := 'Block ' + IntToStr(BlockQuantity);
     end;
   end;
   with Result do begin
@@ -145,13 +131,13 @@ begin
 end;
 
 function TCGraphDesign.DeviceType: string;
-const
-  Prefix = 'TCGraph';
 begin
-  Result := ClassName;
-  if Pos(Prefix, Result) = 1 then begin
-    Delete(Result, 1, Length(Prefix));
-  end;
+  Result := 'TCustomDesign';
+end;
+
+function TCGraphDesign.DeviceAncestorType: string;
+begin
+  Result := 'TDesign';
 end;
 
 function TCGraphDesign.GetUpdatedDescription(Indent: string): string;
@@ -233,25 +219,6 @@ begin
 end;
 
 function TCGraphDesign.Load: Boolean;
-  function GetDeviceClass(DeviceName, DeviceType: string): TCGraphBlockClass;
-  var
-    CodeFile: string;
-    ACodeBuffer: TCodeBuffer;
-    AncestorClassName: string;
-  begin
-    CodeFile := DesignDir + DeviceName + '.pas';
-    //codeFile[ctDescription] := DesignDir + BlockDescription.Name + '.lfm';
-    ACodeBuffer := GetCodeBuffer(CodeFile, cttNone, nil);
-    CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, AncestorClassName, True);
-    WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', AncestorClassName = ', AncestorClassName);
-    if AncestorClassName = 'TBlock' then begin
-      Result := TCGraphBlock;
-    end else if AncestorClassName = 'TRandomSource' then begin
-      Result := TCGraphSource;
-    end else if AncestorClassName = 'TFileDumpProbe' then begin
-      Result := TCGraphProbe;
-    end;
-  end;
 var
   DesignDescription: TLFMTree;
   BlockDescription: TLFMObjectNode;
@@ -318,7 +285,7 @@ begin
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
-      SelectedBlock := AddNewBlock(GetDeviceClass(BlockDescription.Name, BlockDescription.TypeName), BlockDescription.Name);
+      SelectedBlock := AddNewBlock(BlockDescription.Name, BlockDescription.TypeName);
       SelectedBlock.Load(DesignDescription, BlockDescription);
       //WriteLn('++++++++++++++');
     end;
