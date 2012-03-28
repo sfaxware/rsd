@@ -290,7 +290,7 @@ begin
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
-  Design := TDesign.Create(DesignLayout);
+  Design := TTop.Create(DesignLayout);
   with Design do begin
     OnChildrenCreate := @SetupChildrenEvents;
   end;
@@ -582,4 +582,3 @@ initialization
   {$R mainwindow.lfm}
 
 end.
-
