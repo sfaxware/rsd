@@ -47,6 +47,7 @@ type
     IdeHelpMenuItem: TMenuItem;
     IdeHelpLocalHelpMenuItem: TMenuItem;
     AboutMenuItem: TMenuItem;
+    AddSubDesignMenuItem: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
@@ -74,6 +75,7 @@ type
     procedure AboutMenuItemClick(Sender: TObject);
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
+    procedure AddSubDesignMenuItemClick(Sender: TObject);
     procedure BuilderProcessTerminate(Sender: TObject);
     procedure CompileProject(Sender: TObject);
     procedure ConnectPorts(Sender: TObject);
@@ -326,6 +328,11 @@ begin
   if Design.PointedDevice is TBlock then with Design.PointedDevice as TBlock do begin
     AddNewPort(TOutputPort, '');
   end;
+end;
+
+procedure TIdeMainWindow.AddSubDesignMenuItemClick(Sender: TObject);
+begin
+  AddNewBlock('TDesign');
 end;
 
 procedure TIdeMainWindow.CompileProject(Sender: TObject);

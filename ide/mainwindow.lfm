@@ -59,7 +59,6 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
-      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -1041,27 +1040,28 @@ object IdeMainWindow: TIdeMainWindow
   object DesignPopupMenu: TPopupMenu
     left = 96
     top = 72
-    object BlocksSubMenu: TMenuItem
-      Caption = 'Blocks'
-      object AddBlockMenuItem: TMenuItem
-        Caption = 'Add block'
-        OnClick = IdeEditGraphInsertBlockMenuItemClick
+    object AddBlockMenuItem: TMenuItem
+      Caption = 'Add block'
+      OnClick = IdeEditGraphInsertBlockMenuItemClick
+    end
+    object AddSubDesignMenuItem: TMenuItem
+      Caption = 'Add sub design'
+      OnClick = AddSubDesignMenuItemClick
+    end
+    object AddSourceMenuItem: TMenuItem
+      Caption = 'Add source'
+      object RandomSourceMenuItem: TMenuItem
+        Caption = 'Random generator'
+        OnClick = dtslEditGraphInsertRandomSourceMenuItemClick
       end
-      object AddSourceMenuItem: TMenuItem
-        Caption = 'Add source'
-        object RandomSourceMenuItem: TMenuItem
-          Caption = 'Random generator'
-          OnClick = dtslEditGraphInsertRandomSourceMenuItemClick
-        end
-        object FileReadSourceMenuItem: TMenuItem
-          Caption = 'File Read'
-          OnClick = dtslEditGraphInsertFileReadSourceMenuItemClick
-        end
+      object FileReadSourceMenuItem: TMenuItem
+        Caption = 'File Read'
+        OnClick = dtslEditGraphInsertFileReadSourceMenuItemClick
       end
-      object AddProbeMenuItem: TMenuItem
-        Caption = 'Add probe'
-        OnClick = dtslEditGraphInsertProbeMenuItemClick
-      end
+    end
+    object AddProbeMenuItem: TMenuItem
+      Caption = 'Add probe'
+      OnClick = dtslEditGraphInsertProbeMenuItemClick
     end
     object DesignPropertiesMenuItem: TMenuItem
       Caption = '&Properties'

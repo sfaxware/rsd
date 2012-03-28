@@ -53,16 +53,11 @@ var
 constructor TDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  OnPaint := nil;
   Name := 'Design';
   //WriteLn('Created new TDesign class instance');
-  if Aowner is TScrollBox then begin
-    Parent := AOwner as TScrollBox;
-  end else with AOwner as TDesign do begin
-    Self.Parent := Parent;
-  end;
   FMagnification := 1;
   SetViewed(not Assigned(SelectedDesign));
+  //WriteLn('Owner = ', Owner.Name, ', Parent = ', Parent.Name, ', Visible = ', Visible);
 end;
 
 destructor TDesign.Destroy;
@@ -257,10 +252,10 @@ procedure TDesign.SetViewed(ShowDesign: Boolean);
 var
   i: Integer;
 begin
+  //WriteLn('TDesign.SetViewed(ShowDesign = ', ShowDesign, ')');
   if Assigned(SelectedDesign) then begin
     if ShowDesign then begin
       SelectedDesign.SetViewed(False);
-      SelectedDesign := Self;
     end else if IsSelected then begin
       SelectedDesign := nil;
     end;
@@ -269,6 +264,7 @@ begin
     Visible := ShowDesign;
   end;
   if ShowDesign then begin
+    SelectedDesign := Self;
     with Parent do begin
       OnMouseMove := @HandleMouseMove;
       OnMouseWheel := @HandleMouseWheele;
