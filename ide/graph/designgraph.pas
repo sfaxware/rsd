@@ -224,6 +224,22 @@ begin
   WriteLn(f, 'begin');
   WriteLn(f, 'end.');
   Close(f);
+  System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
+  ReWrite(f);
+  WriteLn(f, 'program ', Name, ';');
+  WriteLn(f);
+  WriteLn(f, 'uses');
+  Write(f, '  ', Name, ';');
+  WriteLn(f);
+  WriteLn(f, 'var');
+  Write(f, '  ', Name, 'Simulator;');
+  WriteLn(f);
+  WriteLn(f, 'begin');
+  WriteLn(f, '  ', Name, 'Simulator := TDesign.Create;');
+  WriteLn(f, '  ', Name, 'Simulator.Run;');
+  WriteLn(f, '  ', Name, 'Simulator.Free;');
+  WriteLn(f, 'end.');
+  Close(f);
   Result := True;
 end;
 

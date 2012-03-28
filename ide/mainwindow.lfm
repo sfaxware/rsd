@@ -763,10 +763,14 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         Caption = 'Connect ports...'
       end
     end
-    object MenuItem2: TMenuItem
-      Caption = 'New Item2'
-      object MenuItem3: TMenuItem
-        Caption = 'New Item3'
+    object BlockPropertiesMenuItem: TMenuItem
+      Caption = '&Properties'
+      object BlockNameMenuItem: TMenuItem
+        Caption = 'Name...'
+      end
+      object BlockColorMenuItem: TMenuItem
+        Caption = 'Color...'
+        OnClick = SelectBlockColor
       end
     end
   end
@@ -785,5 +789,32 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 64
     top = 32
+  end
+  object ColorDialog1: TColorDialog
+    OnClose = SetBlockColor
+    Color = clRed
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    top = 64
   end
 end

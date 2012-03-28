@@ -13,6 +13,7 @@ type
   { TdtslIdeMainWindow }
 
   TdtslIdeMainWindow = class(TForm)
+    ColorDialog1: TColorDialog;
     dtslIdeMainMenu: TMainMenu;
     dtslIdeFileMenuItem: TMenuItem;
     dtslIdeEditMenuItem: TMenuItem;
@@ -21,6 +22,7 @@ type
     dtslIdeFileExitMenuItem: TMenuItem;
     AddOutputPortMenuItem: TMenuItem;
     ConnectPortsMenuItem: TMenuItem;
+    BlockColorMenuItem: TMenuItem;
     PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
@@ -28,8 +30,8 @@ type
     MenuItem13: TMenuItem;
     MenuItem14: TMenuItem;
     MenuItem15: TMenuItem;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
+    BlockPropertiesMenuItem: TMenuItem;
+    BlockNameMenuItem: TMenuItem;
     AddInputPortMenuItem: TMenuItem;
     MenuItem5: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
@@ -56,6 +58,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
+    procedure SelectBlockColor(Sender: TObject);
+    procedure SetBlockColor(Sender: TObject);
     procedure SetCoreBlocksPath(Sender: TObject);
     procedure TabControlChange(Sender: TObject);
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
@@ -106,6 +110,7 @@ begin
       Exit;
     DesignDir := ExtractFileDir(FileName);
     Name := GetValue('name', 'Unnamed design');
+    Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
     Path := 'settings/core/blocks/';
     Core.Blocks.Path := GetValue(Path + 'path', '');
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
@@ -130,6 +135,19 @@ begin
     SetValue(Path + 'path', Core.Blocks.Path);
     Design.Save(Name, Project);
     Flush;
+  end;
+end;
+
+procedure TdtslIdeMainWindow.SelectBlockColor(Sender: TObject);
+begin
+  ColorDialog1.Execute;
+end;
+
+procedure TdtslIdeMainWindow.SetBlockColor(Sender: TObject);
+begin
+  if Sender is TColorDialog then with Sender as TColorDialog do begin
+    //WriteLn('Change Color from ', hexStr(Design.SelectedBlock.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
+    Design.SelectedBlock.Canvas.Brush.Color := Color;
   end;
 end;
 
