@@ -14,8 +14,6 @@ uses
   Reals;
 
 type
-  TReal = Real;{This can be changed to any real type to support more huge values}
-  PReal = ^TReal;
   PComplex = ^TComplex;
   TComplex = record
     x, y: Real;{It's too simple a complex is a couple of reals!}

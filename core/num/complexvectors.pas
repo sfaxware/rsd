@@ -12,7 +12,7 @@ interface
 {$DEFINE INTERFACE}
 
 uses
-  Complex;
+  Reals, Complex;
 
 type
   TVectorBase=TComplex;{If you want more precision you can chage to extended/...}
