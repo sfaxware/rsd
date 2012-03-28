@@ -729,7 +729,6 @@ begin
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
-  UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
