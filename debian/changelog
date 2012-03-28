@@ -1,3 +1,9 @@
+rsd (0.0.2-0) unstable; urgency=low
+
+  * Added a design tree view to ease navigation between blocks and sub designs.
+
+ -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 27 Jan 2011 21:09:00 +0100
+
 rsd (0.0.1-0) unstable; urgency=low
 
   * Support for hierarchical design with infinite inclusion levels.
