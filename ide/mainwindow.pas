@@ -25,6 +25,8 @@ type
     BlockColorMenuItem: TMenuItem;
     BlocksSubMenu: TMenuItem;
     AddBlockMenuItem: TMenuItem;
+    CompileMenuItem: TMenuItem;
+    CompileProjectMenuItem: TMenuItem;
     PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
@@ -35,7 +37,7 @@ type
     BlockPropertiesMenuItem: TMenuItem;
     BlockNameMenuItem: TMenuItem;
     AddInputPortMenuItem: TMenuItem;
-    MenuItem5: TMenuItem;
+    ViewMenuItem: TMenuItem;
     dtslEditGraphSubMenu: TMenuItem;
     dtslEditGraphInsertBlockMenuItem: TMenuItem;
     dtslEditCopyMenuItem: TMenuItem;
@@ -57,7 +59,9 @@ type
     Project: TXMLConfig;
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
+    procedure CompileProject(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
     procedure ViewFile(Sender: TObject);
@@ -106,13 +110,30 @@ begin
   Application.Terminate;
 end;
 
+procedure TdtslIdeMainWindow.NewProject(Sender: TObject);
+var
+  ProjectSettings: PProjectSettings;
+begin
+  ProjectSettings := _ProjectSettings;
+  with Project, ProjectSettings^ do begin
+    DesignDir := GetTempDir;
+    Name := 'Untiteled';
+    Units.Count := 0;
+    Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
+    Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';
+    //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
+  end;
+  Design.Cleanup;
+end;
+
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
 var
   Path: string;
   p: Integer;
+  ProjectSettings: PProjectSettings;
 begin
-  CodeToolBoss.OnSearchUsedUnit := @SearchUsedUnit;
-  with Project, TProjectSettings(_ProjectSettings^) do begin
+  ProjectSettings := _ProjectSettings;
+  with Project, ProjectSettings^ do begin
     if OpenDialog1.Execute then
       FileName := OpenDialog1.FileName
     else
@@ -130,7 +151,10 @@ begin
     end;
     Core.Blocks.Path := DesignDir + Path;
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
-    Design.Load(Path);
+  end;
+  with Design do begin
+    Cleanup;
+    Load('');
   end;
   ViewFile(Design);
   TabControl.TabIndex := 0;
@@ -139,8 +163,10 @@ end;
 procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
 var
   Path: string;
+  ProjectSettings: PProjectSettings;
 begin
-  with Project, TProjectSettings(_ProjectSettings^) do begin
+  ProjectSettings := _ProjectSettings;
+  with Project, ProjectSettings^ do begin
     if Filename = '' then
       if SaveDialog1.Execute then
         FileName := SaveDialog1.FileName
@@ -205,16 +231,14 @@ var
   ProjectSettings: PProjectSettings;
 begin
   New(ProjectSettings);
-  with ProjectSettings^ do begin
-    Name := Design.Name;
-    Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';
-    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
-    Units.Count := 0;
-  end;
   _ProjectSettings := ProjectSettings;
+  with CodeToolBoss do begin
+    OnSearchUsedUnit := @SearchUsedUnit;
+  end;
   with Design do begin
     OnDblClick := @ViewFile;
   end;
+  NewProject(Sender);
 end;
 
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
@@ -235,6 +259,11 @@ begin
   with Port do begin
     Parent := Design;
   end;
+end;
+
+procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
+begin
+
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -286,7 +315,8 @@ begin
   with ProjectSettings^ do begin
     Core.Blocks.Path := '';
   end;
-  Dispose(PProjectSettings(_ProjectSettings));
+  Dispose(ProjectSettings);
+  _ProjectSettings := nil;
   inherited Destroy;
 end;
 
