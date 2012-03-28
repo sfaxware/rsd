@@ -53,9 +53,6 @@ begin
   end else begin
     FCurrentSeed := FInitialSeed;
   end;
-  WriteLn('DeviceName = ', DeviceName);
-  WriteLn('InitialSeed = ', InitialSeed);
-  WriteLn('Amplitude = ', Amplitude);
 end;
 
 constructor TSource.Create(AOwner: TComponent);
