@@ -9,6 +9,13 @@ uses
   
 type
   TCGraphBlock = class(TGraphicControl)
+  private
+    _MouseDown: Boolean;
+    _MousePos: TPoint;
+    procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+    procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+    procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure MouseLeaved(Sender: TObject);
   public
     constructor Create(AOwner:TComponent);override;
   protected
@@ -17,26 +24,17 @@ type
     procedure Paint; override;
   published
     property Selected: Boolean read FSelected write SetSeleted;
-//    property Action;
-//    property Align;
-//    property Anchors;
     property BorderSpacing;
     property Constraints;
     property Caption;
     property Color;
     property Enabled;
     property Font;
-//    property Glyph;
     property Visible;
     property OnClick;
     property OnDblClick;
-    property OnMouseDown;
-    property OnMouseEnter;
-    property OnMouseMove;
-    property OnMouseUp;
     property OnPaint;
     property OnResize;
-    property OnChangeBounds;
     property ShowHint;
     property ParentFont;
     property ParentShowHint;
@@ -51,6 +49,44 @@ begin
   Width := 100;
   Height := 100;
   FSelected := False;
+  OnMouseDown := @StartMove;
+  OnMouseUp := @EndMove;
+  OnMouseMove := @Move;
+  OnMouseLeave := @MouseLeaved;
+end;
+
+procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+begin
+  if Sender = Self then begin
+    _MouseDown := True;
+    _MousePos.x := X + Left;
+    _MousePos.y := Y + Top;
+  end;
+end;
+
+procedure TCGraphBlock.EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
+begin
+  _MouseDown := False;
+end;
+
+procedure TCGraphBlock.MouseLeaved(Sender: TObject);
+begin
+  _MouseDown := False;
+end;
+
+procedure TCGraphBlock.Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+var
+  dx, dy: Integer;
+begin
+  if(Sender = Self)and _MouseDown then begin
+    X += Left;
+    Y += Top;
+    dx := X - _MousePos.x;
+    dy := Y - _MousePos.y;
+    _MousePos.x := X;
+    _MousePos.y := Y;
+    ChangeBounds(Left + dx, Top + dy, Width, Height);
+  end;
 end;
 
 procedure TCGraphBlock.SetSeleted(AValue: Boolean);
