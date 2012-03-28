@@ -20,6 +20,7 @@ type
     dtslIdeFileNewMenuItem: TMenuItem;
     dtslIdeFileOpenMenuItem: TMenuItem;
     dtslIdeFileExitMenuItem: TMenuItem;
+    PopupMenu1: TPopupMenu;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
     SynEdit1: TSynEdit;

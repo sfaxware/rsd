@@ -50,7 +50,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
-        <CursorPos X="71" Y="3"/>
+        <CursorPos X="28" Y="23"/>
         <TopLine Value="1"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="24"/>

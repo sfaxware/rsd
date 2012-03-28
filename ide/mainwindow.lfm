@@ -10,7 +10,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   Menu = dtslIdeMainMenu
   object TabControl2: TTabControl
     Left = 328
-    Height = 904
+    Height = 878
     Top = 24
     Width = 748
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -25,7 +25,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     TabStop = False
     object SynEdit1: TSynEdit
       Left = 2
-      Height = 872
+      Height = 846
       Top = 30
       Width = 744
       Align = alClient
@@ -33,8 +33,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Font.Name = 'courier'
       ParentColor = False
       TabOrder = 1
-      BookMarkOptions.OnChange = nil
-      Gutter.OnChange = nil
       Gutter.CodeFoldingWidth = 14
       Highlighter = SynPasSyn1
       Keystrokes = <      
@@ -361,7 +359,6 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       Lines.Strings = (
         'SynEdit1'
       )
-      SelectedColor.OnChange = nil
       TabWidth = 4
     end
   end
@@ -393,5 +390,9 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
     Enabled = False
     left = 86
     top = 100
+  end
+  object PopupMenu1: TPopupMenu
+    left = 84
+    top = 265
   end
 end
