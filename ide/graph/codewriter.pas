@@ -12,6 +12,7 @@ type
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
+function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
 
 implementation
 
@@ -160,6 +161,25 @@ begin
       cttBlock: WriteBlockSourceTemplate(Owner, Result);
     end;
   end;
+end;
+
+function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
+var
+  UserCodeFunction: string;
+  p, l: Integer;
+begin
+  UserCodeFunction := 'procedure T' + BlockName + '.Execute;';
+  Result.X := 0;
+  with Self do begin
+    p := Pos(UserCodeFunction, Source);
+    l := 2;
+    while p > 0 do begin
+      if Source[p] = LineEnding then
+        l += 1;
+      p -= 1;
+    end;
+  end;
+  Result.Y := l;
 end;
 
 end.
