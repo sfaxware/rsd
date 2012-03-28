@@ -43,7 +43,7 @@ type
     OpenDialog1: TOpenDialog;
     PopupMenu1: TPopupMenu;
     SaveDialog1: TSaveDialog;
-    ScrollBox1: TScrollBox;
+    Design: TScrollBox;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
@@ -104,12 +104,13 @@ begin
       FileName := OpenDialog1.FileName
     else
       Exit;
+    DesignDir := ExtractFileDir(FileName);
     Name := GetValue('name', 'Unnamed design');
     Path := 'settings/core/blocks/';
     Core.Blocks.Path := GetValue(Path + 'path', '');
     WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
     Path :=  'design/blocks/';
-    ScrollBox1.Load(Path, Project);
+    Design.Load(Path, Project);
   end;
 end;
 
@@ -126,7 +127,7 @@ begin
     Clear;
     Path := 'settings/core/blocks/';
     SetValue(Path + 'path', Core.Blocks.Path);
-    ScrollBox1.Save(Name, Project);
+    Design.Save(Name, Project);
     Flush;
   end;
 end;
@@ -134,7 +135,7 @@ end;
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   New(PProjectSettings(_ProjectSettings));
-  with ScrollBox1 do begin
+  with Design do begin
     OnDblClick := @ViewFile;
   end;
 end;
@@ -143,9 +144,9 @@ procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 var
   Port: TCGraphInputPort;
 begin
-  Port := TCGraphInputPort.Create(ScrollBox1.SelectedBlock);
+  Port := TCGraphInputPort.Create(Design.SelectedBlock);
   with Port do begin
-    Parent := ScrollBox1;
+    Parent := Design;
   end;
 end;
 
@@ -153,9 +154,9 @@ procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 var             
   Port: TCGraphOutputPort;
 begin
-  Port := TCGraphOutputPort.Create(ScrollBox1.SelectedBlock);
+  Port := TCGraphOutputPort.Create(Design.SelectedBlock);
   with Port do begin
-    Parent := ScrollBox1;
+    Parent := Design;
     end;
 end;
 
@@ -165,10 +166,10 @@ begin
     case TabIndex of
       0:begin
         SynEdit1.Visible := False;
-        ScrollBox1.Visible := True;
+        Design.Visible := True;
       end;
       1:begin
-        ScrollBox1.Visible := False;
+        Design.Visible := False;
         SynEdit1.Visible := True;
       end;
     end;
@@ -180,11 +181,11 @@ var
   FileName: string;
   ProjectSettings: PProjectSettings absolute _ProjectSettings;
 begin
-  //WriteLn('SrcFilename = ', SrcFilename);
-  //WriteLn('TheUnitName = ', TheUnitName);
-  //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  WriteLn('SrcFilename = ', SrcFilename);
+  WriteLn('TheUnitName = ', TheUnitName);
+  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
-  //WriteLn('FileName = ', FileName);
+  WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;
 
@@ -211,20 +212,20 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  if ScrollBox1.SelectedBlock = nil then
+  if Design.SelectedBlock = nil then
     //WriteLn('No selected block')
   else begin
     WriteLn('Removing block');
-    ScrollBox1.RemoveBlock(ScrollBox1.SelectedBlock);
+    Design.RemoveBlock(Design.SelectedBlock);
   end;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  if Assigned(ScrollBox1.SelectedBlock) then
-    ScrollBox1.SelectedBlock.Selected := False;
-  ScrollBox1.SelectedBlock := ScrollBox1.CreateNewBlock;
-  ScrollBox1.InsertBlock(ScrollBox1.SelectedBlock);
+  if Assigned(Design.SelectedBlock) then
+    Design.SelectedBlock.Selected := False;
+  Design.SelectedBlock := Design.CreateNewBlock;
+  Design.InsertBlock(Design.SelectedBlock);
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);

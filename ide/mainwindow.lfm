@@ -414,7 +414,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
       BracketHighlightStyle = sbhsBoth
       TabWidth = 4
     end
-    object ScrollBox1: TScrollBox
+    object Design: TScrollBox
       Left = 2
       Height = 765
       Top = 30

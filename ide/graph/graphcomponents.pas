@@ -14,6 +14,9 @@ const
   DefaultPortHeight = 4;
   MinPortSpacing = 10;
 
+var
+  DesignDir: string;
+
 type
   TCodeType = (ctSource, ctDescription);
   TCGraphConnector = class;
@@ -29,6 +32,7 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save(var f: Text): Boolean; virtual;
   end;
   TCGraphInputPort = class(TCGraphPort)
@@ -55,6 +59,7 @@ type
     constructor Create(AOwner: TComponent);override;
     function GetDescription: TLFMTree;
     function Load: boolean;
+    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
     function Save(var f: Text): boolean;
   protected
@@ -103,11 +108,86 @@ type
     property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
   end;
 
+function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+function FindObjectProperty(ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+function FindObjectProperty(PropertyPath: string; ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+
 implementation
 uses math, DesignGraph, CodeToolManager;
 
 type
   TConnection = array of TPoint;
+
+function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+var
+  PropertyNode: TLFMPropertyNode;
+  ValueNode: TLFMTreeNode;
+  c: char;
+  p: integer;
+begin
+  Result := '';
+  WriteLn('GetPropertyValue : PropertyName = ', PropertyName);
+  PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
+  ValueNode := PropertyNode.Next;
+  if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
+    case ValueType of
+      lfmvString: Result := ReadString;
+      lfmvInteger: begin
+        p := StartPos;
+        c := Tree.LFMBuffer.Source[p];
+        while c in ['0'..'9'] do begin
+          Result += c;
+          p += 1;
+          c := Tree.LFMBuffer.Source[p]
+        end;
+      end;
+    end;
+  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+end;
+
+function FindObjectProperty(ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+var
+  Node: TLFMTreeNode;
+  ObjNode: TLFMObjectNode;
+  p: LongInt;
+  FirstPart: String;
+  RestParts: String;
+begin
+  if Assigned(ContextNode) then
+    Node := ContextNode.NextSibling
+  else
+    Node := Self.Root.FirstChild;
+  while Node <> nil do begin
+    if Node is TLFMObjectNode then begin
+      Result := Node as TLFMObjectNode;
+      WriteLn('Name = ', Result.Name, ', Type = ', Result.TypeName);
+      Exit;
+    end;
+    Node := Node.NextSibling;
+  end;
+  Result:=nil;
+end;
+
+function FindObjectProperty(PropertyPath: string; ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+var
+  p: LongInt;
+  FirstPart: String;
+  RestParts: String;
+begin
+  p:=System.Pos('.', PropertyPath);
+  if p > 0 then begin
+    FirstPart:=copy(PropertyPath, 1, p - 1);
+    RestParts:=copy(PropertyPath, p + 1, length(PropertyPath));
+  end else begin
+    FirstPart := PropertyPath;
+    RestParts := '';
+  end;
+  WriteLn('FindObjectProperty : FirstPart = ', FirstPart, ', RestParts = ', RestParts);
+  Result := ContextNode;
+  repeat
+    Result := FindObjectProperty(Result, Self);
+  until (Result = nil) or (SysUtils.CompareText(Result.Name, PropertyPath) = 0);
+end;
 
 function Translate(Points: TConnection; dx, dy: Integer): TConnection;
 var
@@ -202,6 +282,20 @@ begin
   inherited Paint;
 end;
           
+function TCGraphPort.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+var
+  Path: string;
+  PortDescription: TLFMObjectNode;
+begin
+  if Assigned(ContextNode.Parent) then with ContextNode.Parent as TLFMObjectNode do
+    Path := Name + '.' + ContextNode.Name;
+  Left := StrToInt(GetPropertyValue(DesignDescription, Path + '.Left'));
+  Top := StrToInt(GetPropertyValue(DesignDescription, Path + '.Top'));
+  Color := clRed;
+  Caption := GetPropertyValue(DesignDescription, Path + '.Name');
+  Result := True;
+end;
+
 function TCGraphPort.Save(var f: Text): Boolean;
 var
   PortType: string;
@@ -290,13 +384,42 @@ begin
   end;
 end;
 
+function TCGraphBlock.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
+var
+  Path: string;
+  PortDescription: TLFMObjectNode;
+  Port: TCGraphPort;
+begin
+  if Assigned(ContextNode.Parent) then with ContextNode.Parent as TLFMObjectNode do
+    Path := Name + '.' + ContextNode.Name;
+  Left := StrToInt(GetPropertyValue(DesignDescription, Path + '.Left'));
+  Top := StrToInt(GetPropertyValue(DesignDescription, Path + '.Top'));
+  Color := clRed;
+  Caption := GetPropertyValue(DesignDescription, Path + '.Name');
+  Selected := True;
+  PortDescription := FindObjectProperty(Name, ContextNode, DesignDescription);
+  while Assigned(PortDescription) do begin
+    if PortDescription.TypeName = 'TOutputPort' then
+      Port := TCGraphOutputPort.Create(Self)
+    else if PortDescription.TypeName = 'TInputPort' then
+      Port := TCGraphInputPort.Create(Self)
+    else
+      Exit(False);
+    with Port do begin
+      Load(DesignDescription, PortDescription);
+      OnDblClick := Self.OnDblClick;
+    end;
+  end;
+  Result := True;
+end;
+
 function TCGraphBlock.Load: boolean;
 var
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
 begin
-  codeFile[ctSource] := '/tmp/' + Name + '.pas';
-  codeFile[ctDescription] := '/tmp/' + Name + '.lfm';
+  codeFile[ctSource] := DesignDir + '/' + Name + '.pas';
+  codeFile[ctDescription] := DesignDir + '/' + Name + '.lfm';
   for CodeType := Low(CodeType) To High(CodeType) do begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
@@ -312,7 +435,7 @@ function TCGraphBlock.Save: boolean;
   var
     f: System.Text;
   begin
-    Result := '/tmp/' + Name + '.pas';
+    Result := DesignDir + '/' + Name + '.pas';
     if not FileExists(Result) then begin
       System.Assign(f, Result);
       ReWrite(f);
@@ -349,7 +472,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Save;
   WriteSourceTemplate;
-  System.Assign(f, '/tmp/' + Name + '.lfm');
+  System.Assign(f, DesignDir + '/' + Name + '.lfm');
   ReWrite(f);
   Save(f);
   System.Close(f);
