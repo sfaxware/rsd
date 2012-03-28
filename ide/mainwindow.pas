@@ -50,6 +50,8 @@ type
     AddSubDesignMenuItem: TMenuItem;
     MenuItem1: TMenuItem;
     IdeViewTopLayoutMenuItem: TMenuItem;
+    ShowParentDesignMenuItem: TMenuItem;
+    MenuItem3: TMenuItem;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
@@ -82,6 +84,7 @@ type
     procedure CompileProject(Sender: TObject);
     procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
+    procedure DesignPopupMenuPopup(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
@@ -96,6 +99,7 @@ type
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
     procedure SetBlockProperties(Sender: TObject);
+    procedure ShowParentDesign(Sender: TObject);
     procedure ViewDesign(Sender: TObject);
     procedure ViewFile(Sender: TObject);
     procedure SelectBlockColor(Sender: TObject);
@@ -280,6 +284,11 @@ begin
   end;
 end;
 
+procedure TIdeMainWindow.ShowParentDesign(Sender: TObject);
+begin
+  ViewDesign(TDesign.GetViewed.Owner);
+end;
+
 procedure TIdeMainWindow.SelectBlockColor(Sender: TObject);
 begin
   ColorDialog1.Execute;
@@ -414,6 +423,11 @@ begin
       DeleteConnector(TConnector(PointedDevice));
     end;
   end;
+end;
+
+procedure TIdeMainWindow.DesignPopupMenuPopup(Sender: TObject);
+begin
+  ShowParentDesignMenuItem.Enabled := TDesign.GetViewed <> FTopDesign;
 end;
 
 procedure TIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);

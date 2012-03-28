@@ -59,6 +59,7 @@ object IdeMainWindow: TIdeMainWindow
       ParentFont = False
       TabOrder = 1
       Visible = False
+      BookMarkOptions.OnChange = nil
       Gutter.Width = 59
       Gutter.MouseActions = <      
         item
@@ -1045,8 +1046,17 @@ object IdeMainWindow: TIdeMainWindow
     top = 72
   end
   object DesignPopupMenu: TPopupMenu
+    OnPopup = DesignPopupMenuPopup
     left = 96
     top = 72
+    object ShowParentDesignMenuItem: TMenuItem
+      Caption = 'Parent design'
+      ShortCut = 16422
+      OnClick = ShowParentDesign
+    end
+    object MenuItem3: TMenuItem
+      Caption = '-'
+    end
     object AddBlockMenuItem: TMenuItem
       Caption = 'Add block'
       OnClick = IdeEditGraphInsertBlockMenuItemClick
