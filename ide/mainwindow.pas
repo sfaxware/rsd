@@ -111,13 +111,13 @@ begin
     else
       Exit;
     DesignDir := ExtractFileDir(FileName);
-    Name := GetValue('name', 'Unnamed design');
+    Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
-    Path := 'settings/core/blocks/';
-    Core.Blocks.Path := GetValue(Path + 'path', '');
+    Path := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
+    Core.Blocks.Path := DesignDir + PathDelim + Path;
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
     Path :=  'design/blocks/';
-    Design.Load(Path, Project);
+    Design.Load(Path);
   end;
 end;
 
@@ -131,11 +131,31 @@ begin
         FileName := SaveDialog1.FileName
       else
         Exit;
-    DesignDir := ExtractFileDir(FileName);
-    Clear;
-    Path := 'settings/core/blocks/';
-    SetValue(Path + 'path', Core.Blocks.Path);
-    Design.Save(Name, Project);
+    DesignDir := ExtractFileDir(FileName) + PathDelim;
+    if Name = '' then
+      Name := ChangeFileExt(ExtractFileName(FileName), '');
+    SetValue('ProjectOptions/PathDelim/Value', PathDelim);
+    SetValue('ProjectOptions/General/MainUnit/Value', 0);
+    SetValue('ProjectOptions/Units/Count', 2);
+    SetValue('ProjectOptions/Units/Unit0/Filename/Value', 'Simulate' + Name + '.pas');
+    SetValue('ProjectOptions/Units/Unit0/IsPartOfProject/Value', True);
+    SetValue('ProjectOptions/Units/Unit0/UnitName/Value', 'Simulate' + Name);
+    SetValue('ProjectOptions/Units/Unit0/EditorIndex/Value', 0);
+    SetValue('ProjectOptions/Units/Unit0/Loaded/Value', True);
+    SetValue('ProjectOptions/Units/Unit1/Filename/Value', Name + '.pas');
+    SetValue('ProjectOptions/Units/Unit1/IsPartOfProject/Value', True);
+    SetValue('ProjectOptions/Units/Unit1/UnitName/Value', Name);
+    SetValue('ProjectOptions/Units/Unit1/EditorIndex/Value', 0);
+    SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
+//    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+//    WriteLn('DesignDir = ', DesignDir);
+    path := ExtractRelativepath(DesignDir, Core.Blocks.Path);
+//    WriteLn('realtive path = ', path);
+    SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
+    if Assigned(EditorCodeBuffer) then begin
+       EditorCodeBuffer.Source := Text;
+    end;                        
+    Design.Save(Name);
     Flush;
   end;
 end;
@@ -165,6 +185,9 @@ begin
   New(PProjectSettings(_ProjectSettings));
   with Design do begin
     OnDblClick := @ViewFile;
+  end;
+  with TProjectSettings(_ProjectSettings^) do begin
+    Name := Design.Name;
   end;
 end;
 

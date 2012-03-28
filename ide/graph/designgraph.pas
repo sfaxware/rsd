@@ -18,8 +18,8 @@ type
     function CreateNewBlock: TCGraphBlock; virtual;
     function GetUpdatedDescription: string;
     function Load: Boolean;
-    function Load(Path: string; const Project: TXMLConfig): Boolean;
-    function Save(DesignName: string; var Project: TXMLConfig): Boolean;
+    function Load(Path: string): Boolean;
+    function Save(DesignName: string): Boolean;
     procedure ConnectPorts(Sender: TObject);
     procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
@@ -124,7 +124,7 @@ begin
   Result := true;
 end;
 
-function TCGraphDesign.Load(Path: string; const Project: TXMLConfig): Boolean;
+function TCGraphDesign.Load(Path: string): Boolean;
 var
   BlocksCount: integer;
   DesignDescription: TLFMTree;
@@ -176,16 +176,13 @@ begin
   end;
 end;
 
-function TCGraphDesign.Save(DesignName: string; var Project: TXMLConfig): Boolean;
+function TCGraphDesign.Save(DesignName: string): Boolean;
 var
   Component: TComponent;
   i: Integer;
   CodeFileName: string;
   f: System.Text;
 begin
-  with Project do begin
-    SetValue('design/name', DesignName);
-  end;
   //WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
