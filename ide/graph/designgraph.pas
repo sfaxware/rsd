@@ -226,7 +226,6 @@ begin
   end;
   with Result do begin
     Visible := IsSelected;
-    Selected := IsSelected;
     OnClick := @SelectBlock;
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
@@ -235,6 +234,9 @@ begin
     OnChildrenCreate(Result);
   end;
   InsertDevice(Result, Self);
+  if Result.Visible then begin
+    SelectBlock(Result);
+  end;
 end;
 
 function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;

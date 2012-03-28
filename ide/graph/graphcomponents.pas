@@ -996,7 +996,6 @@ begin
     end;
     DeviceDescriptionNode := FindObjectProperty(DeviceDescriptionNode, DesignDescription);
   end;
-  Selected := True;
 end;
 
 function TBlock.Save: boolean;
