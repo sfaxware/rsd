@@ -109,8 +109,8 @@ type
   end;
 
 function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
-function FindObjectProperty(ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
-function FindObjectProperty(PropertyPath: string; ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
+function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 
 implementation
 uses math, DesignGraph, CodeToolManager;
@@ -145,10 +145,9 @@ begin
   WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
 end;
 
-function FindObjectProperty(ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 var
   Node: TLFMTreeNode;
-  ObjNode: TLFMObjectNode;
   p: LongInt;
   FirstPart: String;
   RestParts: String;
@@ -168,7 +167,7 @@ begin
   Result:=nil;
 end;
 
-function FindObjectProperty(PropertyPath: string; ContextNode: TLFMObjectNode; Self: TLFMTree): TLFMObjectNode;
+function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 var
   p: LongInt;
   FirstPart: String;
@@ -183,9 +182,9 @@ begin
     RestParts := '';
   end;
   WriteLn('FindObjectProperty : FirstPart = ', FirstPart, ', RestParts = ', RestParts);
-  Result := ContextNode;
   repeat
-    Result := FindObjectProperty(Result, Self);
+    Result := FindObjectProperty(ContextNode, Self);
+    ContextNode := Result;
   until (Result = nil) or (SysUtils.CompareText(Result.Name, PropertyPath) = 0);
 end;
 
@@ -285,14 +284,17 @@ end;
 function TCGraphPort.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
   Path: string;
-  PortDescription: TLFMObjectNode;
 begin
-  if Assigned(ContextNode.Parent) then with ContextNode.Parent as TLFMObjectNode do
-    Path := Name + '.' + ContextNode.Name;
-  Left := StrToInt(GetPropertyValue(DesignDescription, Path + '.Left'));
-  Top := StrToInt(GetPropertyValue(DesignDescription, Path + '.Top'));
-  Color := clRed;
-  Caption := GetPropertyValue(DesignDescription, Path + '.Name');
+  Path := '';
+  while Assigned(ContextNode) do with ContextNode do begin
+    Path := Name + '.' + Path;
+    ContextNode := Parent as TLFMObjectNode;
+  end;
+  WriteLn('TCGraphPort : Path = ', Path);
+//  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
+//  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
+  Color := clBlack;
+//  Caption := GetPropertyValue(DesignDescription, Path + 'Name');
   Result := True;
 end;
 
@@ -387,18 +389,24 @@ end;
 function TCGraphBlock.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
   Path: string;
+  ChildNode: TLFMTreeNode;
   PortDescription: TLFMObjectNode;
   Port: TCGraphPort;
 begin
-  if Assigned(ContextNode.Parent) then with ContextNode.Parent as TLFMObjectNode do
-    Path := Name + '.' + ContextNode.Name;
-  Left := StrToInt(GetPropertyValue(DesignDescription, Path + '.Left'));
-  Top := StrToInt(GetPropertyValue(DesignDescription, Path + '.Top'));
+  ChildNode := ContextNode.FirstChild;
+  Path := '';
+  while Assigned(ContextNode) do with ContextNode do begin
+    Path := Name + '.' + Path;
+    ContextNode := Parent as TLFMObjectNode;
+  end;
+  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
+  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
   Color := clRed;
-  Caption := GetPropertyValue(DesignDescription, Path + '.Name');
+  Caption := GetPropertyValue(DesignDescription, Path + 'Name');
   Selected := True;
-  PortDescription := FindObjectProperty(Name, ContextNode, DesignDescription);
+  PortDescription := FindObjectProperty(ChildNode, DesignDescription);
   while Assigned(PortDescription) do begin
+    WriteLn('PortDescription.TypeName = ', PortDescription.TypeName);
     if PortDescription.TypeName = 'TOutputPort' then
       Port := TCGraphOutputPort.Create(Self)
     else if PortDescription.TypeName = 'TInputPort' then
@@ -406,9 +414,11 @@ begin
     else
       Exit(False);
     with Port do begin
+      Parent := Self.Parent;
       Load(DesignDescription, PortDescription);
       OnDblClick := Self.OnDblClick;
     end;
+    PortDescription := FindObjectProperty(PortDescription, DesignDescription);
   end;
   Result := True;
 end;
