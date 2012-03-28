@@ -84,7 +84,6 @@ type
     procedure AddSubDesignMenuItemClick(Sender: TObject);
     procedure BuilderProcessTerminate(Sender: TObject);
     procedure CompileProject(Sender: TObject);
-    procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
     procedure DesignLayoutClick(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
@@ -423,11 +422,6 @@ begin
   end;
 end;
 
-procedure TIdeMainWindow.ConnectPorts(Sender: TObject);
-begin
-  AddNewConnector('TConnector');
-end;
-
 procedure TIdeMainWindow.DeleteConnector(Sender: TObject);
 begin
   with TDesign.GetViewed do begin
@@ -525,10 +519,13 @@ begin
   //WriteLn('HandleMouseDownEvents');
   case Button of
     mbLeft: with TDesign.GetViewed do begin
-      if Sender is TOutputPort then begin
-       SelectedOutputPort := Sender as TOutputPort
-      end else begin
-       SelectedOutputPort := nil;
+      SelectedOutputPort := nil;
+      if Sender is TInputPortRef then begin
+        SelectedOutputPort := Sender as TInputPortRef;
+        //WriteLn(SelectedOutputPort.DeviceIdentifier);
+      end else if Sender is TOutputPort then begin
+        SelectedOutputPort := Sender as TOutputPort;
+        //WriteLn(SelectedOutputPort.DeviceIdentifier);
       end;
     end;
   end;
@@ -536,16 +533,22 @@ end;
 
 procedure TIdeMainWindow.HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('TPort.HandleMouseUpEvents');
+  //WriteLn('HandleMouseUpEvents');
   case Button of
     mbLeft: with TDesign.GetViewed do begin
-      if (Sender is TInputPort) and (Assigned(SelectedOutputPort)) then begin
-        SelectedInputPort := Sender as TInputPort;
-        //WriteLn('SelectedOutputPort = ', SelectedOutputPort.Top, ', ', SelectedOutputPort.Left);
-        //WriteLn('SelectedInputPort = ', SelectedInputPort.Top, ', ', SelectedInputPort.Left);
-        ConnectPorts(Self);
-      end else
-        SelectedInputPort := nil;
+      SelectedInputPort := nil;
+      if Assigned(SelectedOutputPort) then begin
+        if Sender is TOutputPortRef then begin
+          SelectedInputPort := Sender as TOutputPortRef;
+          //WriteLn(SelectedInputPort.DeviceIdentifier);
+        end else if Sender is TInputPort then begin
+          SelectedInputPort := Sender as TInputPort;
+          //WriteLn(SelectedInputPort.DeviceIdentifier);
+        end;
+      end;
+      if Assigned(SelectedInputPort) then begin
+        Self.AddNewConnector('TConnector');
+      end;
     end;
   end;
 end;
@@ -569,6 +572,7 @@ begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;
   end else if Sender is TPort then with Sender as TPort do begin
+    //WriteLn('SetupChildrenEvents for ', DeviceIdentifier, ': ', ClassName);
     OnMouseUp := @HandleMouseUpEvents;
     OnMouseDown := @HandleMouseDownEvents;
   end;
