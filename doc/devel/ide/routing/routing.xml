@@ -45,7 +45,7 @@
         <short>A list of indexes to reference subsets of elements in other lists like TArea and TSegments.</short>
       </element>
       <element name="TAdjacenceGraph">
-        <short>lIst of list of adjacent rectangles</short>
+        <short>List of list of adjacent rectangles</short>
         <descr>This list gives for each rectrangle, referenced by the same index in a given area,  the list the adjacent rectangles.
 Two rectangles are adjacent if their intersection is not empty and not reduced to a unique point.
 
@@ -68,6 +68,17 @@ The adjacence grapgh can be seen as a compact implementation of a tree. It allow
       <element name="AdjacenceGraph">
         <short>Return the adjacence graph of a given area.</short>
       </element>
+      <short>A unit building routes between block ports</short>
+      <descr>
+        <p>This unit provides a set of type definitions and an API to handle the routing problem which consists on finding a list of rectangles starting, the first containing the start point and the last containing the end point and each rectangle in the list is adjacent to the previous and to the next rectangle in the list. Also the rectangles should not involve any intersection with a rectangle modelling a block.
+</p>
+        <p>The first step consists in representing the design area as a list of rectangles which could be separated into two types: the blocks and the free areas.
+</p>
+        <p>An area is a set of contiguous rectangles, containing the start and the stop points. For routing two points we need to find one area fitting this criteria. This could be done by building the adjacence graph, which is the set of free areas in the desing. Then just looking for each area if it contains both points.
+</p>
+        <p>The list of free areas change each time a new block is inserted or an old block is moves or deleted. Of course each of these events should trigger an event for rebuilding the list and rerouting the design.
+</p>
+      </descr>
     </module>
   </package>
 </fpdoc-descriptions>
