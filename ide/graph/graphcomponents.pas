@@ -16,7 +16,10 @@ const
 
 type
   TCodeType = (ctSource, ctDescription);
+  TCGraphConnector = class;
   TCGraphPort = class(TGraphicControl)
+  private
+    FConnector: TCGraphConnector;
   public
     constructor Create(AOwner: TComponent); override;
   protected
@@ -32,6 +35,7 @@ type
   protected
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
+  TPortType = class of TCGraphPort;
   TCGraphBlock = class(TGraphicControl)
   private
     _MouseDown: Boolean;
@@ -52,6 +56,7 @@ type
     FType: string;
     procedure SetSeleted(AValue: Boolean);
     procedure Paint; override;
+    procedure UpdatePortsBounds(PortType: TPortType);
     procedure ValidateInsert(AComponent: TComponent); override;
   published
     property Selected: Boolean read FSelected write SetSeleted;
@@ -80,6 +85,7 @@ type
     FPoints: array of TPoint;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   protected
     procedure Paint; override;
     procedure SetInputPort(Value: TCGraphInputPort);
@@ -91,6 +97,23 @@ type
   end;
 
 implementation
+uses math;
+
+type
+  TConnection = array of TPoint;
+
+function Translate(Points: TConnection; dx, dy: Integer): TConnection;
+var
+  l: Integer;
+begin
+  l := Length(Points);
+  SetLength(Result, l);
+  while l > 0 do begin
+    l -= 1;
+    Result[l].x := Points[l].x + dx;
+    Result[l].y := Points[l].y + dy;
+  end;
+end;
 
 constructor TCGraphPort.Create(AOwner: TComponent);
 begin
@@ -152,6 +175,9 @@ begin
   end;
   //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
   ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
+  if Assigned(FConnector) then with FConnector do begin
+    UpdatePoints;
+  end;
 end;
 
 procedure TCGraphOutputPort.UpdateBounds(Idx: Integer; Interval: Integer);
@@ -170,6 +196,9 @@ begin
   end;
   //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
   ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
+  if Assigned(FConnector) then with FConnector do begin
+    UpdatePoints;
+  end;
 end;
 
 constructor TCGraphBlock.Create(AOwner:TComponent);
@@ -302,9 +331,8 @@ begin
     _MousePos.x := X;
     _MousePos.y := Y;
     ChangeBounds(Left + dx, Top + dy, Width, Height);
-    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-      ChangeBounds(Left + dx, Top + dy, Width, Height);
-    end;
+    UpdatePortsBounds(TCGraphInputPort);
+    UpdatePortsBounds(TCGraphOutputPort);
   end;
 end;
 
@@ -323,8 +351,8 @@ var
 begin
   //WriteLn('TCGraphBlock.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
   PaintRect:=ClientRect;
+  //with PaintRect do WriteLn('TCGraphBlock.Paint PaintRect=', Left,', ', Top,', ', Right,', ', Bottom);
   with Canvas do begin
-    //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
     if FSelected then begin
       Color := clBlack;
       Brush.Color := clGray;
@@ -353,34 +381,37 @@ begin
   inherited Paint;
 end;
 
-procedure TCGraphBlock.ValidateInsert(AComponent: TComponent);
+procedure TCGraphBlock.UpdatePortsBounds(PortType: TPortType);
 var
   i: Integer;
   Idx: Integer;
   dy: Integer;
   Component: TComponent;
 begin
+  if (PortType = TCGraphInputPort) and (FInputComponentCount > 0) then
+    dy := Height div FInputComponentCount
+  else if (PortType = TCGraphOutputPort) and (FOutputComponentCount > 0) then
+    dy := Height div FOutputComponentCount
+  else
+    Exit;
   Idx := 0;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is PortType then with Component as PortType do begin
+      UpdateBounds(Idx, dy);
+      Idx += 1;
+    end;
+  end;
+end;
+
+procedure TCGraphBlock.ValidateInsert(AComponent: TComponent);
+begin
   if AComponent is TCGraphInputPort then begin
     FInputComponentCount += 1;
-    dy := Height div FInputComponentCount;
-    for i := 0 to ComponentCount - 1 do begin
-      Component := Components[i];
-      if Component is TCGraphInputPort then with Component as TCGraphInputPort do begin
-        UpdateBounds(Idx, dy);
-        Idx += 1;
-      end;
-    end;
+    UpdatePortsBounds(TCGraphInputPort);
   end else if AComponent is TCGraphOutputPort then begin
     FOutputComponentCount += 1;
-    dy := Height div FOutputComponentCount;
-    for i := 0 to ComponentCount - 1 do begin
-      Component := Components[i];
-      if Component is TCGraphOutputPort then with Component as TCGraphOutputPort do begin
-        UpdateBounds(Idx, dy);
-        Idx += 1;
-      end;
-    end;
+    UpdatePortsBounds(TCGraphOutputPort);
   end;
 end;
 
@@ -389,21 +420,26 @@ begin
   inherited Create(AOwner);
 end;
 
+procedure TCGraphConnector.Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
+begin
+  OutputPort := AOutputPort;
+  InputPort := AInputPort;
+end;
+
 Procedure TCGraphConnector.Paint;
 begin
+  //WriteLn('TCGraphConnector.Paint Self=', Left,', ', Top,', ', Width,', ', Height);
   if Length(FPoints) > 0 then with Canvas do begin
-    //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
     {if FSelected then begin
       Color := clBlack;
       Brush.Color := clGray;
-      Rectangle();
       InflateRect(PaintRect, -2, -2);
     end;}
     If not Enabled then
-      Brush.Color := clBtnShadow
+      Color := clBtnShadow
     else
-      Brush.Color:= clGreen;
-    Polyline(FPoints);
+      Color:= clGreen;
+    Polyline(Translate(FPoints, -Left, -Top));
   end;
   inherited Paint;
 end;
@@ -411,6 +447,7 @@ end;
 procedure TCGraphConnector.SetInputPort(Value: TCGraphInputPort);
 begin
   FInputPort := Value;
+  FInputPort.FConnector := Self;
   if Assigned(FOutputPort) then begin
     UpdatePoints;
   end;
@@ -419,6 +456,7 @@ end;
 procedure TCGraphConnector.SetOutputPort(Value: TCGraphOutputPort);
 begin
   FOutputPort := Value;
+  FOutputPort.FConnector := Self;
   if Assigned(FInputPort) then begin
     UpdatePoints;
   end;
@@ -427,10 +465,12 @@ end;
 procedure TCGraphConnector.UpdatePoints;
 begin
   SetLength(FPoints, 4);
-  FPoints[0] := Point(FOutputPort.Top + FOutputPort.Height div 2, FOutputPort.Left - FOutputPort.Width);
-  FPoints[4] := Point(FInputPort.Top + FInputPort.Height div 2, FInputPort.Left + FInputPort.Width);
-  FPoints[2] := Point((FPoints[0].x + FPoints[4].x) div 2, FPoints[0].y);
-  FPoints[3] := Point((FPoints[0].x + FPoints[4].x) div 2, FPoints[4].y);
+  FPoints[0] := Point(FOutputPort.Left, FOutputPort.Top + FOutputPort.Height div 2);
+  FPoints[3] := Point(FInputPort.Left + FInputPort.Width, FInputPort.Top + FInputPort.Height div 2);
+  FPoints[1] := Point((FPoints[0].x + FPoints[3].x) div 2, FPoints[0].y);
+  FPoints[2] := Point((FPoints[0].x + FPoints[3].x) div 2, FPoints[3].y);
+  //WriteLn('OutputPort = (', FPoints[0].x, ', ', FPoints[0].y, ' ), InputPort = (', FPoints[3].x, ', ', FPoints[3].y, ' )');
+  SetBounds(min(FOutputPort.Left, FInputPort.Left + FInputPort.Width), min(FOutputPort.Top + FOutputPort.Height div 2, FInputPort.Top + FInputPort.Height div 2), 1 + abs(FPoints[0].x - FPoints[3].x), 1 + abs(FPoints[0].y - FPoints[3].y));
 end;
 
 end.
