@@ -162,7 +162,6 @@ type
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DevicePropertiesDescription(Indent: string): string; override;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
   TProbe = class(TBlock)
   protected
@@ -171,7 +170,6 @@ type
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType; PortName: string): TPort; override;
     function DevicePropertiesDescription(Indent: string): string; override;
-    function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean; override;
   end;
 
 function CreateDevice(out Device: TDevice; DeviceName, DeviceType, DeviceAncestorType: string; AOwner: TComponent): Boolean;
@@ -1339,11 +1337,6 @@ begin
   end;
 end;
 
-function TSource.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
-begin
-  Result := inherited;
-end;
-
 constructor TProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
@@ -1414,11 +1407,6 @@ begin
   end else with OriginalBounds do begin
     Result := inherited;
   end;
-end;
-
-function TProbe.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
-begin
-  Result := inherited;
 end;
 
 initialization
