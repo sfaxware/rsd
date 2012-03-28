@@ -224,7 +224,6 @@ begin
     if Qty > Size then begin
       Qty := Size
     end;
-    WriteLn(Qty);
     Move(Raw, Samples, Qty);
     Freemem(P);
   end;
@@ -254,7 +253,6 @@ begin
     Size := Qty;
     Move(Samples, Raw, Qty);
   end;
-  WriteLn('Pushed Qty = ', Qty);
   if Assigned(FConnector) then begin
     //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
     Result := FConnector.Push(P);
