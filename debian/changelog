@@ -3,5 +3,6 @@ rsd (0.0.1-0) unstable; urgency=low
   * Support for hierarchical design with infinite inclusion levels.
   * Basic block scheduler (no support for loops).
   * Auto generated control code with VCS friendly changes.
+  * Lazarus compatible projects.
 
- -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 12 Jan 2011 19:19:00 +0100
+ -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 25 Jan 2011 09:06:00 +0100
