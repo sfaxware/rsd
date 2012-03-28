@@ -265,6 +265,7 @@ endif
 PACKAGESDIR:=$(wildcard $(FPCDIR) $(FPCDIR)/packages $(FPCDIR)/packages/base $(FPCDIR)/packages/extra)
 override PACKAGE_NAME=dtsl
 override PACKAGE_VERSION=0.0.1
+PACKAGES=core/${PACKAGE_NAME}core
 PO_FILES=$(wildcard locale/*_*.po)
 MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
 LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
@@ -2183,17 +2184,20 @@ makefiles: fpc_makefiles
 ifneq ($(wildcard fpcmake.loc),)
 include fpcmake.loc
 endif
-.PHONY: all clean install ide
-all:mo_files ide
-	lazbuild -B core/${PACKAGE_NAME}core.lpk
-	sed -e 's@\.\./build/lib/dtsl/core/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/core/${PACKAGE_NAME}core.lpk
-	${COPY} -t build/lib/dtsl/core/ core/${PACKAGE_NAME}core.pas
+.PHONY: all clean install ide packages
+all:mo_files ide packages
 clean:fpc_clean clean_packages
 clean_packages:
 	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
 ide:build/bin/${TARGET_PROGRAMS}
 build/bin/%:ide/%.lpi
 	lazbuild $<
+packages:$(addprefix build/lib/dtsl/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
+build/lib/dtsl/%.pas:%.pas build/lib/dtsl/%.lpk
+	${COPY} $< $@
+build/lib/dtsl/%.lpk:%.lpk %.pas
+	lazbuild -B $<
+	sed -e 's@\.\./build/lib/dtsl/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g' $< > $@
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 	${MKDIR} $(dir $@)
@@ -2262,7 +2266,7 @@ ifneq ($(DEBVERSION),$(PACKAGE_VERSION))
 	@$(ECHO) "Debian version ($(DEBVERSION)) is not correct, expect $(PACKAGE_VERSION)"
 	@exit 1
 endif
-debcopy: distclean
+debcopy: clean
 	${DELTREE} ${BUILDDIR}
 	${MKDIRTREE} ${DEBSRCDIR}
 ifdef DEBUSESVN

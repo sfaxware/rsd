@@ -24,18 +24,16 @@ fpcpackage=n
 basedir=usr
 
 [prerules]
+PACKAGES=core/${PACKAGE_NAME}core
 PO_FILES=$(wildcard locale/*_*.po)
 MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
 LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
 #-----------------------------------------------------------------------------
 [rules]
-.PHONY: all clean install ide
+.PHONY: all clean install ide packages
 
 #-----------------------------------------------------------------------------
-all:mo_files ide
-	lazbuild -B core/${PACKAGE_NAME}core.lpk
-	sed -e 's@\.\./build/lib/dtsl/core/@$$(PkgDir)/@g' core/${PACKAGE_NAME}core.lpk > build/lib/dtsl/core/${PACKAGE_NAME}core.lpk
-	${COPY} -t build/lib/dtsl/core/ core/${PACKAGE_NAME}core.pas
+all:mo_files ide packages
 
 clean:fpc_clean clean_packages
 
@@ -46,6 +44,15 @@ ide:build/bin/${TARGET_PROGRAMS}
 
 build/bin/%:ide/%.lpi
 	lazbuild $<
+
+packages:$(addprefix build/lib/dtsl/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
+
+build/lib/dtsl/%.pas:%.pas build/lib/dtsl/%.lpk
+	${COPY} $< $@
+
+build/lib/dtsl/%.lpk:%.lpk %.pas
+	lazbuild -B $<
+	sed -e 's@\.\./build/lib/dtsl/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g' $< > $@
 
 mo_files:${MO_FILES}
 
@@ -135,7 +142,7 @@ ifneq ($(DEBVERSION),$(PACKAGE_VERSION))
 	@exit 1
 endif
 
-debcopy: distclean
+debcopy: clean
 	${DELTREE} ${BUILDDIR}
 	${MKDIRTREE} ${DEBSRCDIR}
 ifdef DEBUSESVN
