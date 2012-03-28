@@ -5,29 +5,21 @@ unit Designs;
 interface
 
 uses
-  Blocks;
+  Classes, Blocks;
 
 type
   TDesign = class(TBlock)
   public
-    constructor Create(AOwner: TBlock); override;
-    constructor Create(AOwner: TDesign); virtual;
+    constructor Create(AOwner: TComponent); override;
     procedure Run;
   end;
 
 implementation
 
 uses
-  Classes, BlockBasics;
+  BlockBasics;
 
-constructor TDesign.Create(AOwner: TBlock);
-begin
-  if AOwner is TDesign then begin
-    Create(AOwner as TDesign);
-  end;
-end;
-
-constructor TDesign.Create(AOwner: TDesign);
+constructor TDesign.Create(AOwner: TComponent);
 var
   cn: string;
 begin

@@ -97,9 +97,7 @@ type
       Count: Word;
     end;
     Core: record
-      Blocks: record
-        Path: string;
-      end;
+      Path: string;
     end;
   end;
 
@@ -120,7 +118,7 @@ begin
     Name := 'Design';
     Units.Count := 0;
     Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
-    Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';
+    Core.Path := ExpandFileName(ExtractFilePath(ParamStr(0)) + '../../core');
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
   end;
   Design.Cleanup;
@@ -149,7 +147,7 @@ begin
     if p > 0 then begin
       Delete(Path, p, Length(Path));
     end;
-    Core.Blocks.Path := DesignDir + Path;
+    Core.Path := DesignDir + Path;
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
   end;
   with Design do begin
@@ -192,7 +190,7 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
 //    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
 //    WriteLn('DesignDir = ', DesignDir);
-    path := ExtractRelativepath(DesignDir, Core.Blocks.Path) + ';$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
+    path := ExtractRelativepath(DesignDir, Core.Path) + '/block;' + ExtractRelativepath(DesignDir, Core.Path) + '/fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
 //    WriteLn('realtive path = ', path);
     SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', Path);
     Flush;
@@ -292,8 +290,8 @@ begin
   //WriteLn('SrcFilename = ', SrcFilename);
   //WriteLn('TheUnitName = ', TheUnitName);
   //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
-  DirList := ProjectSettings^.Core.Blocks.Path;
-  //WriteLn('DirList = ', DirList);
+  DirList := ProjectSettings^.Core.Path + '/block' + PathSep + ProjectSettings^.Core.Path + '/fifo';
+  WriteLn('DirList = ', DirList);
   FileName := TheUnitInFilename;
   if FileName = '' then begin
     FileName := LowerCase(TheUnitName) + '.pas';
@@ -312,9 +310,6 @@ var
   ProjectSettings: PProjectSettings;
 begin
   ProjectSettings := _ProjectSettings;
-  with ProjectSettings^ do begin
-    Core.Blocks.Path := '';
-  end;
   Dispose(ProjectSettings);
   _ProjectSettings := nil;
   inherited Destroy;
@@ -379,9 +374,9 @@ begin
   ProjectSettings := _ProjectSettings;
   with ProjectSettings^, SelectDirectoryDialog1 do begin
     if Execute then begin
-      Core.Blocks.Path := FileName;
+      Core.Path := FileName;
     end;
-    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+    WriteLn('Core.Blocks.Path = ', Core.Path);
   end;
 end;
 
