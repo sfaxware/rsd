@@ -682,7 +682,6 @@ object IdeMainWindow: TIdeMainWindow
     Top = 793
     Width = 1036
     AutoSize = False
-    Color = clBlue
     Panels = <    
       item
         Text = 'Pannel 0'
@@ -705,8 +704,8 @@ object IdeMainWindow: TIdeMainWindow
   end
   object DesignTreeView: TTreeView
     Left = 0
-    Height = 793
-    Top = 2
+    Height = 761
+    Top = 32
     Width = 192
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoExpand = True
@@ -716,6 +715,14 @@ object IdeMainWindow: TIdeMainWindow
     TabOrder = 2
     OnDblClick = DesignTreeViewClick
     Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoNoDoubleClickExpand, tvoThemedDraw]
+  end
+  object Label1: TLabel
+    Left = 8
+    Height = 18
+    Top = 15
+    Width = 75
+    Caption = 'Design tree'
+    ParentColor = False
   end
   object IdeMainMenu: TMainMenu
     object IdeFileMenuItem: TMenuItem

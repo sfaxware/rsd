@@ -5,10 +5,10 @@ unit mainWindow;
 interface
 
 uses
-  AsyncProcess, Classes, process, SysUtils, LResources, Forms, Controls,
-  Graphics, Dialogs, Menus, ExtCtrls, ComCtrls, SynHighlighterPas,
-  SynCompletion, GraphComponents, SynEdit, XMLCfg, CodeCache,
-  LFMTrees, DesignGraph;
+  AsyncProcess, Classes, process, StdCtrls, SysUtils, LResources, Forms,
+  Controls, Graphics, Dialogs, Menus, ExtCtrls, ComCtrls, SynHighlighterPas,
+  SynCompletion, GraphComponents, SynEdit, XMLCfg, CodeCache, LFMTrees,
+  DesignGraph;
 
 type
   { TIdeMainWindow }
@@ -48,6 +48,7 @@ type
     IdeHelpLocalHelpMenuItem: TMenuItem;
     AboutMenuItem: TMenuItem;
     AddSubDesignMenuItem: TMenuItem;
+    Label1: TLabel;
     MenuItem1: TMenuItem;
     IdeViewTopLayoutMenuItem: TMenuItem;
     ShowTopLayoutMenuItem: TMenuItem;
