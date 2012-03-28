@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <fpdoc-descriptions>
   <package name="dtsl_ide">
-    <module name="routing">
+    <module name="Routing">
       <element name="TSegment">
         <short>Modelizes a straight line joining two points</short>
       </element>

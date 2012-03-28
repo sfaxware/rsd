@@ -11,7 +11,7 @@
       <MainUnit Value="0"/>
       <TargetFileExt Value=""/>
     </General>
-    <LazDoc Paths="../doc/devel/ide/;../doc/devel/ide/graph/"/>
+    <LazDoc Paths="../doc/devel/ide/;../doc/devel/ide/graph/;../doc/devel/ide/routing/"/>
     <VersionInfo>
       <ProjectVersion Value=""/>
     </VersionInfo>
@@ -76,9 +76,9 @@
         <UnitName Value="CodeWriter"/>
       </Unit4>
       <Unit5>
-        <Filename Value="graph/routing.pas"/>
+        <Filename Value="routing/routing.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="routing"/>
+        <UnitName Value="Routing"/>
       </Unit5>
       <Unit6>
         <Filename Value="graph/magnifier.pas"/>
@@ -99,7 +99,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)/"/>
-      <OtherUnitFiles Value="graph/"/>
+      <OtherUnitFiles Value="graph/;routing/"/>
       <UnitOutputDirectory Value="../build"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>
