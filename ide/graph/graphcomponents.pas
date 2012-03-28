@@ -36,6 +36,8 @@ type
   private
     _MouseDown: Boolean;
     _MousePos: TPoint;
+    FInputComponentCount: Integer;
+    FOutputComponentCount: Integer;
     procedure StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
     procedure EndMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
     procedure Move(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -68,22 +70,16 @@ type
     property ParentShowHint;
     property PopupMenu;
     property Typ: string read FType;
+    property InputComponentCount: Integer read FInputComponentCount;
+    property OutputComponentCount: Integer read FOutputComponentCount;
   end;
 
 implementation
 
 constructor TCGraphPort.Create(AOwner: TComponent);
-var
-  dy: Integer;
-  idx: Integer;
 begin
   Inherited Create(AOwner);
-  with AOwner as TCGraphBlock do begin
-    Idx := ComponentCount;
-    dy := Height div idx;
-  end;
-  Idx -= 1;
-  UpdateBounds(idx, dy);
+  UpdateBounds(-1, -1);
 end;
 
 procedure TCGraphPort.Paint;
@@ -129,6 +125,12 @@ var
   PortTop, PortLeft: Integer;
 begin
   with Owner as TCGraphBlock do begin
+    if Interval <= 0 then begin
+      Interval := Height div FInputComponentCount;
+    end;
+    if idx < 0 then begin
+      idx := FInputComponentCount - 1;
+    end;
     PortTop := Top + idx * Interval + Interval div 2 - DefaultPortHeight div 2;
     PortLeft := Left + Width;
   end;
@@ -141,7 +143,13 @@ var
   PortTop, PortLeft: Integer;
 begin
   with Owner as TCGraphBlock do begin
-    PortTop := Top + idx * Interval + Interval div 2 - DefaultPortHeight div 2;
+    if Interval <= 0 then begin
+      Interval := Height div FOutputComponentCount;
+    end;
+    if Idx < 0 then begin
+      Idx := FOutputComponentCount - 1;
+    end;
+    PortTop := Top + Idx * Interval + Interval div 2 - DefaultPortHeight div 2;
     PortLeft := Left - DefaultPortWidth;
   end;
   //WriteLn('idx = ', idx, ' PortTop = ', PortTop, ' PortLeft = ', PortLeft);
@@ -151,6 +159,8 @@ end;
 constructor TCGraphBlock.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
+  FInputComponentCount := 0;
+  FOutputComponentCount := 0;
   Width := DefaultBlockWidth;
   Height := DefaultBlockHeight;
   FSelected := False;
@@ -330,12 +340,30 @@ end;
 procedure TCGraphBlock.ValidateInsert(AComponent: TComponent);
 var
   i: Integer;
+  Idx: Integer;
   dy: Integer;
+  Component: TComponent;
 begin
-  if AComponent is TCGraphPort then begin
-    dy := Height div (ComponentCount + 1);
-    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-      UpdateBounds(i, dy);
+  Idx := 0;
+  if AComponent is TCGraphInputPort then begin
+    FInputComponentCount += 1;
+    dy := Height div FInputComponentCount;
+    for i := 0 to ComponentCount - 1 do begin
+      Component := Components[i];
+      if Component is TCGraphInputPort then with Component as TCGraphInputPort do begin
+        UpdateBounds(Idx, dy);
+        Idx += 1;
+      end;
+    end;
+  end else if AComponent is TCGraphOutputPort then begin
+    FOutputComponentCount += 1;
+    dy := Height div FOutputComponentCount;
+    for i := 0 to ComponentCount - 1 do begin
+      Component := Components[i];
+      if Component is TCGraphOutputPort then with Component as TCGraphOutputPort do begin
+        UpdateBounds(Idx, dy);
+        Idx += 1;
+      end;
     end;
   end;
 end;
