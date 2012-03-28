@@ -10,6 +10,16 @@
       <element name="TCGraphPort.Create">
         <short>Create a port for a given block</short>
       </element>
+      <element name="CreateDevice">
+        <short>Create a new device guessing devuce name and type if not passed.</short>
+        <descr>This function creates a new device. The user may pass name and type information or it may guess is automatically.
+
+For devices loaded from a FLM file, the name and the type are already known.
+
+To create a new device you can either create the name your self and pass it to this function or pass an empty string. In this case, the device name will be created depanding on the type name of the device to be created.
+
+To create a new class associated to the new variable, you may either provide a new type name, or just leave the <var>DeviceType</var> parameter empty. In this case the type name will be gessed from the <var>DeviceName</var> if any is passed otherwise it will be derived from the <var>AncestorType</var> type name.</descr>
+      </element>
     </module>
   </package>
 </fpdoc-descriptions>
