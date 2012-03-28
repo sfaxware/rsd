@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=rsd
+Comment=Rapid Simulator Design IDE
+Exec=rsd %f
+Terminal=false
+Type=Application
+Icon=rsd_ide
+Categories=Application;IDE;Development;GUIDesigner;
+StartupWMClass=rsd
+MimeType=text/lazarus-project-information;
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.lpi
+X-Ubuntu-Gettext-Domain=desktop_kdelibs
+
