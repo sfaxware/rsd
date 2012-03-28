@@ -5,14 +5,14 @@ unit DesignGraph;
 interface
 
 uses
-  Classes, SysUtils, Forms, XMLCfg, CodeCache, GraphComponents;
+  Classes, SysUtils, Forms, XMLCfg, CodeCache, CodeWriter, GraphComponents;
 
 type
   TCGraphDesign = class(TScrollBox)
   private
     _Blocks:TFPList;
   public
-    CodeBuffer: array[TCodeType] of TCodeBuffer;
+    CodeBuffer: array[TCodeType] of TCodeWriter;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
@@ -176,13 +176,11 @@ begin
 end;
 
 function TCGraphDesign.Save(DesignName: string; var Project: TXMLConfig): Boolean;
-var              
+var
   Component: TComponent;
   i: Integer;
   f: System.Text;
   CodeFileName: string;
-  p, e: Integer;
-  usedBlocks: string;
 begin
   with Project do begin
     SetValue('design/name', DesignName);
@@ -209,44 +207,9 @@ begin
   if not Assigned(CodeBuffer[ctSource]) then with CodeBuffer[ctSource] do begin
     CodeBuffer[ctSource] := TCodeCache.Create.CreateFile(CodeFileName);
     with CodeBuffer[ctSource] do begin
-      Insert(0, 'unit ' + Name + ';' + LineEnding);
-      Insert(SourceLength, '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
-        LineEnding +
-        'interface' + LineEnding +
-        LineEnding);
-      Insert(SourceLength, 'uses' + LineEnding + '  ');
-      for i := 0 to ComponentCount - 1 do begin
-        Component := Components[i];
-        if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-          Insert(SourceLength, Name + ', ');
-        end;
-      end;
-      Insert(SourceLength, 'Blocks;');
-      Insert(SourceLength,   LineEnding +
-        'type' + LineEnding +
-        '  TDesign = class(TBlock)' + LineEnding +
-        '  end;' + LineEnding +
-        LineEnding +
-        'implementation' + LineEnding +
-        LineEnding +
-        'begin' + LineEnding +
-        LineEnding +
-        'end.');
     end;
-  end else with CodeBuffer[ctSource] do begin
-    usedBlocks := 'uses' + LineEnding + '  ';
-    p := System.Pos(usedBlocks, Source);
-    e := System.Pos('Blocks;' + LineEnding, Source);
-    for i := 0 to ComponentCount - 1 do begin
-      Component := Components[i];
-      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-        usedBlocks += Name + ', ';
-      end;
-    end;
-    //WriteLn('p = ', p, ', e = ', e);
-    //WriteLn(usedBlocks);
-    Replace(p, e - p, usedBlocks);
   end;
+  CodeBuffer[ctSource].UpdateUsedBlocks(Self);
   Result := CodeBuffer[ctSource].Save;
   System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
   ReWrite(f);
