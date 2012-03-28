@@ -56,10 +56,6 @@ function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
       end;
     end;
   end;
-  function UpdateConnectorsIdentifiers(ClassType: string): Boolean;
-  begin
-    Result := True;
-  end;
 var
   OwnerType: string;
 begin
@@ -74,7 +70,6 @@ begin
     Result := UpdateUsesClause
       and UpdateBlocksIdentifiers(OwnerType)
       and UpdatePortsIdentifiers(OwnerType)
-      and UpdateConnectorsIdentifiers(OwnerType);
   end;
 end;
 
