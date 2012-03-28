@@ -26,7 +26,7 @@ type
   private
     FMagnification: Real;
     FMousePos: TPoint;
-    FOriginalBound: TRect;
+    FOriginalBounds: TRect;
     procedure HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   protected
@@ -46,6 +46,7 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
+    function BlockBoundsDescription(Indent: string): string; override;
     function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DeviceDescription(Indent: string): string;
     function DeviceUnitName: string;
@@ -161,6 +162,20 @@ begin
   SetViewed(False);
   inherited Destroy;
 end;
+
+function TDesign.BlockBoundsDescription(Indent: string): string;
+begin
+  if not IsSelected then begin
+    FOriginalBounds := OriginalBounds;
+  end;
+  with FOriginalBounds do begin
+    Result := Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+              Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+              Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+              Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+  end;
+end;
+
 
 procedure TDesign.Cleanup;
 var
@@ -355,7 +370,7 @@ begin
     end;
     SelectedDesign := Self;
     Visible := False;
-    FOriginalBound := OriginalBounds;
+    FOriginalBounds := OriginalBounds;
     with Parent do begin
       OnMouseMove := @HandleMouseMove;
       OnMouseWheel := @HandleMouseWheele;
@@ -365,7 +380,7 @@ begin
     OriginalBounds := R;
   end else if IsSelected then begin
     SelectedDesign := nil;
-    OriginalBounds := FOriginalBound;
+    OriginalBounds := FOriginalBounds;
   end;
   SetControlsVisibility(ShowDesign);
 end;
