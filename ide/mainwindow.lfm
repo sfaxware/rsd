@@ -975,12 +975,14 @@ object IdeMainWindow: TIdeMainWindow
     left = 96
   end
   object SaveDialog1: TSaveDialog
+    Title = 'Save design as...'
     DefaultExt = '.*.lpi'
     Filter = '*.lpi|*.lpi'
     Options = [ofPathMustExist, ofEnableSizing, ofViewDetail]
     top = 32
   end
   object OpenDialog1: TOpenDialog
+    Title = 'Open design...'
     Filter = '*.lpi|*.lpi'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
     left = 32
