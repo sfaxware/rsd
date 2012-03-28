@@ -137,7 +137,7 @@ endif
 	find ${INSTALL_DIR} -empty -delete
 	touch install-arch-stamp
 
-arrange-arch: install-arch arrange-arch-stamp
+arrange-arch: install-arch arrange-arch-stamp install-man
 arrange-arch-stamp:
 	dh_testdir
 	dh_testroot
@@ -147,6 +147,12 @@ arrange-arch-stamp:
 build-indep: patch
 install-indep:
 	touch install-indep-stamp
+
+install-man: install-man-stamp
+install-man-stamp:
+	# Install man pages
+	dh_installman -s
+	touch install-man-stamp
 
 ###################
 # Documentation
