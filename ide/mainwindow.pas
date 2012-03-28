@@ -117,7 +117,7 @@ begin
   ProjectSettings := _ProjectSettings;
   with Project, ProjectSettings^ do begin
     DesignDir := GetTempDir;
-    Name := 'Untiteled';
+    Name := 'Design';
     Units.Count := 0;
     Self.Caption := 'D.T.S.L. IDE (' +  Name + ')';
     Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';

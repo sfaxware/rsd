@@ -51,7 +51,6 @@ end;
 
 procedure TCGraphDesign.Cleanup;
 var
-  i: Integer;
   CodeType: TCodeType;
 begin
   while Assigned(Components[0]) do begin
@@ -192,6 +191,7 @@ var
   p: Integer;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
+  Component: TComponent;
 begin
   Result := true;
   codeFile[ctSource] := DesignDir + Name + '.pas';
@@ -222,20 +222,28 @@ begin
   //WriteLn('TCGraphDesign.Load : LFM created');
   BlockDescription := FindObjectProperty(nil, DesignDescription);
   while Assigned(BlockDescription) do begin
-    //WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
+    WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
     if BlockDescription.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(BlockDescription, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
-      //WriteLn('OutputPortName = ', PortName);
-      SelectedOutputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphOutputPort;
+      WriteLn('OutputPortName = ', PortName);
+      Component := FindComponent(BlockName);
+      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      Component := Component.FindComponent(PortName);
+      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      SelectedOutputPort := Component as TCGraphOutputPort;
       PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
-      //WriteLn('InputPortName = ', PortName);
-      SelectedInputPort := FindComponent(BlockName).FindComponent(PortName) as TCGraphInputPort;
+      WriteLn('InputPortName = ', PortName);
+      Component := FindComponent(BlockName);
+      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      Component := Component.FindComponent(PortName);
+      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      SelectedInputPort := Component as TCGraphInputPort;
       ConnectPorts(Self);
     end else begin
       if Assigned(SelectedBlock) then

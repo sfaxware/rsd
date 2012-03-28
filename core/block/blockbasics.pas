@@ -107,18 +107,19 @@ type
 
   TCConnector = class(TCDevice,TIConnector)
   private
-    FOutputPort: TIOutputPort;
-    FInputPort: TIInputPort;
+    FOutputPort: TCOutputPort;
+    FInputPort: TCInputPort;
   protected
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
   public
     procedure Connect(Output: TIOutputPort; Input:TIInputPort);
+    procedure Connect(Output: TCOutputPort; Input:TCInputPort);
     property IsEmpty: Boolean read GetIsEmpty;
     property IsFull: Boolean read GetIsFull;
   published
-    property OutputPort: TIOutputPort read FOutputPort write FOutputPort;
-    property InputPort: TIInputPort read FInputPort write FInputPort;
+    property OutputPort: TCOutputPort read FOutputPort write FOutputPort;
+    property InputPort: TCInputPort read FInputPort write FInputPort;
  end;
 
   TFuncName = string[31];
@@ -335,10 +336,15 @@ end;
 
 procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
 begin
+  Connect(Output, Input);
+end;
+
+procedure TCConnector.Connect(Output:TCOutputPort; Input: TCInputPort);
+begin
   FOutputPort := Output;
   FInputPort := Input;
-  Output.Connector := Self;
-  Input.Connector := Self;
+  Output.FConnector := Self;
+  Input.FConnector := Self;
 end;
 
 end.
