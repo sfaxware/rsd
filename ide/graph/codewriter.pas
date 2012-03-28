@@ -115,9 +115,6 @@ begin
       '  TCustom' + Owner.Name + ' = class(TDesign)' + LineEnding +
       '  end;' + LineEnding +
       LineEnding +
-      'var' + LineEnding +
-      '  ' + Owner.Name + 'Simulator: TCustom' + Owner.Name + ';' + LineEnding +
-      LineEnding +
       'implementation' + LineEnding +
       LineEnding +
       'uses' + LineEnding +
@@ -126,10 +123,9 @@ begin
       'initialization' + LineEnding +
       '  {$R *.lfm}' + LineEnding +
       '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
-      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
-      '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
+      LineEnding +
       'end.');
   end;
 end;
@@ -144,8 +140,13 @@ begin
       'uses' + LineEnding +
       '  ' + Owner.Name + ';' + LineEnding +
       LineEnding +
+      'var' + LineEnding +
+      '  ' + Owner.Name + 'Simulator: TCustom' + Owner.Name + ';' + LineEnding +
+      LineEnding +
       'begin' + LineEnding +
+      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(TCustomDesign(nil));' + LineEnding +
       '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
+      '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
       'end.');
   end;
 end;

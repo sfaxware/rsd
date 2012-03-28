@@ -125,7 +125,7 @@ begin
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
-      Result += GetUpdatedDescription('');
+      Result += GetUpdatedDescription(Indent + '  ');
     end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
       Result += GetUpdatedDescription(Indent + '  ');
     end;
