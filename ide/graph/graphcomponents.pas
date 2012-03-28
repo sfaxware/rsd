@@ -132,7 +132,7 @@ type
     function AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual; abstract;
     procedure HandleMouseEnter(Sender: TObject); virtual; abstract;
     procedure HandleMouseLeave(Sender: TObject); virtual; abstract;
-    procedure SetSeleted(AValue: Boolean);
+    procedure SetSelected(AValue: Boolean);
     procedure DoPaint(Sender: TObject); override;
     procedure UpdatePortsBounds(PortType: TPortType);
     procedure ValidateInsert(AComponent: TComponent); override;
@@ -149,7 +149,7 @@ type
     procedure Magnify(m: Real); override;
     property OnChildrenCreate: TNotifyEvent read FOnChildrenCreate write FOnChildrenCreate;
   published
-    property Selected: Boolean read FSelected write SetSeleted;
+    property Selected: Boolean read FSelected write SetSelected;
     property InputComponentCount: Integer read FInputComponentCount;
     property OutputComponentCount: Integer read FOutputComponentCount;
   end;
@@ -622,10 +622,11 @@ var
   i: Integer;
   PropValue: TDeviceProperty;
 begin
+  Result := False;
   with Devices[FDeviceId] do begin
     for i := Low(Properties) to High(Properties) do begin;
       PropValue := GetPropertyValue(ContextNode, Properties[i].PropName, DesignDescription);
-      SetProperty(i, PropValue);
+      Result := Result and SetProperty(i, PropValue);
     end;
   end;
 end;
@@ -1166,7 +1167,7 @@ begin
   end;
 end;
 
-procedure TBlock.SetSeleted(AValue: Boolean);
+procedure TBlock.SetSelected(AValue: Boolean);
 begin
   if FSelected <> AValue then begin
     FSelected := AValue;
