@@ -58,7 +58,7 @@
   \bsegment
     \lcir r:#1
     \textref h:C v:C
-    \htext(0 0){\vbox{#2}}
+    \htext(0 0){\hbox{#2}}
     \savepos(#1 0)(*ex *ey)
   \esegment
   \move(*ex *ey)
@@ -80,8 +80,8 @@
   \bsegment
     \rlvec(#1 #2)
     \textref h:C v:C
-    \htext(0.1 {\result}){\vbox{#3}}
-    \savepos(#1 0)(*ex *ey)
+    \htext(0.1 {\result}){\hbox{#3}}
+    \savepos(#1 #2)(*ex *ey)
   \esegment
   \move(*ex *ey)
 }
