@@ -108,7 +108,7 @@ begin
     Name := GetValue('name', 'Unnamed design');
     Path := 'settings/core/blocks/';
     Core.Blocks.Path := GetValue(Path + 'path', '');
-    WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
+    //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
     Path :=  'design/blocks/';
     Design.Load(Path, Project);
   end;
@@ -181,11 +181,11 @@ var
   FileName: string;
   ProjectSettings: PProjectSettings absolute _ProjectSettings;
 begin
-  WriteLn('SrcFilename = ', SrcFilename);
-  WriteLn('TheUnitName = ', TheUnitName);
-  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  //WriteLn('SrcFilename = ', SrcFilename);
+  //WriteLn('TheUnitName = ', TheUnitName);
+  //WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   FileName := ProjectSettings^.Core.Blocks.Path + LowerCase(TheUnitName) + '.pas';
-  WriteLn('FileName = ', FileName);
+  //WriteLn('FileName = ', FileName);
   Result := CodeToolBoss.LoadFile(FileName, True, False);
 end;
 
@@ -215,7 +215,7 @@ begin
   if Design.SelectedBlock = nil then
     //WriteLn('No selected block')
   else begin
-    WriteLn('Removing block');
+    //WriteLn('Removing block');
     Design.RemoveBlock(Design.SelectedBlock);
   end;
 end;

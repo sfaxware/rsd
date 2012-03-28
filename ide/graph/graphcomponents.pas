@@ -108,7 +108,7 @@ type
     property OutputPort: TCGraphOutputPort read FoutputPort write SetOutputPort;
   end;
 
-function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 function FindObjectProperty(PropertyPath: string; ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
 
@@ -118,16 +118,20 @@ uses math, DesignGraph, CodeToolManager;
 type
   TConnection = array of TPoint;
 
-function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+function GetPropertyValue(ContextNode: TLFMObjectNode; PropertyName: string; Self: TLFMTree): string;
 var
   PropertyNode: TLFMPropertyNode;
   ValueNode: TLFMTreeNode;
   c: char;
   p: integer;
 begin
+  while Assigned(ContextNode) do with ContextNode do begin
+    PropertyName := Name + '.' + PropertyName;
+    ContextNode := Parent as TLFMObjectNode;
+  end;
   Result := '';
-  WriteLn('GetPropertyValue : PropertyName = ', PropertyName);
-  PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
+  //WriteLn('GetPropertyValue : PropertyName = ', PropertyName);
+  PropertyNode := Self.FindProperty(PropertyName, nil);
   ValueNode := PropertyNode.Next;
   if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
     case ValueType of
@@ -141,8 +145,19 @@ begin
           c := Tree.LFMBuffer.Source[p]
         end;
       end;
+      lfmvSymbol: begin
+        p := StartPos;
+        c := Tree.LFMBuffer.Source[p];
+        while c in ['0'..'9', 'A'..'Z', 'a'..'z', '_', '.'] do begin
+          Result += c;
+          p += 1;
+          c := Tree.LFMBuffer.Source[p]
+        end;
+      end;
+    else
+      WriteLn('GetPropertyValue : Unsupported node type "', Integer(ValueType), '"');
     end;
-  WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+  //WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
 end;
 
 function FindObjectProperty(ContextNode: TLFMTreeNode; Self: TLFMTree): TLFMObjectNode;
@@ -159,7 +174,7 @@ begin
   while Node <> nil do begin
     if Node is TLFMObjectNode then begin
       Result := Node as TLFMObjectNode;
-      WriteLn('Name = ', Result.Name, ', Type = ', Result.TypeName);
+      //WriteLn('Name = ', Result.Name, ', Type = ', Result.TypeName);
       Exit;
     end;
     Node := Node.NextSibling;
@@ -181,7 +196,7 @@ begin
     FirstPart := PropertyPath;
     RestParts := '';
   end;
-  WriteLn('FindObjectProperty : FirstPart = ', FirstPart, ', RestParts = ', RestParts);
+  //WriteLn('FindObjectProperty : FirstPart = ', FirstPart, ', RestParts = ', RestParts);
   repeat
     Result := FindObjectProperty(ContextNode, Self);
     ContextNode := Result;
@@ -388,21 +403,15 @@ end;
 
 function TCGraphBlock.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
-  Path: string;
   ChildNode: TLFMTreeNode;
   PortDescription: TLFMObjectNode;
   Port: TCGraphPort;
 begin
   ChildNode := ContextNode.FirstChild;
-  Path := '';
-  while Assigned(ContextNode) do with ContextNode do begin
-    Path := Name + '.' + Path;
-    ContextNode := Parent as TLFMObjectNode;
-  end;
-  Left := StrToInt(GetPropertyValue(DesignDescription, Path + 'Left'));
-  Top := StrToInt(GetPropertyValue(DesignDescription, Path + 'Top'));
+  Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
+  Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));
   Color := clRed;
-  Caption := GetPropertyValue(DesignDescription, Path + 'Name');
+  Caption := GetPropertyValue(ContextNode, 'Name', DesignDescription);
   Selected := True;
   PortDescription := FindObjectProperty(ChildNode, DesignDescription);
   while Assigned(PortDescription) do begin
