@@ -13,12 +13,13 @@ type
     FBounds: TRect;
     FMagnification: Integer;
     function GetMagnification: Real;
+    function GetOriginalBounds: TRect;
     procedure SetOriginalBounds(B: TRect);
     procedure DoMagnify;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Magnify(m:Real); virtual;
-    property OriginalBounds: TRect read FBounds write SetOriginalBounds;
+    property OriginalBounds: TRect read GetOriginalBounds write SetOriginalBounds;
     property Magnification: Real read GetMagnification;
   end;
 
@@ -53,6 +54,11 @@ end;
 function TMagnifier.GetMagnification: Real;
 begin
   Result := FMagnification / 256;
+end;
+
+function TMagnifier.GetOriginalBounds: TRect;
+begin
+  Result := FBounds;
 end;
 
 procedure TMagnifier.SetOriginalBounds(B: TRect);
