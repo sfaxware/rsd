@@ -188,30 +188,32 @@ var
   dx, dy, dm: Integer;
 begin
   Handled := True;
-  with MousePos do begin
-    if WheelDelta > 0 then begin
-      dm := 10;
-    end else begin
-      dm := -10;
+  if ssCtrl in Shift then begin
+    with MousePos do begin
+      if WheelDelta > 0 then begin
+        dm := 10;
+      end else begin
+        dm := -10;
+      end;
+      dx := x div dm;
+      dy := y div dm;
     end;
-    dx := x div dm;
-    dy := y div dm;
-  end;
-  m := FMagnification + 1 / dm;
-  with HorzScrollBar do begin
-    Range := Round(Width * m);
-  end;
-  with VertScrollBar do begin
-    Range := Round(Height * m);
-  end;
-  for i := 0 to ControlCount - 1 do begin
-    Control := Controls[i];
-    if Control is TCGraphBlock then with Control as TMagnifier do begin
-      Magnify(m);
+    m := FMagnification + 1 / dm;
+    with HorzScrollBar do begin
+      Range := Round(Width * m);
     end;
+    with VertScrollBar do begin
+      Range := Round(Height * m);
+    end;
+    for i := 0 to ControlCount - 1 do begin
+      Control := Controls[i];
+      if Control is TCGraphBlock then with Control as TMagnifier do begin
+        Magnify(m);
+      end;
+    end;
+    FMagnification := m;
+    ScrollBy(dx, dy);
   end;
-  FMagnification := m;
-  ScrollBy(dx, dy);
 end;
 
 procedure TCGraphDesign.SelectBlock(Sender: TObject);
@@ -265,28 +267,28 @@ begin
   //WriteLn('TCGraphDesign.Load : LFM created');
   BlockDescription := FindObjectProperty(nil, DesignDescription);
   while Assigned(BlockDescription) do begin
-    WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
+    //WriteLn('BlockDescription.TypeName = ', BlockDescription.TypeName);
     if BlockDescription.TypeName = 'TConnector' then begin
       PortName := GetPropertyValue(BlockDescription, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
-      WriteLn('BlockName = ', BlockName);
+      //WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
-      WriteLn('OutputPortName = ', PortName);
+      //WriteLn('OutputPortName = ', PortName);
       Component := FindComponent(BlockName);
-      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       Component := Component.FindComponent(PortName);
-      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedOutputPort := Component as TCGraphOutputPort;
       PortName := GetPropertyValue(BlockDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
-      WriteLn('InputPortName = ', PortName);
+      //WriteLn('InputPortName = ', PortName);
       Component := FindComponent(BlockName);
-      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       Component := Component.FindComponent(PortName);
-      WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedInputPort := Component as TCGraphInputPort;
       Connector := CreateConnector(BlockDescription.Name, BlockDescription.TypeName, Self);
       with Connector do begin
