@@ -1,4 +1,4 @@
-object RsdIdeMainWindow: TRsdIdeMainWindow
+object IdeMainWindow: TIdeMainWindow
   Left = 232
   Height = 841
   Top = 27
@@ -8,7 +8,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
   ClientHeight = 814
   ClientWidth = 1036
   Font.Color = clDefault
-  Menu = dtslIdeMainMenu
+  Menu = IdeMainMenu
   OnCreate = FormCreate
   LCLVersion = '0.9.28.2'
   object TabControl: TTabControl
@@ -682,10 +682,10 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
       end>
     SimplePanel = False
   end
-  object dtslIdeMainMenu: TMainMenu
-    object dtslIdeFileMenuItem: TMenuItem
+  object IdeMainMenu: TMainMenu
+    object IdeFileMenuItem: TMenuItem
       Caption = '&File'
-      object dtslIdeFileNewMenuItem: TMenuItem
+      object IdeFileNewMenuItem: TMenuItem
         Caption = '&New'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -717,7 +717,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
         }
         OnClick = NewProject
       end
-      object dtslIdeFileOpenMenuItem: TMenuItem
+      object IdeFileOpenMenuItem: TMenuItem
         Caption = '&Open...'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -749,7 +749,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
         }
         OnClick = LoadProject
       end
-      object dtslIdeFileSaveMenuItem: TMenuItem
+      object IdeFileSaveMenuItem: TMenuItem
         Caption = '&Save...'
         Bitmap.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
@@ -789,7 +789,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
         }
         OnClick = SaveProject
       end
-      object dtslIdeFileExitMenuItem: TMenuItem
+      object IdeFileExitMenuItem: TMenuItem
         Caption = 'E&xit'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -819,23 +819,23 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
           D485B1DA5A91B95D87BAFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3B54726C9CD35F8DC1
         }
-        OnClick = dtslIdeFileExitMenuItemClick
+        OnClick = IdeFileExitMenuItemClick
       end
     end
-    object dtslIdeEditMenuItem: TMenuItem
+    object IdeEditMenuItem: TMenuItem
       Caption = '&Edit'
-      object dtslEditGraphSubMenu: TMenuItem
+      object IdeEditGraphSubMenu: TMenuItem
         Caption = '&Graph'
-        object dtslEditGraphInsertBlockMenuItem: TMenuItem
+        object IdeEditGraphInsertBlockMenuItem: TMenuItem
           Caption = '&Insert Block'
-          OnClick = dtslEditGraphInsertBlockMenuItemClick
+          OnClick = IdeEditGraphInsertBlockMenuItemClick
         end
-        object dtslEditGraphDeleteBlockMenuItem: TMenuItem
+        object IdeEditGraphDeleteBlockMenuItem: TMenuItem
           Caption = '&Delete Block'
-          OnClick = dtslEditGraphDeleteBlockMenuItemClick
+          OnClick = IdeEditGraphDeleteBlockMenuItemClick
         end
       end
-      object dtslEditCutMenuItem: TMenuItem
+      object IdeEditCutMenuItem: TMenuItem
         Caption = 'C&ut'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -866,7 +866,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
           FFFF6B502AFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         }
       end
-      object dtslEditCopyMenuItem: TMenuItem
+      object IdeEditCopyMenuItem: TMenuItem
         Caption = '&Copy'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -897,7 +897,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         }
       end
-      object dtslEditPastMenuItem: TMenuItem
+      object IdeEditPastMenuItem: TMenuItem
         Caption = '&Past'
         Bitmap.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -929,34 +929,35 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
         }
       end
     end
-    object ViewMenuItem: TMenuItem
+    object IdeViewMenuItem: TMenuItem
       Caption = '&View'
-      object MenuItem11: TMenuItem
-        Caption = 'New Item12'
-        object MenuItem12: TMenuItem
-          Caption = 'New Item13'
-        end
-        object MenuItem14: TMenuItem
-          Caption = 'New Item15'
-        end
+      object IdeViewLayoutMenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'Layout'
+        Checked = True
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = IdeViewLayoutMenuItemClick
       end
-      object MenuItem13: TMenuItem
-        Caption = 'New Item14'
-      end
-      object MenuItem15: TMenuItem
-        Caption = 'New Item16'
+      object IdeViewSourceCodeMenuItem: TMenuItem
+        AutoCheck = True
+        Caption = 'Source code'
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = IdeViewSourceCodeMenuItemClick
       end
     end
-    object CompileMenuItem: TMenuItem
+    object IdeCompileMenuItem: TMenuItem
       Caption = 'Com&pile'
-      object CompileProjectMenuItem: TMenuItem
+      object IdeCompileProjectMenuItem: TMenuItem
         Caption = 'Co&mpile project'
+        GroupIndex = 1
         OnClick = CompileProject
       end
     end
-    object dtslIdeConfigurationMenuItem: TMenuItem
+    object IdeConfigurationMenuItem: TMenuItem
       Caption = '&Configuration'
-      object dtslIdeConfigurationPathsMenuItem: TMenuItem
+      object IdeConfigurationPathsMenuItem: TMenuItem
         Caption = '&Paths...'
         OnClick = SetCoreBlocksPath
       end
@@ -1019,7 +1020,7 @@ object RsdIdeMainWindow: TRsdIdeMainWindow
       Caption = 'Blocks'
       object AddBlockMenuItem: TMenuItem
         Caption = 'Add block'
-        OnClick = dtslEditGraphInsertBlockMenuItemClick
+        OnClick = IdeEditGraphInsertBlockMenuItemClick
       end
       object AddSourceMenuItem: TMenuItem
         Caption = 'Add source'
