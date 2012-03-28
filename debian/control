@@ -1,0 +1,32 @@
+Source: dtsl
+Section: misc
+Priority: optional
+Maintainer: Abou Al Montacir <abou.almontacir@sfr.fr>
+Uploaders: 
+DM-Upload-Allowed: yes
+Standards-Version: 3.8.4
+Build-Depends: debhelper (>= 7), quilt, lazarus-ide (>= 0.9.28.2-9), fp-compiler (>= 2.4.0-2), fp-utils, fp-units-multimedia
+
+Package: dtsl
+Architecture: i386 powerpc sparc amd64 arm
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: dtsl-doc
+Suggests: dtsl-src
+Description: Free Prayer Time Calculator
+ dtsl is a program that computes Muaslim prayer time and notify user for evey
+ Salat by playing Athan. It features multiple compuations methods, full
+ internationalization support.
+ .
+ This package contains the main binary executable program and data files.
+
+Package: dtsl-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Suggests: dtsl, fptc-src
+Description: Free Prayer Time Calculator - Developer's Documentation
+ dtsl is a program that computes Muaslim prayer time and notify user for evey
+ Salat by playing Athan. It features multiple compuations methods, full
+ internationalization support.
+ .
+ This package contains documentation.

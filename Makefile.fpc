@@ -1,0 +1,178 @@
+#
+#   Makefile.fpc for Free Prayer Time Calculator (FPTC)
+#
+
+[package]
+name=dtsl
+version=0.0.1
+
+[require]
+packages=
+
+[target]
+programs=dtsl_ide
+dirs=
+exampledirs=
+
+[compiler]
+
+[clean]
+files=$(wildcard build/*$(OEXT)) $(wildcard build/*$(PPUEXT)) $(wildcard build/*$(RSTEXT)) ${MO_FILES}
+
+[install]
+fpcpackage=n
+basedir=usr
+
+[prerules]
+PO_FILES=$(wildcard locale/*_*.po)
+MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
+LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
+#-----------------------------------------------------------------------------
+[rules]
+.PHONY: all clean install
+
+#-----------------------------------------------------------------------------
+all:mo_files ${LPI_FILES}
+	lazbuild ${LPI_FILES}
+
+mo_files:${MO_FILES}
+
+build/share/locale/%/LC_MESSAGES/dtsl.mo:locale/dtsl_%.po
+	${MKDIR} $(dir $@)
+	msgfmt -o $@ $<
+#-----------------------------------------------------------------------------
+# Many C expect 'make install' to copy the binaries to somewhere
+# Copy the fptc tree to the install directory and set a link
+install:
+	$(COPYTREE) build/bin $(INSTALL_PREFIX)
+	$(COPYTREE) build/share $(INSTALL_PREFIX)
+
+##########################################################################
+# Debian
+##########################################################################
+
+ifeq ($(OS_TARGET),linux)
+
+ifndef DEBDIR
+DEBDIR=debian
+endif
+
+# Build dir
+ifndef BUILDDIR
+BUILDDIR=$(BASEDIR)/tmp
+endif
+
+# Link Tree
+ifdef LINKISCOPY
+ifndef LINKTREE
+LINKTREE:=$(CPPROG) -Rfpl
+endif
+else
+ifndef LINKTREE
+LINKTREE:=$(CPPROG) -Rfpl
+endif
+endif
+
+ifneq ($(wildcard ${DEBDIR}/changelog),)
+
+.PHONY: debcopy deb
+
+DEBPACKAGEVERSION:=$(shell head -n 1 ${DEBDIR}/changelog | awk '{ print $$2 }' | tr -d '[()]')
+DEBVERSION=$(firstword $(subst -, ,${DEBPACKAGEVERSION}))
+DEBBUILD=$(lastword $(subst -, ,${DEBPACKAGEVERSION}))
+DEBSRC=${PACKAGE_NAME}-${DEBVERSION}
+DEBSRCDIR=${BUILDDIR}/${DEBSRC}
+DEBSRC_ORIG=${PACKAGE_NAME}_${DEBVERSION}.orig
+BUILDDATE=$(shell /bin/date --utc +%Y%m%d)
+ifdef MENTORS
+DEB_BUILDPKG_OPT=-sa
+else
+DEB_BUILDPKG_OPT=
+endif
+ifdef NODOCS
+	DEB_BUILDPKG_OPT+= -B
+endif
+ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
+ifeq (${DEBBUILD},0)
+DEBUSESVN=1
+endif
+ifeq (${DEBBUILD},1)
+DEBUSESVN=1
+endif
+ifeq (${DEBBUILD},)
+DEBUSESVN=1
+endif
+ifdef SNAPSHOT
+DEBUSESVN=1
+endif
+ifndef DEBUSESVN
+$(error Need "${DEBSRC_ORIG}.tar.gz" to build for DEBBUILD = "${DEBBUILD}" > 1)
+endif
+endif
+ifndef SIGN
+DEB_BUILDPKG_OPT+= -us -uc
+endif
+
+debcheck:
+ifneq ($(DEBVERSION),$(PACKAGE_VERSION))
+	@$(ECHO) "Debian version ($(DEBVERSION)) is not correct, expect $(PACKAGE_VERSION)"
+	@exit 1
+endif
+
+debcopy: distclean
+	${DELTREE} ${BUILDDIR}
+	${MKDIRTREE} ${DEBSRCDIR}
+ifdef DEBUSESVN
+	$(LINKTREE) -t $(DEBSRCDIR) \
+		Makefile.fpc \
+		build doc locale \
+		core ide
+	echo -e "const\n  RevisionStr = '${SVNVERSION}';" > $(DEBSRCDIR)/version.inc
+else
+	tar -C ${BUILDDIR} -zxf ${DEBSRC_ORIG}.tar.gz ${DEBSRC}
+	${DELTREE} $(DEBSRCDIR)/debian
+endif
+
+debsetup:
+	$(LINKTREE) ${DEBDIR} $(DEBSRCDIR)/debian
+ifdef SNAPSHOT
+	sed s+${DEBPACKAGEVERSION}+${DEBPACKAGEVERSION}-${BUILDDATE}+ $(DEBSRCDIR)/debian/changelog > $(DEBSRCDIR)/debian/changelog.tmp
+	${MOVE} $(DEBSRCDIR)/debian/changelog.tmp $(DEBSRCDIR)/debian/changelog
+endif
+	chmod 755 $(DEBSRCDIR)/debian/rules
+	find $(DEBSRCDIR) -name '.svn' | xargs ${DELTREE}
+	find $(DEBSRCDIR) -name 'Makefile' | xargs ${DELTREE}
+
+debbuild:
+	cd ${DEBSRCDIR} ; dpkg-buildpackage ${DEB_BUILDPKG_OPT}
+
+debcheckpolicy:
+ifdef LINTIAN
+	cd ${DEBSRCDIR} ; lintian -I -i ../*.changes
+endif
+
+debclean:
+ifndef DEBUSESVN
+	${DEL} ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz
+endif
+	mv -v -t . \
+	$(DEBSRCDIR)/../*.changes \
+	$(DEBSRCDIR)/../*.deb \
+	$(DEBSRCDIR)/../*.dsc \
+	$(DEBSRCDIR)/../*.gz
+	${DELTREE} $(DEBSRCDIR)
+	rmdir $(BUILDDIR)
+
+deb: debcheck debcopy deborigtargz debsetup debbuild debcheckpolicy debclean
+
+deborigtargz:
+ifdef DEBUSESVN
+	#$(MAKE) fpc_zipinstall USETAR=y ZIPTARGET=debcopy PACKDIR=$(DEBSRCDIR) FULLZIPNAME=${DEBSRC_ORIG}
+	tar -C ${BUILDDIR} -zcf ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz --exclude-vcs ${DEBSRC}
+else
+	${LINKTREE} ${DEBSRC_ORIG}.tar.gz ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz
+endif
+
+endif   # changelog found
+
+endif
