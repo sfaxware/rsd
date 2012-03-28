@@ -12,10 +12,13 @@ type
   private
     FMagnification: Real;
     FOnChildrenCreate: TNotifyEvent;
+    procedure HandleMouseEnter(Sender: TObject);
+    procedure HandleMouseLeave(Sender: TObject);
     procedure MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SimCodeBuffer: TCodeBuffer;
+    PointedDevice : TCGraphDevice;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
@@ -81,6 +84,8 @@ begin
   with Connector do begin
     Parent := Self;
     Connect(SelectedOutputPort, SelectedInputPort);
+    OnMouseEnter := @HandleMouseEnter;
+    OnMouseLeave := @HandleMouseLeave;
   end;
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Connector);
@@ -126,6 +131,8 @@ begin
   with Result do begin
     Selected := True;
     OnClick := @SelectBlock;
+    OnMouseEnter := @HandleMouseEnter;
+    OnMouseLeave := @HandleMouseLeave;
   end;
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
@@ -167,6 +174,18 @@ end;
 procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
 begin
   FreeAndNil(Block);
+end;
+
+procedure TCGraphDesign.HandleMouseEnter(Sender: TObject);
+begin
+  PointedDevice := Sender as TCGraphDevice;
+end;
+
+procedure TCGraphDesign.HandleMouseLeave(Sender: TObject);
+begin
+  if Sender = PointedDevice then begin
+    PointedDevice := nil;
+  end;
 end;
 
 procedure TCGraphDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);

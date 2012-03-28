@@ -222,7 +222,7 @@ end;
 
 procedure TdtslIdeMainWindow.SelectBlockName(Sender: TObject);
 begin
-  with Design.SelectedBlock do begin
+  with Design.PointedDevice do begin
     Caption := InputBox('Change block name', 'Please type the new block name', Caption);
     Invalidate;
   end;
@@ -231,8 +231,8 @@ end;
 procedure TdtslIdeMainWindow.SetBlockColor(Sender: TObject);
 begin
   if Sender is TColorDialog then with Sender as TColorDialog do begin
-    //WriteLn('Change Color from ', hexStr(Design.SelectedBlock.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
-    Design.SelectedBlock.Canvas.Brush.Color := Color;
+    //WriteLn('Change Color from ', hexStr(Design.PointedDevice.Canvas.Brush.Color, 8), ' to ', hexStr(Color, 8));
+    Design.PointedDevice.Canvas.Brush.Color := Color;
     Invalidate;
   end;
 end;
@@ -255,12 +255,16 @@ end;
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   WriteLn('Sender.ClassName = ', Sender.ClassName);
-  Design.SelectedBlock.AddNewPort(TCGraphInputPort);
+  if Design.PointedDevice is TCGraphBlock then with Design.PointedDevice as TCGraphBlock do begin
+    AddNewPort(TCGraphInputPort);
+  end;
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
-  Design.SelectedBlock.AddNewPort(TCGraphOutputPort);
+  if Design.PointedDevice is TCGraphBlock then with Design.PointedDevice as TCGraphBlock do begin
+    AddNewPort(TCGraphOutputPort);
+  end;
 end;
 
 procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
