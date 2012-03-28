@@ -5,12 +5,9 @@
     <Version Value="7"/>
     <General>
       <Flags>
-        <MainUnitIsPascalSource Value="False"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
-        <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <AlwaysBuild Value="False"/>
-        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -52,7 +49,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="dtsl_ide.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -70,11 +67,17 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="GraphComponents"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="graph/designgraph.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="DesignGraph"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)/"/>
       <OtherUnitFiles Value="graph/"/>
       <SrcPath Value="$(LazarusDir)/lcl/;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)/"/>
     </SearchPaths>

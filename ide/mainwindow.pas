@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
   ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
-  SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees;
+  SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees, DesignGraph;
 
 type
   { TdtslIdeMainWindow }
@@ -53,7 +53,6 @@ type
     Project: TXMLConfig;
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
-    procedure ConnectPortsMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure LoadProject(Sender: TObject);
     procedure SaveProject(Sender: TObject);
@@ -62,16 +61,11 @@ type
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure dtslIdeFileExitMenuItemClick(Sender: TObject);
-    procedure SelectBlock(Sender: TObject);
     function GetBlockDescription(Block: TCGraphBlock): TLFMTree;
   private
-    _Blocks:TFPList;
-    _SelectedBlock:TCGraphBlock;
     _ProjectSettings: pointer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
-    procedure InsertBlock(Block:TCGraphBlock);
-    procedure RemoveBlock(Block:TCGraphBlock);
     procedure ViewFile(Sender: TObject);
   end; 
 
@@ -110,11 +104,6 @@ begin
       if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
         Result := nil;
     end;
-end;
-
-procedure TdtslIdeMainWindow.InsertBlock(Block:TCGraphBlock);
-begin
-  _blocks.Add(Block);
 end;
 
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
@@ -161,56 +150,40 @@ begin
     for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
       BlockPath := 'Block' + IntToStr(BlocksCount);
       WriteLn('Loading "', BlockPath, '"');
-      if Assigned(_selectedBlock) then
-        _selectedBlock.Selected := False;
-      _selectedBlock := TCGraphBlock.Create(ScrollBox1);
-      with _selectedBlock do begin
+      if Assigned(ScrollBox1.SelectedBlock) then
+        ScrollBox1.SelectedBlock.Selected := False;
+      ScrollBox1.SelectedBlock := TCGraphBlock.Create(ScrollBox1);
+      with ScrollBox1.SelectedBlock do begin
         Parent := ScrollBox1;
         try
           Name := 'Block' + IntToStr(BlocksCount);
         except
           ShowMessage('Invalid block name "' + BlockPath + '"');
-          _selectedBlock.Destroy;
-          _selectedBlock := nil;
+          ScrollBox1.SelectedBlock.Destroy;
+          ScrollBox1.SelectedBlock := nil;
           continue;
         end;
-        BlockDescription := GetBlockDescription(_SelectedBlock);
+        BlockDescription := GetBlockDescription(ScrollBox1.SelectedBlock);
         if not Assigned(BlockDescription) then begin
           WriteLn('BlockDescription = nil');
-          _SelectedBlock.Free;
+          ScrollBox1.SelectedBlock.Free;
           continue;
         end;
         Left := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Left'));
         Top := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Top'));
         Color := clRed;
         Caption := GetPropertyValue(BlockDescription, BlockPath + '.Name');
-        OnClick := @SelectBlock;
+        OnClick := @ScrollBox1.SelectBlock;
         OnDblClick := @ViewFile;
         Selected := True;
         PopupMenu := PopupMenu1;
       end;
-      InsertBlock(_selectedBlock);
+      ScrollBox1.InsertBlock(ScrollBox1.SelectedBlock);
     end;
   end;
 end;
 
-procedure TdtslIdeMainWindow.RemoveBlock(Block:TCGraphBlock);
-begin
-  _blocks.Remove(Block);
-end;
-
-procedure StreamBlock(data, arg: pointer);
-var
-  Path: string;
-begin
-  with TXMLConfig(arg), TCGraphBlock(data) do begin
-    Save;
-    Path := 'design/blocks/' + Name + '/';
-    SetValue(Path + 'name', Caption);
-  end;
-end;
-
-procedure TdtslIdeMainWindow.SaveProject( Sender: TObject);
+procedure TdtslIdeMainWindow.SaveProject(Sender: TObject);
 var
   Path: string;
 begin
@@ -223,16 +196,13 @@ begin
     Clear;
     Path := 'settings/core/blocks/';
     SetValue(Path + 'path', Core.Blocks.Path);
-    SetValue('design/name', Name);
-    SetValue('design/blocks/count', _Blocks.Count);
-    _Blocks.ForEachCall(@StreamBlock, Project);
+    ScrollBox1.Stream(Name, Project);
     Flush;
   end;
 end;
 
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
-  _blocks := TFPList.Create;
   New(PProjectSettings(_ProjectSettings));
 end;
 
@@ -240,7 +210,7 @@ procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 var
   Port: TCGraphInputPort;
 begin
-  Port := TCGraphInputPort.Create(_SelectedBlock);
+  Port := TCGraphInputPort.Create(ScrollBox1.SelectedBlock);
   with Port do begin
     Parent := ScrollBox1;
   end;
@@ -250,25 +220,10 @@ procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 var             
   Port: TCGraphOutputPort;
 begin
-  Port := TCGraphOutputPort.Create(_SelectedBlock);
+  Port := TCGraphOutputPort.Create(ScrollBox1.SelectedBlock);
   with Port do begin
     Parent := ScrollBox1;
     end;
-end;
-
-procedure TdtslIdeMainWindow.ConnectPortsMenuItemClick(Sender: TObject);
-var
-  Connector: TCGraphConnector;
-  AOutputPort: TCGraphOutputPort;
-  AInputPort:TCGraphInputPort;
-begin
-  AOutputPort := TCGraphOutputPort(TCGraphBlock(_Blocks.Items[0]).Components[0]);
-  AInputPort := TCGraphInputPort(TCGraphBlock(_Blocks.Items[1]).Components[0]);
-  Connector := TCGraphConnector.Create(ScrollBox1);
-  with Connector do begin
-    Parent := ScrollBox1;
-    Connect(AOutputPort, AInputPort);
-  end;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -323,54 +278,23 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
 begin
-  if _selectedBlock = nil then
+  if ScrollBox1.SelectedBlock = nil then
     WriteLn('No selected block')
   else begin
     WriteLn('Removing block');
-    RemoveBlock(_selectedBlock);
+    ScrollBox1.RemoveBlock(ScrollBox1.SelectedBlock);
     WriteLn('Destroying block');
-    _selectedBlock.Destroy;
-    _selectedBlock := nil;
+    ScrollBox1.SelectedBlock.Destroy;
+    ScrollBox1.SelectedBlock := nil;
   end;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
-var
-  BlockQuantity: integer = 0;
 begin
-  if Assigned(_selectedBlock) then
-    _selectedBlock.Selected := False;
-  _selectedBlock := TCGraphBlock.Create(ScrollBox1);
-  with _selectedBlock do begin
-    Parent := ScrollBox1;
-    Left := Random(ScrollBox1.Width - Width);
-    Top := Random(ScrollBox1.Height - Height);
-    BlockQuantity += 1;
-    repeat
-      try
-        Name := 'Block' + IntToStr(BlockQuantity);
-        break;
-      except
-        BlockQuantity += 1;
-      end;
-    until false;
-    Caption := 'Block ' + IntToStr(BlockQuantity);
-    OnClick := @SelectBlock;
-    OnDblClick := @ViewFile;
-    PopupMenu := PopupMenu1;
-    Selected := True;
-  end;
-  InsertBlock(_selectedBlock);
-end;
-
-procedure TdtslIdeMainWindow.SelectBlock(Sender: TObject);
-begin
-  if Sender is TCGraphBlock then begin
-     if Assigned(_selectedBlock) then
-       _selectedBlock.Selected := False;
-    _selectedBlock := TCGraphBlock(Sender);
-    _selectedBlock.Selected := True;
-  end;
+  if Assigned(ScrollBox1.SelectedBlock) then
+    ScrollBox1.SelectedBlock.Selected := False;
+  ScrollBox1.SelectedBlock := ScrollBox1.CreateNewBlock;
+  ScrollBox1.InsertBlock(ScrollBox1.SelectedBlock);
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);
