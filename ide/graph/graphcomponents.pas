@@ -20,6 +20,7 @@ type
     constructor Create(AOwner:TComponent);override;
   protected
     FSelected: Boolean;
+    FType: string;
     procedure SetSeleted(AValue: Boolean);
     procedure Paint; override;
   published
@@ -39,6 +40,7 @@ type
     property ParentFont;
     property ParentShowHint;
     property PopupMenu;
+    property Typ: string read FType;
   end;
 
 implementation
@@ -53,14 +55,18 @@ begin
   OnMouseUp := @EndMove;
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
+  FType := 'TCGraphBlock';
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
 begin
-  if Sender = Self then begin
-    _MouseDown := True;
-    _MousePos.x := X + Left;
-    _MousePos.y := Y + Top;
+  if Sender = Self then
+    case Button of
+    mbLeft:begin
+      _MouseDown := True;
+      _MousePos.x := X + Left;
+      _MousePos.y := Y + Top;
+    end;
   end;
 end;
 
