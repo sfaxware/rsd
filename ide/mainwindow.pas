@@ -93,20 +93,14 @@ begin
 end;
 
 function TdtslIdeMainWindow.GetBlockDescription(Block: TCGraphBlock): TLFMTree;
-var
-  SrcFile: string;
 begin
-  with Block do begin
-    Save;
-    SrcFile := '/tmp/' + Name + '.pas';
-    SynEdit1.Lines.LoadFromFile(srcFile);
-    with CodeToolBoss do begin
+  with Block do
+    if Load then with CodeToolBoss do begin
       OnSearchUsedUnit := @SearchUsedUnit;
       GetCodeToolForSource(CodeBuffer[ctSource], true, false);
       if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], Result, False, False) then
         Result := nil;
     end;
-  end;
 end;
 
 procedure TdtslIdeMainWindow.InsertBlock(Block:TCGraphBlock);
@@ -119,7 +113,8 @@ procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
   var
     PropertyNode: TLFMPropertyNode;
     ValueNode: TLFMTreeNode;
-    c: Char;
+    c: char;
+    p: integer;
   begin
     Result := '';
     PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
@@ -128,11 +123,12 @@ procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
       case ValueType of
         lfmvString: Result := ReadString;
         lfmvInteger: begin
-          c := Tree.LFMBuffer.Source[StartPos];
+          p := StartPos;
+          c := Tree.LFMBuffer.Source[p];
           while c in ['0'..'9'] do begin
             Result += c;
-            StartPos += 1;
-            c := Tree.LFMBuffer.Source[StartPos]
+            p += 1;
+            c := Tree.LFMBuffer.Source[p]
           end;
         end;
       end;
@@ -154,6 +150,7 @@ begin
     Path :=  'design/blocks/';
     for BlocksCount := 1 to GetValue(Path + 'count', 0) do begin
       BlockPath := 'Block' + IntToStr(BlocksCount);
+      WriteLn('Loading "', BlockPath, '"');
       if Assigned(_selectedBlock) then
         _selectedBlock.Selected := False;
       _selectedBlock := TCGraphBlock.Create(ScrollBox1);
@@ -168,6 +165,11 @@ begin
           continue;
         end;
         BlockDescription := GetBlockDescription(_SelectedBlock);
+        if not Assigned(BlockDescription) then begin
+          WriteLn('BlockDescription = nil');
+          _SelectedBlock.Free;
+          continue;
+        end;
         Left := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Left'));
         Top := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Top'));
         Color := clRed;
@@ -191,6 +193,7 @@ var
   Path: string;
 begin
   with TXMLConfig(arg), TCGraphBlock(data) do begin
+    Save;
     Path := 'design/blocks/' + Name + '/';
     SetValue(Path + 'name', Caption);
   end;
@@ -255,14 +258,20 @@ var
   LFMTree: TLFMTree;
   SrcFile: string;
 begin
-  if Sender is TCGraphBlock then
+  if Sender is TCGraphBlock then begin
+    with Sender as TCGraphBlock do begin
+      Save;
+      SrcFile := '/tmp/' + Name + '.pas';
+    end;
     LFMTree := GetBlockDescription(Sender as TCGraphBlock);
     if Assigned(LFMTree) then begin
-      TabControl.TabIndex := 1;
+      SynEdit1.Lines.LoadFromFile(srcFile);
       SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
       SynEdit1.EnsureCursorPosVisible;
+      TabControl.TabIndex := 1;
     end else
       ShowMessage('False');
+  end;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
@@ -289,7 +298,6 @@ begin
     Parent := ScrollBox1;
     Left := Random(ScrollBox1.Width - Width);
     Top := Random(ScrollBox1.Height - Height);
-    Color := clRed;
     BlockQuantity += 1;
     repeat
       try

@@ -21,6 +21,7 @@ type
     constructor Create(AOwner:TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     CodeCache: array[TCodeType] of TCodeCache;
+    function Load: boolean;
     function Save: boolean;
   protected
     FSelected: Boolean;
@@ -32,7 +33,6 @@ type
     property BorderSpacing;
     property Constraints;
     property Caption;
-    property Color;
     property Enabled;
     property Font;
     property Visible;
@@ -66,42 +66,62 @@ begin
     CodeCache[CodeType] := TCodeCache.Create;
 end;
 
-function TCGraphBlock.Save: boolean;
+function TCGraphBlock.Load: boolean;
 var
-  f: System.Text;
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
 begin
-  CodeFile[ctSource] := '/tmp/' + Name + '.pas';
-  if not FileExists(CodeFile[ctSource]) then begin
-    System.Assign(f, CodeFile[ctSource]);
-    ReWrite(f);
-    WriteLn(f, 'unit ', Name, ';');
-    WriteLn(f, 'interface');
-    WriteLn(f, 'uses');
-    WriteLn(f, '  Blocks;');
-    WriteLn(f);
-    WriteLn(f, 'type');
-    WriteLn(f, '  T', Name, ' = class(TBlock)');
-    WriteLn(f, '    procedure Execute; override;');
-    WriteLn(f, '  end;');
-    WriteLn(f);
-    WriteLn(f, 'implementation');
-    WriteLn(f, 'procedure T', Name, '.Execute;');
-    WriteLn(f, 'begin;');
-    WriteLn(f, '  {Write here your code}');
-    WriteLn(f, 'end;');
-    WriteLn(f);
-    WriteLn(f, 'initialization');
-    WriteLn(f);
-    WriteLn(f, 'finalization');
-    WriteLn(f);
-    WriteLn(f, 'end.');
-    System.Close(f);
+  codeFile[ctSource] := '/tmp/' + Name + '.pas';
+  codeFile[ctDescription] := '/tmp/' + Name + '.lfm';
+  for CodeType := Low(CodeType) To High(CodeType) do begin
+    if Assigned(CodeBuffer[CodeType]) then
+      CodeBuffer[CodeType].Reload
+    else begin
+      CodeBuffer[CodeType] := CodeCache[CodeType].LoadFile(CodeFile[CodeType]);
+    end;
   end;
-  CodeFile[ctDescription] := '/tmp/' + Name + '.lfm';
-  if not FileExists(CodeFile[ctDescription]) then begin
-    System.Assign(f, CodeFile[ctDescription]);
+  Result := true;
+end;
+
+function TCGraphBlock.Save: boolean;
+  function WriteSourceTemplate: string;
+  var
+    f: System.Text;
+  begin
+    Result := '/tmp/' + Name + '.pas';
+    if not FileExists(Result) then begin
+      System.Assign(f, Result);
+      ReWrite(f);
+      WriteLn(f, 'unit ', Name, ';');
+      WriteLn(f, 'interface');
+      WriteLn(f, 'uses');
+      WriteLn(f, '  Blocks;');
+      WriteLn(f);
+      WriteLn(f, 'type');
+      WriteLn(f, '  T', Name, ' = class(TBlock)');
+      WriteLn(f, '    procedure Execute; override;');
+      WriteLn(f, '  end;');
+      WriteLn(f);
+      WriteLn(f, 'implementation');
+      WriteLn(f, 'procedure T', Name, '.Execute;');
+      WriteLn(f, 'begin;');
+      WriteLn(f, '  {Write here your code}');
+      WriteLn(f, 'end;');
+      WriteLn(f);
+      WriteLn(f, 'initialization');
+      WriteLn(f);
+      WriteLn(f, 'finalization');
+      WriteLn(f);
+      WriteLn(f, 'end.');
+      System.Close(f);
+    end;
+  end;
+  function WriteDescriptionTemplate: string;
+  var
+    f: System.Text;
+  begin
+    Result := '/tmp/' + Name + '.lfm';
+    System.Assign(f, Result);
     ReWrite(f);
     WriteLn(f, 'object ', Name, ': T' + Name);
     WriteLn(f, '  Name = ''', Name, '''');
@@ -113,8 +133,15 @@ begin
     WriteLn(f, 'end');
     System.Close(f);
   end;
+var
+  CodeType: TCodeType;
+begin
   for CodeType := Low(CodeType) To High(CodeType) do
-    CodeBuffer[CodeType] := CodeCache[CodeType].LoadFile(CodeFile[CodeType]);
+    if Assigned(CodeBuffer[CodeType]) then
+      CodeBuffer[CodeType].Save;
+  WriteSourceTemplate;
+  WriteDescriptionTemplate;
+  Result := true;
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;
@@ -173,13 +200,14 @@ begin
     //WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
     if FSelected then begin
       Color := clBlack;
+      Brush.Color := clGray;
       Rectangle(PaintRect);
       InflateRect(PaintRect, -2, -2);
     end;
     If not Enabled then
-      Color := clBtnShadow
+      Brush.Color := clBtnShadow
     else
-      Color:= Self.Color;
+      Brush.Color:= clRed;
     Rectangle(PaintRect);
     if Caption <> '' then begin
       TXTStyle := Canvas.TextStyle;
