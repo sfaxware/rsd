@@ -54,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
-        <CursorPos X="12" Y="81"/>
-        <TopLine Value="47"/>
+        <CursorPos X="22" Y="82"/>
+        <TopLine Value="49"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="34"/>
         <Loaded Value="True"/>
@@ -112,9 +112,7 @@
         <UnitName Value="ExtCtrls"/>
         <CursorPos X="17" Y="490"/>
         <TopLine Value="462"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="../../src/lazarus/lcl/include/winapih.inc"/>
@@ -127,61 +125,37 @@
         <UnitName Value="Controls"/>
         <CursorPos X="24" Y="1801"/>
         <TopLine Value="1773"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <CursorPos X="31" Y="974"/>
-        <TopLine Value="965"/>
-        <EditorIndex Value="4"/>
+        <CursorPos X="14" Y="1020"/>
+        <TopLine Value="1002"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit12>
     </Units>
-    <JumpHistory Count="10" HistoryIndex="9">
+    <JumpHistory Count="5" HistoryIndex="4">
       <Position1>
         <Filename Value="mainwindow.pas"/>
-        <Caret Line="46" Column="47" TopLine="34"/>
+        <Caret Line="77" Column="12" TopLine="47"/>
       </Position1>
       <Position2>
         <Filename Value="mainwindow.pas"/>
-        <Caret Line="76" Column="11" TopLine="45"/>
+        <Caret Line="76" Column="8" TopLine="49"/>
       </Position2>
       <Position3>
         <Filename Value="mainwindow.pas"/>
-        <Caret Line="74" Column="23" TopLine="45"/>
+        <Caret Line="81" Column="27" TopLine="49"/>
       </Position3>
       <Position4>
         <Filename Value="mainwindow.pas"/>
-        <Caret Line="76" Column="25" TopLine="45"/>
+        <Caret Line="82" Column="19" TopLine="49"/>
       </Position4>
       <Position5>
         <Filename Value="mainwindow.pas"/>
-        <Caret Line="75" Column="29" TopLine="45"/>
+        <Caret Line="77" Column="26" TopLine="49"/>
       </Position5>
-      <Position6>
-        <Filename Value="../../src/lazarus/lcl/extctrls.pp"/>
-        <Caret Line="490" Column="16" TopLine="462"/>
-      </Position6>
-      <Position7>
-        <Filename Value="mainwindow.pas"/>
-        <Caret Line="76" Column="18" TopLine="45"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../../src/lazarus/lcl/graphics.pp"/>
-        <Caret Line="1025" Column="24" TopLine="980"/>
-      </Position8>
-      <Position9>
-        <Filename Value="../../src/lazarus/lcl/extctrls.pp"/>
-        <Caret Line="490" Column="17" TopLine="462"/>
-      </Position9>
-      <Position10>
-        <Filename Value="../../src/lazarus/lcl/controls.pp"/>
-        <Caret Line="1801" Column="24" TopLine="1773"/>
-      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
