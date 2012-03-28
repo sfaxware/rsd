@@ -711,9 +711,11 @@ object IdeMainWindow: TIdeMainWindow
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoExpand = True
     DefaultItemHeight = 19
+    ReadOnly = True
     ScrollBars = ssAutoBoth
     TabOrder = 2
-    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    OnDblClick = DesignTreeViewClick
+    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoNoDoubleClickExpand, tvoThemedDraw]
   end
   object IdeMainMenu: TMainMenu
     object IdeFileMenuItem: TMenuItem

@@ -86,6 +86,7 @@ type
     procedure BuilderProcessTerminate(Sender: TObject);
     procedure CompileProject(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
+    procedure DesignTreeViewClick(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
@@ -191,7 +192,7 @@ begin
   end;
   CreateDevice(FTopDesign , 'Design', 'TTopDesign', 'TDesign', DesignLayout);
   with FTopDesign do begin
-    TreeNode := DesignTreeView.Items.AddChild(nil, Name);
+    TreeNode := DesignTreeView.Items.AddChildObject(nil, Name, FTopDesign);
     OnChildrenCreate := @SetupChildrenEvents;
   end;
 end;
@@ -462,6 +463,25 @@ begin
   end;
 end;
 
+procedure TIdeMainWindow.DesignTreeViewClick(Sender: TObject);
+var
+  TreeNode: TTreeNode;
+  Block: TBlock;
+begin
+  TreeNode := DesignTreeView.Selected;
+  if Assigned(TreeNode) then begin
+    Block := TBlock(TreeNode.Data);
+    if Assigned(Block) then begin
+      if Block is TDesign then begin
+        ViewDesign(Block);
+        TabControl.TabIndex := 0;
+      end else if Block is TBlock then begin
+        ViewFile(Block);
+      end;
+    end;
+  end;
+end;
+
 procedure TIdeMainWindow.dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
 begin
   AddNewBlock('TFileReadSource');
@@ -582,7 +602,7 @@ begin
     end else if Sender is TProbe then with Sender as TProbe do begin
        SetupChildrenEvents(FindComponent('Input'));
     end;
-    TreeNode := DesignTreeView.Items.AddChild(TBlock(Owner).TreeNode, Name);
+    TreeNode := DesignTreeView.Items.AddChildObject(TBlock(Owner).TreeNode, Name, Sender);
   end else if Sender is TConnector then with Sender as TConnector do begin
     OnDblClick := @ViewFile;
     PopupMenu := ConnectorPopupMenu;
