@@ -86,6 +86,9 @@ type
   PProjectSettings = ^ TProjectSettings;
   TProjectSettings = record
     Name: string;
+    Units: record
+      Count: Word;
+    end;
     Core: record
       Blocks: record
         Path: string;
@@ -111,7 +114,10 @@ begin
     else
       Exit;
     DesignDir := ExtractFileDir(FileName);
-    Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
+    Units.Count := GetValue('ProjectOptions/Units/Count', 0);
+    if Units.Count > 1 then begin
+      Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
+    end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
     Path := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
     Core.Blocks.Path := DesignDir + PathDelim + Path;
@@ -136,7 +142,9 @@ begin
       Name := ChangeFileExt(ExtractFileName(FileName), '');
     SetValue('ProjectOptions/PathDelim/Value', PathDelim);
     SetValue('ProjectOptions/General/MainUnit/Value', 0);
-    SetValue('ProjectOptions/Units/Count', 2);
+    if Units.Count < 2 then
+      Units.Count := 2;
+    SetValue('ProjectOptions/Units/Count', Units.Count);
     SetValue('ProjectOptions/Units/Unit0/Filename/Value', 'Simulate' + Name + '.pas');
     SetValue('ProjectOptions/Units/Unit0/IsPartOfProject/Value', True);
     SetValue('ProjectOptions/Units/Unit0/UnitName/Value', 'Simulate' + Name);
@@ -145,7 +153,7 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Filename/Value', Name + '.pas');
     SetValue('ProjectOptions/Units/Unit1/IsPartOfProject/Value', True);
     SetValue('ProjectOptions/Units/Unit1/UnitName/Value', Name);
-    SetValue('ProjectOptions/Units/Unit1/EditorIndex/Value', 0);
+    SetValue('ProjectOptions/Units/Unit1/EditorIndex/Value', 1);
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
 //    WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
 //    WriteLn('DesignDir = ', DesignDir);
