@@ -44,11 +44,14 @@ type
   TIConnector = interface(TIDevice)
     function GetIsEmpty: Boolean;
     function GetIsFull: Boolean;
-    procedure Connect(Output: TIOutputPort; Input:TIInputPort);
+    function GetOutputPort: TIOutputPort;
+    function GetInputPort: TIInputPort;
+    procedure SetOutputPort(Output: TIOutputPort);
+    procedure SetInputPort(Input:TIInputPort);
     procedure Push(Sample: Integer);
     procedure Pop(out Sample: Integer);
-    property OutputPort: TIOutputPort;
-    property InputPort: TIInputPort;
+    property OutputPort: TIOutputPort read GetOutputPort write SetOutputPort;
+    property InputPort: TIInputPort read GetInputPort write SetInputPort;
     property IsEmpty: Boolean read GetIsEmpty;
     property IsFull: Boolean read GetIsFull;
   end;
@@ -105,7 +108,6 @@ type
     function GetOutputQty: Integer;
     function GetInputIdx(const InputName: string): Integer;
     function GetOutputIdx(const OutputName: string): Integer;
-    procedure ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
     procedure Execute; virtual;
   end;
 
@@ -119,15 +121,19 @@ type
     function GetIsFull: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure Connect(Output: TIOutputPort; Input:TIInputPort);
-    procedure Connect(Output: TCOutputPort; Input:TCInputPort);
+    function GetOutputPort: TIOutputPort;
+    function GetInputPort: TIInputPort;
+    procedure SetOutputPort(Output: TIOutputPort);
+    procedure SetOutputPort(Output: TCOutputPort);
+    procedure SetInputPort(Input:TIInputPort);
+    procedure SetInputPort(Input:TCInputPort);
     procedure Push(Sample: Integer);
     procedure Pop(out Sample: Integer);
     property IsEmpty: Boolean read GetIsEmpty;
     property IsFull: Boolean read GetIsFull;
   published
-    property OutputPort: TCOutputPort read FOutputPort write FOutputPort;
-    property InputPort: TCInputPort read FInputPort write FInputPort;
+    property OutputPort: TCOutputPort read FOutputPort write SetOutputPort;
+    property InputPort: TCInputPort read FInputPort write SetInputPort;
  end;
 
   TFuncName = string[31];
@@ -316,16 +322,6 @@ begin
   WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
 end;
 
-procedure TCBlock.ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
-var
-  Connector: TCConnector;
-begin
-  Connector := TCConnector.Create(Self);
-  with Connector do begin
-    Connect(Output, Input);
-  end;
-end;
-
 procedure TCBlock.Execute;
 var
   i: Integer;
@@ -371,16 +367,37 @@ begin
   FSamples := TCFifo.Create(128);
 end;
 
-procedure TCConnector.Connect(Output:TIOutputPort; Input: TIInputPort);
+function TCConnector.GetOutputPort:TIOutputPort;
 begin
-  //Connect(Output, Input);
+  Result := FOutputPort;
 end;
 
-procedure TCConnector.Connect(Output:TCOutputPort; Input: TCInputPort);
+function TCConnector.GetInputPort:TIInputPort;
+begin
+  Result := FInputPort;
+end;
+
+procedure TCConnector.SetOutputPort(Output:TIOutputPort);
+begin
+  //FOutputPort := Output as TCOutputPort;
+  //Output.FConnector := Self;
+end;
+
+procedure TCConnector.SetOutputPort(Output:TCOutputPort);
 begin
   FOutputPort := Output;
-  FInputPort := Input;
   Output.FConnector := Self;
+end;
+
+procedure TCConnector.SetInputPort(Input: TIInputPort);
+begin
+  //FInputPort := Input as TCInputPort;
+  //Input.FConnector := Self;
+end;
+
+procedure TCConnector.SetInputPort(Input: TCInputPort);
+begin
+  FInputPort := Input;
   Input.FConnector := Self;
 end;
 
