@@ -878,6 +878,7 @@ var
 begin
   Result := Load() and inherited;
   Caption := GetPropertyValue(ContextNode, 'Caption', DesignDescription);
+  TreeNode.Text := Caption;
   with R do begin
     Left := StrToInt(GetPropertyValue(ContextNode, 'Left', DesignDescription));
     Top := StrToInt(GetPropertyValue(ContextNode, 'Top', DesignDescription));

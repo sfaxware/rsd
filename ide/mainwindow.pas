@@ -304,8 +304,9 @@ end;
 
 procedure TIdeMainWindow.SelectBlockName(Sender: TObject);
 begin
-  with TDesign.GetViewed.PointedDevice do begin
+  with TDesign.GetViewed.PointedDevice as TBlock do begin
     Caption := InputBox('Change block name', 'Please type the new block name', Caption);
+    TreeNode.Text := Caption;
     Invalidate;
   end;
 end;
