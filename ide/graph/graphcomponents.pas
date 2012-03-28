@@ -1011,11 +1011,19 @@ function TBlock.Save: boolean;
 var
   Component: TComponent;
   i: Integer;
+  NewFileName: string;
 begin
   CodeBuffer[ctDescription] := GetCodeBuffer(cttDescription,Self);
   CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
-  CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+  if Assigned(CodeBuffer[ctSource]) then begin
+    NewFileName := SourceFileName(DeviceIdentifier);
+    if CodeBuffer[ctSource].Filename <> NewFileName then begin
+      CodeToolBoss.SaveBufferAs(CodeBuffer[ctSource], NewFileName, CodeBuffer[ctSource]);
+    end;
+  end else begin
+    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+  end;
   Result := Result and CodeBuffer[ctSource].Save;
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
