@@ -28,12 +28,10 @@ endif
 ifndef CP
 CP=cp -Rfpl
 endif
-RM:=rm -rf
-ifndef LAZBUILD
-LAZBUILD=lazbuild
+ifndef MV
+MV=mv
 endif
-# Set default compilation options
-BUILDOPTS=
+RM:=rm -rf
 # Get fpcmake from path if none is specified.
 ifndef FPCMAKE
 FPCMAKE=fpcmake
@@ -42,6 +40,11 @@ endif
 ifndef FPCDIR
 export FPCDIR=/usr/share/fpcsrc/${FPCVER}
 endif
+ifndef LAZBUILD
+LAZBUILD=lazbuild
+endif
+# Set default compilation options
+BUILDOPTS=
 # Configure patch system
 include /usr/share/quilt/quilt.make
 
