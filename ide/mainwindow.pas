@@ -257,7 +257,13 @@ begin
 end;
 
 destructor TdtslIdeMainWindow.Destroy;
+var
+  ProjectSettings: PProjectSettings;
 begin
+  ProjectSettings := _ProjectSettings;
+  with ProjectSettings^ do begin
+    Core.Blocks.Path := '';
+  end;
   Dispose(PProjectSettings(_ProjectSettings));
   inherited Destroy;
 end;
