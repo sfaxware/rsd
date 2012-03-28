@@ -331,12 +331,15 @@ function TCGraphBlock.Save: boolean;
 var
   CodeType: TCodeType;
 begin
+  Result := true;
   for CodeType := Low(CodeType) To High(CodeType) do
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Save;
   WriteSourceTemplate;
   WriteDescriptionTemplate;
-  Result := true;
+  for CodeType := Low(CodeType) To High(CodeType) do
+    if not Assigned(CodeBuffer[CodeType]) then
+      Result := Load;
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
