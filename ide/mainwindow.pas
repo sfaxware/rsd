@@ -124,9 +124,9 @@ begin
     end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
     Path := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
-    p := Pos(PathSep, Path);
+    p := Pos(';', Path);
     if p > 0 then begin
-      Delete(Path, p, Length(Path) - p);
+      Delete(Path, p, Length(Path));
     end;
     Core.Blocks.Path := DesignDir + Path;
     //WriteLn('Core.Blocks.Path = "', Core.Blocks.Path, '"');
@@ -209,6 +209,7 @@ begin
     Name := Design.Name;
     Core.Blocks.Path := ExtractFilePath(ParamStr(0)) + '../../core/block';
     WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
+    Units.Count := 0;
   end;
   _ProjectSettings := ProjectSettings;
   with Design do begin
@@ -263,9 +264,18 @@ begin
   WriteLn('TheUnitName = ', TheUnitName);
   WriteLn('TheUnitInFilename = ', TheUnitInFilename);
   DirList := ProjectSettings^.Core.Blocks.Path;
-  FileName := FileSearch(LowerCase(TheUnitName) + '.pas', DirList);
+  WriteLn('DirList = ', DirList);
+  FileName := TheUnitInFilename;
+  if FileName = '' then begin
+    FileName := LowerCase(TheUnitName) + '.pas';
+    WriteLn('TheUnitInFilename := ', FileName);
+  end;
+  FileName := FileSearch(FileName, DirList);
   WriteLn('FileName = ', FileName);
-  GetCodeBuffer(FileName, cttNone, Self, Result);
+  if FileName = '' then
+    Result := nil
+  else
+    Result := GetCodeBuffer(FileName, cttNone, Self);
 end;
 
 destructor TdtslIdeMainWindow.Destroy;
@@ -281,21 +291,29 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
+var
+  CodeFileName: string;
 begin
   with SynEdit1 do begin
     if Assigned(EditorCodeBuffer) then begin
        EditorCodeBuffer.Source := Text;
     end;
     if Sender is TCGraphBlock then with Sender as TCGraphBlock do begin
-      if Save then begin
+      try
+        CodeFileName := DesignDir + PathDelim + Name + '.pas';
+        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
+        UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
-      end else begin
+      except
         ShowMessage('Unable to save file')
       end
     end else if Sender is TCGraphDesign then with Sender as TCGraphDesign do begin
-      if Save then begin
+      try
+        CodeFileName := DesignDir + '/' + Name + '.pas';
+        CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
+        UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
         EditorCodeBuffer := CodeBuffer[ctSource];
-      end else begin
+      except
         ShowMessage('Unable to save file')
       end;
     end;

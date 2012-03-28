@@ -494,7 +494,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
-      GetCodeBuffer(CodeFile[CodeType], cttBlock, Self, CodeBuffer[CodeType]);
+      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttBlock, Self);
     end;
   end;
   Result := true;
@@ -511,7 +511,7 @@ begin
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
   Result := CodeBuffer[ctDescription].Save;}
   CodeFileName := DesignDir + PathDelim + Name + '.pas';
-  GetCodeBuffer(CodeFileName, cttBlock, Self, CodeBuffer[ctSource]);
+  CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
   for CodeType := Low(CodeType) To High(CodeType) do

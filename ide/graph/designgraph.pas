@@ -174,7 +174,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
-      GetCodeBuffer(CodeFile[CodeType], cttNone,Self, CodeBuffer[CodeType]);
+      CodeBuffer[CodeType] := GetCodeBuffer(CodeFile[CodeType], cttNone,Self);
     end;
   end;
   Result := true;
@@ -192,8 +192,13 @@ begin
     //WriteLn('TCGraphDesign.Load : CodeBuffer[ctDescription] = "', CodeBuffer[ctDescription].Filename, '"');
     //WriteLn('TCGraphDesign.Load : CodeBuffer[ctSource] = "', CodeBuffer[ctSource].Filename, '"');
     GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then
-      Exit(False);
+    if not CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], DesignDescription, False, False) then begin
+      if not Assigned(DesignDescription) then begin
+        Exit(False);
+      end else begin
+        WriteLn('Errors encountered while loading design');
+      end;
+    end;
   end;
   //WriteLn('TCGraphDesign.Load : LFM created');
   BlockDescription := FindObjectProperty(nil, DesignDescription);
@@ -237,7 +242,6 @@ var
   Component: TComponent;
   i: Integer;
   CodeFileName: string;
-  f: System.Text;
 begin
   //WriteLn('FileName = ', DesignDir + '/' + Name + '.lfm');
   for i := 0 to ComponentCount - 1 do begin
@@ -247,14 +251,14 @@ begin
     end; 
   end;
   CodeFileName := DesignDir + Name + '.lfm';
-  GetCodeBuffer(CodeFileName, cttNone,Self, CodeBuffer[ctDescription]);
+  CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
   CodeBuffer[ctDescription].Source := GetUpdatedDescription;
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := DesignDir + '/Simulate' + Name + '.pas';
-  GetCodeBuffer(CodeFileName, cttSimulator, Self, SimCodeBuffer);
+  SimCodeBuffer := GetCodeBuffer(CodeFileName, cttSimulator, Self);
   Result := Result and SimCodeBuffer.Save;
   CodeFileName := DesignDir + '/' + Name + '.pas';
-  GetCodeBuffer(CodeFileName, cttDesign, Self, CodeBuffer[ctSource]);
+  CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);
   UpdateUsedBlocks(Self, CodeBuffer[ctSource]);
   Result := Result and CodeBuffer[ctSource].Save;
 end;
