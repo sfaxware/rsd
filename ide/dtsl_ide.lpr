@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, mainWindow, RunTimeTypeInfoControls, graphcomponents;
+  Forms, mainWindow;
 
 begin
   Application.Initialize;

@@ -67,6 +67,12 @@ var
 
 implementation
 
+uses
+  LFMTrees, StdCodeTools, CodeCache, CodeToolManager, LinkScanner;
+
+var
+  CodeTool: TStandardCodeTool;
+  
 { TdtslIdeMainWindow }
 
 procedure TdtslIdeMainWindow.dtslIdeFileExitMenuItemClick(Sender: TObject);
@@ -116,6 +122,8 @@ end;
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
 begin
   _blocks := TFPList.Create;
+  CodeTool := TStandardCodeTool.Create;
+  CodeTool.Scanner := TLinkScanner.Create;
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -137,21 +145,28 @@ end;
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 var
   f: System.Text;
+  LFMCodeCache, PASCodeCache: TCodeCache;
+  LFMBuf, PASBuf: TCodeBuffer;
+  LFMTree: TLFMTree;
+  OnFindDefineProperty: TOnFindDefinePropertyForContext;
+  SrcFile, DescrFile: string;
 begin
   if Sender is TCGraphBlock then
     with Sender as TCGraphBlock do begin
-      if not FileExists(Caption) then begin
-        System.Assign(f, Caption + '.pas');
+      SrcFile := '/tmp/' + Name + '.pas';
+      if not FileExists(SrcFile) then begin
+        System.Assign(f, SrcFile);
         ReWrite(f);
-        WriteLn(f, 'unit ', Caption, ';');
+        WriteLn(f, 'unit ', Name, ';');
         WriteLn(f, 'interface');
         WriteLn(f, 'type');
-        WriteLn(f, '  T', Caption, ' = Calss(TBlock)');
+        WriteLn(f, '  TBlock = class;');
+        WriteLn(f, '  T', Name, ' = class(TBlock)');
         WriteLn(f, '    procedure Execute;');
         WriteLn(f, '  end;');
         WriteLn(f);
         WriteLn(f, 'implementation');
-        WriteLn(f, 'procedure T', Caption, '.Execute;');
+        WriteLn(f, 'procedure T', Name, '.Execute;');
         WriteLn(f, 'begin;');
         WriteLn(f, '  {Write here your code}');
         WriteLn(f, 'end;');
@@ -163,9 +178,31 @@ begin
         WriteLn(f, 'end.');
         System.Close(f);
       end;
-      SynEdit1.Lines.LoadFromFile(Caption + '.pas');
+      SynEdit1.Lines.LoadFromFile(srcFile);
+      DescrFile := '/tmp/' + Name + '.lfm';
+      if not FileExists(DescrFile) then begin
+        System.Assign(f, DescrFile);
+        ReWrite(f);
+        WriteLn(f, 'object ', Name, ': T' + Name);
+        WriteLn(f, '  name = ', Name);
+        WriteLn(f, '  type = ', Typ);
+        WriteLn(f, '  left = ', Left);
+        WriteLn(f, '  top = ', Top);
+        WriteLn(f, '  width = ', Width);
+        WriteLn(f, '  height = ', Height);
+        WriteLn(f, 'end');
+        System.Close(f);
+      end;
     end;
-  TabControl.TabIndex := 1;
+  LFMCodeCache := TCodeCache.Create;
+  LFMBuf := LFMCodeCache.LoadFile(DescrFile);
+  PASCodeCache := TCodeCache.Create;
+  PASBuf := PASCodeCache.LoadFile(srcFile);
+  PASBuf.Scanner := CodeTool.Scanner;
+  if CodeTool.CheckLFM(LFMBuf, LFMTree, OnFindDefineProperty, False, False) then
+    TabControl.TabIndex := 1
+  else
+    ShowMessage('False');
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
@@ -193,6 +230,7 @@ begin
     Left := Random(ScrollBox1.Width - Width);
     Top := Random(ScrollBox1.Height - Height);
     Color := clRed;
+    BlockQuantity += 1;
     repeat
       try
         Name := 'block' + IntToStr(BlockQuantity);
