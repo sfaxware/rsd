@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Classes
-  { add your units here }, BlockBasics;
+  { add your units here }, BlockBasics, blocks, designs, probes, sources;
 
 begin
 end.
