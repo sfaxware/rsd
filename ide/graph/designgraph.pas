@@ -174,7 +174,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
-      CodeBuffer[CodeType] := TCodeCache.Create.LoadFile(CodeFile[CodeType]);
+      GetCodeBuffer(CodeFile[CodeType], cttNone,Self, CodeBuffer[CodeType]);
     end;
   end;
   Result := true;
