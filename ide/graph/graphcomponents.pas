@@ -904,8 +904,8 @@ var
   CodeType: TCodeType;
   Device: TDevice;
   Port: TPort;
-  InputPort: TInputPort;
-  OutputPort: TOutputPort;
+  InputPort: IInputPort;
+  OutputPort: IOutputPort;
   Block: TBlock;
   DeviceClass: TDeviceClass;
 begin
@@ -939,7 +939,7 @@ begin
   DeviceDescriptionNode := FindObjectProperty(nil, DesignDescription);
   Port := nil;
   while Assigned(DeviceDescriptionNode) do begin
-    //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
+    //WriteLn('DeviceDescriptionNode.TypeName = ', DeviceDescriptionNode.TypeName);
     DeviceClass := GetDeviceClass(DeviceDescriptionNode.TypeName);
     if Assigned(DeviceClass) and DeviceClass.InheritsFrom(TPort) then begin
       Port := AddNewPort(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName);
@@ -950,21 +950,39 @@ begin
       //WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('OutputPortName = ', PortName);
-      Device := FindComponent(BlockName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      if p = 0 then begin
+        Device := Self;
+      end else begin
+        Device := FindComponent(BlockName) as TDevice;
+      end;
+      //WriteLn('Block.Name = ', Device.DeviceIdentifier, ', Block.Type = ', Device.DeviceType);
       Device := Device.FindComponent(PortName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      OutputPort := Device as TOutputPort;
+      //WriteLn('OutputPort.Name = ', Device.DeviceIdentifier, ', OutputPort.Type = ', Device.DeviceType);
+      if Device is TOutputPort then begin
+        OutputPort := Device as TOutputPort;
+      end else if Device is TInputPortRef then begin
+        OutputPort := Device as TInputPortRef;
+      end;
       PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
+      //WriteLn('BlockName = ', BlockName);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('InputPortName = ', PortName);
-      Device := FindComponent(BlockName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
+      if p = 0 then begin
+        Device := Self;
+      end else begin
+        Device := FindComponent(BlockName) as TDevice;
+      end;
+      //WriteLn('Block.Name = ', Device.DeviceIdentifier, ', Block.Type = ', Device.DeviceType);
       Device := Device.FindComponent(PortName) as TDevice;
-      //WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
-      InputPort := Device as TInputPort;
+      //WriteLn('InputPort.Name = ', Device.DeviceIdentifier, ', InputPort.Type = ', Device.DeviceType);
+      //WriteLn('InputPortName = ', PortName);
+      if Device is TInputPort then begin
+        InputPort := Device as TInputPort;
+      end else if Device is TOutputPortRef then begin
+        InputPort := Device as TInputPortRef;
+      end;
       Device := AddNewConnector(DeviceDescriptionNode.Name, DeviceDescriptionNode.TypeName, OutputPort, InputPort);
       Device.Load(DesignDescription, DeviceDescriptionNode);
     end else begin
