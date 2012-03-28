@@ -267,7 +267,7 @@ begin
   if Sender is TCGraphBlock then begin
     with Sender as TCGraphBlock do begin
       Save;
-      SrcFile := '/tmp/' + Name + '.pas';
+      SrcFile := CodeBuffer[ctSource].FileName;
     end;
     LFMTree := GetBlockDescription(Sender as TCGraphBlock);
     if Assigned(LFMTree) then begin

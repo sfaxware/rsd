@@ -20,7 +20,6 @@ type
   public
     constructor Create(AOwner:TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
-    CodeCache: array[TCodeType] of TCodeCache;
     function Load: boolean;
     function Save: boolean;
   protected
@@ -50,8 +49,6 @@ type
 implementation
 
 constructor TCGraphBlock.Create(AOwner:TComponent);
-var
-  CodeType: TCodeType;
 begin
   inherited Create(AOwner);
   Width := 100;
@@ -62,8 +59,6 @@ begin
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
   FType := 'TCGraphBlock';
-  for CodeType := Low(CodeType) To High(CodeType) do
-    CodeCache[CodeType] := TCodeCache.Create;
 end;
 
 function TCGraphBlock.Load: boolean;
@@ -77,7 +72,7 @@ begin
     if Assigned(CodeBuffer[CodeType]) then
       CodeBuffer[CodeType].Reload
     else begin
-      CodeBuffer[CodeType] := CodeCache[CodeType].LoadFile(CodeFile[CodeType]);
+      CodeBuffer[CodeType] := TCodeCache.Create.LoadFile(CodeFile[CodeType]);
     end;
   end;
   Result := true;
