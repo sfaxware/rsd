@@ -41,9 +41,6 @@ type
     procedure SelectBlock(Sender: TObject);
     procedure SetViewed(ShowDesign: Boolean);
   end;
-  TTop = class(TDesign)
-    constructor Create(AOwner: TComponent); override;
-  end;
 
 implementation
 
@@ -337,13 +334,7 @@ begin
   end;
 end;
 
-constructor TTop.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  Visible := False;
-end;
-
 initialization
   TDesign.RegisterDevice('TDesign', 'Designs', []);
-  TTop.RegisterDevice('TTop', 'Designs', []);
+  TDesign.RegisterDevice('TTopDesign', 'Designs', []);
 end.
