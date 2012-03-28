@@ -25,7 +25,10 @@ type
     function DeviceType: string;
   end;
   TCGraphDevice = class(TMagnifier, TIGraphDevice)
+  protected
+    procedure DoPaint(Sender: TObject); virtual; abstract;
   public
+    constructor Create(AOwner: TComponent); override;
     function DeviceIdentifier: string;
     function DeviceType: string;
   end;
@@ -38,7 +41,7 @@ type
     procedure HandleMouseEnterLeaveEvents(Sender: TObject); virtual;
     procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); virtual; abstract;
     procedure ValidateContainer(AComponent: TComponent); override;
   public
@@ -48,12 +51,12 @@ type
   end;
   TCGraphInputPort = class(TCGraphPort)
   protected
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TCGraphOutputPort = class(TCGraphPort)
   protected
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TPortType = class of TCGraphPort;
@@ -80,7 +83,7 @@ type
   protected
     FSelected: Boolean;
     procedure SetSeleted(AValue: Boolean);
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
     procedure UpdatePortsBounds(PortType: TPortType);
     procedure ValidateInsert(AComponent: TComponent); override;
   published
@@ -99,7 +102,7 @@ type
     function GetUpdatedDescription(Indent: string): string;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   protected
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
     procedure SetInputPort(Value: TCGraphInputPort);
     procedure SetOutputPort(Value: TCGraphOutputPort);
     procedure UpdatePoints; virtual;
@@ -109,12 +112,14 @@ type
   end;
   TCGraphSource = class(TCGraphBlock)
   protected
-    procedure Paint; override;
+    procedure DoPaint(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
   end;
   TCGraphProbe = class(TCGraphBlock)
+  protected
+    procedure DoPaint(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
@@ -224,6 +229,12 @@ begin
   end;
 end;
 
+constructor TCGraphDevice.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  OnPaint := @DoPaint;
+end;
+
 function TCGraphDevice.DeviceIdentifier: string;
 begin
   Result := Name;
@@ -286,11 +297,10 @@ begin
   end;
 end;
 
-procedure TCGraphPort.Paint;
+procedure TCGraphPort.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
 begin
-  inherited Paint;
   PaintRect := ClientRect;
   Color := clBlack;
   with Canvas do begin
@@ -346,12 +356,12 @@ begin
   end;
 end;
 
-procedure TCGraphInputPort.Paint;
+procedure TCGraphInputPort.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
   Triangle: array[0..2] of TPoint;
 begin
-  inherited Paint;
+  inherited DoPaint(Sender);
   PaintRect := ClientRect;
   with PaintRect do begin
     Triangle[0] := Point(Left, Top + Height div 2);
@@ -391,12 +401,12 @@ begin
   end;
 end;
 
-procedure TCGraphOutputPort.Paint;
+procedure TCGraphOutputPort.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
   Triangle: array[0..2] of TPoint;
 begin
-  inherited Paint;
+  inherited DoPaint(Sender);
   PaintRect := ClientRect;
   with PaintRect do begin
     Triangle[0] := Point(Left, Top + Height div 2);
@@ -687,7 +697,7 @@ begin
   end
 end;
 
-procedure TCGraphBlock.Paint;
+procedure TCGraphBlock.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
   TXTStyle : TTextStyle;
@@ -718,7 +728,6 @@ begin
       TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
     end;
   end;
-  inherited Paint;
 end;
 
 procedure TCGraphBlock.UpdatePortsBounds(PortType: TPortType);
@@ -777,7 +786,7 @@ begin
   InputPort := AInputPort;
 end;
 
-Procedure TCGraphConnector.Paint;
+Procedure TCGraphConnector.DoPaint(Sender: TObject);
 begin
   //WriteLn('TCGraphConnector.Paint Self=', Left,', ', Top,', ', Width,', ', Height);
   if Length(FPoints) > 0 then with Canvas do begin
@@ -792,7 +801,6 @@ begin
       Color:= clGreen;
     Polyline(Translate(FPoints, -Left, -Top));
   end;
-  inherited Paint;
 end;
 
 procedure TCGraphConnector.SetInputPort(Value: TCGraphInputPort);
@@ -831,7 +839,7 @@ begin
   AddNewPort(TCGraphInputPort);
 end;
 
-procedure TCGraphSource.Paint;
+procedure TCGraphSource.DoPaint(Sender: TObject);
 var
   PaintRect: TRect;
   TXTStyle : TTextStyle;
@@ -842,7 +850,7 @@ begin
   with Canvas do begin
     if FSelected then begin
       Pen.Color := clBlack;
-      Rectangle(PaintRect);
+      Ellipse(PaintRect);
       InflateRect(PaintRect, -2, -2);
     end;
     If not Enabled then
@@ -862,7 +870,6 @@ begin
       TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
     end;
   end;
-  inherited Paint;
 end;
 
 function TCGraphSource.AddNewPort(PortType: TPortType): TCGraphPort;
@@ -884,6 +891,39 @@ constructor TCGraphProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
   AddNewPort(TCGraphOutputPort);
+end;
+
+procedure TCGraphProbe.DoPaint(Sender: TObject);
+var
+  PaintRect: TRect;
+  TXTStyle : TTextStyle;
+begin
+  //WriteLn('TCGraphBlock.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
+  PaintRect:=ClientRect;
+  //with PaintRect do WriteLn('TCGraphBlock.Paint PaintRect=', Left,', ', Top,', ', Right,', ', Bottom);
+  with Canvas do begin
+    if FSelected then begin
+      Pen.Color := clBlack;
+      Ellipse(PaintRect);
+      InflateRect(PaintRect, -2, -2);
+    end;
+    If not Enabled then
+      Brush.Color := clBtnShadow;
+    Ellipse(PaintRect);
+    if Caption <> '' then begin
+      TXTStyle := Canvas.TextStyle;
+      with TXTStyle do begin
+        Opaque := False;
+        Clipping := True;
+        ShowPrefix := False;
+        Alignment := taCenter;
+        Layout := tlCenter;
+      end;
+    // set color here, otherwise SystemFont is wrong if the button was disabled before
+      Font.Color := Self.Font.Color;
+      TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
+    end;
+  end;
 end;
 
 function TCGraphProbe.AddNewPort(PortType: TPortType): TCGraphPort;
