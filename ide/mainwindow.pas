@@ -205,6 +205,7 @@ begin
   end;
   ViewFile(DesignLayout);
   TabControl.TabIndex := 0;
+  ViewDesign(FTopDesign);
 end;
 
 procedure TIdeMainWindow.LoadProject(Sender: TObject);
