@@ -5,10 +5,7 @@ unit CodeWriter;
 interface
 
 uses
-  Classes, SysUtils, ComCtrls,CodeCache, CodeTree;
-
-type
-  TCodeTemplateType = (cttNone, cttSimulator, cttDesign, cttBlock);
+  Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
@@ -17,7 +14,7 @@ function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
 implementation
 
 uses
-  GraphComponents, CodeToolManager;
+  CodeToolManager;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
 var
