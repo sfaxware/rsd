@@ -13,7 +13,9 @@ type
   TRoute = array of TPoint;
   TRoutes = array of TRoute;
   TArea = array of TRect;
-  TIndexes = array of Integer;
+  TIndex = Integer;
+  TIndexes = array of TIndex;
+  TAdjacenceGraph = array of TIndexes;
 
 function Bounds(R: TRoute): TRect;
 function Intersect(const S1, S2: TSegment): Boolean;
@@ -24,9 +26,15 @@ function RectCenter(Rect: TRect): TPoint;
 function Route(const P1, P2: TPoint; const Area: TArea; out ARoute: TRoute): Boolean;
 procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
 procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
-procedure AddRect(const R: TRect; var A: TArea);
-procedure RemoveRect(const R: TRect; var A: TArea);
-function Intersection(const R: TRect; const A: TArea; out Intersections: TArea): TIndexes;
+procedure AddRect(var A: TArea; const R: TRect);
+procedure RemoveRect(var A: TArea; const R: TRect);
+procedure RemoveRect(var A: TArea; const B, R: TRect);
+function RemoveRect(const B, R: TRect):TArea;
+function Intersection(out I: TArea; const A: TArea; const P: TPoint): TIndexes;
+function Intersection(out I: TArea; const A: TArea; const R: TRect): TIndexes;
+function Containers(const A: TArea; P: TPoint): TIndexes;
+function Adjacents(const A: TArea; n: TIndex): TIndexes;
+function AdjacenceGraph(A: TArea): TAdjacenceGraph;
 
 implementation
 
@@ -133,35 +141,136 @@ begin
 
 end;
 
-function Intersection(const R: TRect; const A: TArea; out Intersections: TArea): TIndexes;
+function Intersection(out I: TArea; const A: TArea; const P: TPoint): TIndexes;
 var
-  i: Integer;
+  n: Integer;
+  l: Integer;
+begin
+  l := 0;
+  SetLength(Result, l);
+  SetLength(I, 0);
+  for n := Low(A) to High(A) do begin
+    if PtInRect(A[n], P) then begin
+      AddRect(I, A[n]);
+      SetLength(Result, l + 1);
+      Result[l] := n;
+      l += 1;
+    end;
+  end;
+end;
+
+function Intersection(out I: TArea; const A: TArea; const R: TRect): TIndexes;
+var
+  n: Integer;
   l: Integer;
   X: TRect;
 begin
   l := 0;
   SetLength(Result, l);
-  SetLength(Intersections, l);
-  for i := Low(A) to High(A) do begin
-    if IntersectRect(X, A[i], R) then begin
-      Inc(l);
-      SetLength(Result, l);
-      SetLength(Intersections, l);
-      Result[l - 1] := i;
-      Intersections[l - 1] := X;
+  SetLength(I, 0);
+  for n := Low(A) to High(A) do begin
+    if IntersectRect(X, A[n], R) then begin
+      AddRect(I, X);
+      SetLength(Result, l + 1);
+      Result[l] := n;
+      l += 1;
     end;
   end;
 end;
 
-procedure AddRect(const R: TRect; var A: TArea);
+procedure AddRect(var A: TArea; const R: TRect);
+var
+  l: Integer;
 begin
-
+  if not IsRectEmpty(R) then begin
+    l := Length(A);
+    SetLength(A, l + 1);
+    A[l] := R;
+  end;
 end;
 
-procedure RemoveRect(const R: TRect; var A: TArea);
+procedure RemoveRect(var A: TArea; const R: TRect);
+var
+  n, s, d: Integer;
+  I: TArea;
+  X: TIndexes;
 begin
+  Intersection(I, A, R);
+  s := 0;
+  d := 0;
+  for n := Low(X) to High(X) do begin
+    if s <> X[n] then begin
+      A[d] := A[s];
+      d += 1;
+    end;
+    s += 1;
+  end;
+  SetLength(A, d);
+  for n := Low(I) to High(I) do begin
+    RemoveRect(A, I[n], R);
+  end;
+end;
 
+procedure RemoveRect(var A: TArea; const B, R: TRect);
+var
+  S: TRect;
+  RectQty: Integer;
+begin
+  if IntersectRect(S, R, B) then begin
+    AddRect(A, Rect(B.Left, B.Top, B.Right, S.Top));
+    AddRect(A, Rect(S.Left, S.Top, B.Right, B.Bottom));
+    AddRect(A, Rect(B.Left, S.Top, S.Left, S.Bottom));
+    AddRect(A, Rect(B.Left, S.Bottom, B.Right, B.Bottom));
+  end;
+end;
+
+function RemoveRect(const B, R: TRect): TArea;
+begin
+  SetLength(Result, 0);
+  RemoveRect(Result, B, R);
+end;
+
+function Containers(const A: TArea; P: TPoint): TIndexes;
+var
+  n: Integer;
+  l: Integer;
+begin
+  l := 0;
+  SetLength(Result, l);
+  for n := Low(A) to High(A) do begin
+    if PtInRect(A[n], P) then begin
+      SetLength(Result, l + 1);
+      Result[l] := n;
+      l += 1;
+    end;
+  end;
+end;
+
+function Adjacents(const A: TArea; n: TIndex): TIndexes;
+var
+  p: Integer;
+  l: Integer;
+  X: TRect;
+begin
+  l := 0;
+  SetLength(Result, l);
+  for p := Low(A) to High(A) do begin
+    if IntersectRect(X, A[p], A[n]) then begin
+      SetLength(Result, l + 1);
+      Result[l] := p;
+      l += 1;
+    end;
+  end;
+end;
+
+function AdjacenceGraph(A: TArea): TAdjacenceGraph;
+var
+  n: TIndex;
+begin
+  SetLength(Result, Length(A));
+  for n := Low(A) to High(A) do begin
+    Result[n] := Adjacents(A, n);
+  end;
 end;
 
 end.
-
