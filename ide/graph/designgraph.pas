@@ -82,7 +82,7 @@ procedure TCGraphDesign.ConnectPorts(Sender: TObject);
 var
   Connector: TCGraphConnector;
 begin
-  Connector := TCGraphConnector.Create(Self);
+  Connector := CreateConnector('', '', Self);
   with Connector do begin
     Parent := Self;
     Connect(SelectedOutputPort, SelectedInputPort);
@@ -234,6 +234,7 @@ var
   CodeFile: array[TCodeType] of string;
   CodeType: TCodeType;
   Component: TComponent;
+  Connector: TCGraphConnector;
 begin
   Result := true;
   codeFile[ctSource] := SourceFileName(Name);
@@ -287,7 +288,16 @@ begin
       Component := Component.FindComponent(PortName);
       WriteLn('Component.Name = ', Component.Name, ', Component.Type = ', Component.ClassName);
       SelectedInputPort := Component as TCGraphInputPort;
-      ConnectPorts(Self);
+      Connector := CreateConnector(BlockDescription.Name, BlockDescription.TypeName, Self);
+      with Connector do begin
+        Parent := Self;
+        Connect(SelectedOutputPort, SelectedInputPort);
+        OnMouseEnter := @HandleMouseEnter;
+        OnMouseLeave := @HandleMouseLeave;
+      end;
+      if Assigned(FOnChildrenCreate) then begin
+        FOnChildrenCreate(Connector);
+      end;
     end else begin
       if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
