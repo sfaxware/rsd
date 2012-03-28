@@ -2187,15 +2187,16 @@ endif
 .PHONY: all clean install
 all:mo_files
 	lazbuild ide/dtsl_ide.lpi
-	lazbuild core/fifo/fifotest.lpi
-	lazbuild core/block/blocktest.lpi
+	lazbuild core/dtslcore.lpk
 mo_files:${MO_FILES}
 build/share/locale/%/LC_MESSAGES/dtsl.mo:locale/dtsl_%.po
 	${MKDIR} $(dir $@)
 	msgfmt -o $@ $<
 install:
-	$(COPYTREE) build/bin $(INSTALL_PREFIX)
-	$(COPYTREE) build/share $(INSTALL_PREFIX)
+	$(COPYTREE) -t $(INSTALL_PREFIX) \
+		build/bin \
+		build/share \
+		core/dtslcore.lpk
 ifeq ($(OS_TARGET),linux)
 ifndef DEBDIR
 DEBDIR=debian

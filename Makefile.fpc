@@ -34,9 +34,7 @@ LPI_FILES=$(addsuffix .lpi,${TARGET_PROGRAMS})
 #-----------------------------------------------------------------------------
 all:mo_files
 	lazbuild ide/dtsl_ide.lpi
-	lazbuild core/fifo/fifotest.lpi
-	lazbuild core/block/blocktest.lpi
-	lazbuild core/num/numtest.lpi
+	lazbuild core/dtslcore.lpk
 
 mo_files:${MO_FILES}
 
@@ -47,8 +45,10 @@ build/share/locale/%/LC_MESSAGES/dtsl.mo:locale/dtsl_%.po
 # Many C expect 'make install' to copy the binaries to somewhere
 # Copy the fptc tree to the install directory and set a link
 install:
-	$(COPYTREE) build/bin $(INSTALL_PREFIX)
-	$(COPYTREE) build/share $(INSTALL_PREFIX)
+	$(COPYTREE) -t $(INSTALL_PREFIX) \
+		build/bin \
+		build/share \
+		core/dtslcore.lpk
 
 ##########################################################################
 # Debian
