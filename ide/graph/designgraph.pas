@@ -53,12 +53,22 @@ end;
 function TCGraphDesign.CreateNewBlock:TCGraphBlock;
 var
   BlockQuantity: integer = 0;
+  R: TRect;
+  w, h: Integer;
 begin
   Result := TCGraphBlock.Create(Self);
+  R := Result.OriginalBounds;
+  with R do begin
+    w := Right - Left;
+    h := Bottom - Top;
+    Left := Random(Width - w);
+    Top := Random(Height - h);
+    Right := Left + w;
+    Bottom := Top + h;
+  end;
   with Result do begin
+    OriginalBounds := R;
     Parent := Self;
-    Left := Random(Self.Width - Width);
-    Top := Random(Self.Height - Height);
     BlockQuantity += 1;
     repeat
       try
