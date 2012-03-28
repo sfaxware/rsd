@@ -132,7 +132,8 @@ end;
 procedure TdtslIdeMainWindow.SelectBlock(Sender: TObject);
 begin
   if Sender is TCGraphBlock then begin
-    _selectedBlock.Selected := False;
+     if Assigned(_selectedBlock) then
+       _selectedBlock.Selected := False;
     _selectedBlock := TCGraphBlock(Sender);
     _selectedBlock.Selected := True;
   end;
