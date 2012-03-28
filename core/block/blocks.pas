@@ -8,6 +8,8 @@ uses
   Classes, SysUtils, BlockBasics; 
 
 type
+  TInputPort = class(TCInputPort);
+  TOutputPort = class(TCOutputPort);
   TBlock = class(TCBlock)
   private
   public

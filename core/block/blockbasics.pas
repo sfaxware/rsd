@@ -25,7 +25,13 @@ type
     property Input[index: string]: TIInputPort;
     property Output[index: string]: TIInputPort;
   end;
+
+  TCInputPort = class(TIInputPort)
+  end;
   
+  TCOutputPort = class(TIOutputPort)
+  end;
+
   TCBlock = class(TIBlock)
   private
   public
