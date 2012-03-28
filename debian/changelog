@@ -1,5 +1,8 @@
 rsd (0.0.1-0) unstable; urgency=low
 
-  * First attempt to build DTSL deb package.
+  * Support of simple design (no sub designs).
+  * Basic block scheduler (no support of loops).
+  * Control code auto generated.
+  * VCS friendly changes.
 
- -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 04 Oct 2010 09:22:00 +0200
+ -- Mazen NEIFER <mazen.neifer@supaero.org>  Mon, 08 Nov 2010 19:59:00 +0100
