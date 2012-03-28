@@ -42,8 +42,6 @@ type
 
 implementation
 
-uses buttons;
-
 constructor TCGraphBlock.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
@@ -58,12 +56,9 @@ end;
 procedure TCGraphBlock.Paint;
 var
   PaintRect: TRect;
-  GlyphWidth, GlyphHeight: Integer;
-  Offset, OffsetCap: TPoint;
-  ClientSize, TotalSize, TextSize, GlyphSize: TSize;
+  OffsetCap: TPoint;
+  ClientSize, TextSize: TSize;
   TXTStyle : TTextStyle;
-  SIndex : Longint;
-  myparent:TCustomControl;
 begin
   WriteLn('TCGraphBlock.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
   PaintRect:=ClientRect;
@@ -71,22 +66,21 @@ begin
   ClientSize.cy:= PaintRect.Bottom - PaintRect.Top;
   TextSize.CY := PaintRect.Bottom - PaintRect.Top;
   TextSize.CX := PaintRect.Right - PaintRect.Left;
-  Offset.X:= (ClientSize.cx - TextSize.cx) div 2;
-  Offset.Y:= (ClientSize.cy - TextSize.cy) div 2;
   OffsetCap.X:= (ClientSize.cx - TextSize.cx) div 2;
   OffsetCap.Y:= (ClientSize.cy - TextSize.cy) div 2;
 
   if Caption <> '' then
   begin
     TXTStyle := Canvas.TextStyle;
-    TXTStyle.Opaque := False;
-    TXTStyle.Clipping := True;
-//    TXTStyle.ShowPrefix := ShowAccelChar;
-    TXTStyle.Alignment := taLeftJustify;
-    TXTStyle.Layout := tlTop;
+    with TXTStyle do begin
+      Opaque := False;
+      Clipping := True;
+//      ShowPrefix := ShowAccelChar;
+      Alignment := taCenter;
+      Layout := tlCenter;
+    end;
     // set color here, otherwise SystemFont is wrong if the button was disabled before
     Canvas.Font.Color := Font.Color;
-    TXTStyle.SystemFont := Canvas.Font.IsDefault;//Match System Default Style
 
     With PaintRect, OffsetCap do begin
       Left := Left + X;
@@ -95,14 +89,14 @@ begin
 
     with Canvas do begin
       If not Enabled then begin
-      Font.Color := clBtnHighlight;
-      OffsetRect(PaintRect, 1, 1);
-      TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
-      Font.Color := clBtnShadow;
-      OffsetRect(PaintRect, -1, -1);
+        Font.Color := clBtnHighlight;
+        OffsetRect(PaintRect, 1, 1);
+        TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
+        Font.Color := clBtnShadow;
+        OffsetRect(PaintRect, -1, -1);
       end;
       WriteLn('TCGraphBlock.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
-      Brush.Color:= Color;
+      Color:= Self.Color;
       FillRect(PaintRect);
       TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
     end;
