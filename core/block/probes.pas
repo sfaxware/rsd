@@ -1,4 +1,4 @@
-unit Probe;
+unit Probes;
 
 {$mode objfpc}{$H+}
 

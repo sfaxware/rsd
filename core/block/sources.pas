@@ -1,4 +1,4 @@
-unit Source;
+unit Sources;
 
 {$mode objfpc}{$H+}
 
