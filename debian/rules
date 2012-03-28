@@ -59,7 +59,7 @@ clean: patch configure clean-patched unpatch
 	${RM} debian/files debian/docs debian/dirs debian/*.files debian/*.docs debian/*.examples debian/*.postinst debian/*.postrm
 	${RM} .pc
 	# Remove auto-generated version file.
-	${RM} ide/version.inc
+	${RM} version.inc
 	# Remove auto-generated make files.
 	find -name Makefile.fpc -execdir 'sh' '-c' '${RM} $$(basename {} .fpc)' ';'
 	dh_clean 
@@ -93,7 +93,7 @@ configure-stamp:
 	# Regenrate make files using fpcmake.
 	${FPCMAKE} -r -Tall
 	# Remove auto-generated version file.
-	${RM} ide/version.inc
+	${RM} version.inc
 	# Add version.inc:
 	echo \'$(DEB_VERSION)\' > version.inc
 	touch configure-stamp
