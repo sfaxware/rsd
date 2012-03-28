@@ -48,8 +48,8 @@
         <Filename Value="fifobasics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FifoBasics"/>
-        <CursorPos X="1" Y="66"/>
-        <TopLine Value="60"/>
+        <CursorPos X="66" Y="75"/>
+        <TopLine Value="58"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
@@ -69,56 +69,7 @@
         <UsageCount Value="10"/>
       </Unit4>
     </Units>
-    <JumpHistory Count="12" HistoryIndex="11">
-      <Position1>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="81" Column="36" TopLine="53"/>
-      </Position1>
-      <Position2>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="12" Column="5" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="22" Column="5" TopLine="7"/>
-      </Position3>
-      <Position4>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="3" Column="14" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="24" Column="9" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="20" Column="16" TopLine="6"/>
-      </Position6>
-      <Position7>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="40" Column="6" TopLine="14"/>
-      </Position7>
-      <Position8>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="25" Column="5" TopLine="11"/>
-      </Position8>
-      <Position9>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="15" Column="3" TopLine="1"/>
-      </Position9>
-      <Position10>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="30" Column="1" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="fifobasics.pas"/>
-        <Caret Line="34" Column="39" TopLine="20"/>
-      </Position11>
-      <Position12>
-        <Filename Value="fifotest.lpr"/>
-        <Caret Line="25" Column="7" TopLine="1"/>
-      </Position12>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

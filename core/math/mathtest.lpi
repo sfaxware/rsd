@@ -47,8 +47,8 @@
         <Filename Value="mathbasics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathBasics"/>
-        <CursorPos X="3" Y="28"/>
-        <TopLine Value="23"/>
+        <CursorPos X="12" Y="57"/>
+        <TopLine Value="34"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
@@ -96,12 +96,7 @@
         <UsageCount Value="11"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
-      <Position1>
-        <Filename Value="mathbasics.pas"/>
-        <Caret Line="57" Column="12" TopLine="34"/>
-      </Position1>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
