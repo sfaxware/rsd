@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
   ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
-  SynEdit, RTTICtrls;
+  SynEdit, RTTICtrls, XMLCfg;
 
 type
 
@@ -36,14 +36,18 @@ type
     dtslEditCopyMenuItem: TMenuItem;
     dtslEditPastMenuItem: TMenuItem;
     dtslEditCutMenuItem: TMenuItem;
+    dtslIdeFileSaveMenuItem: TMenuItem;
     PopupMenu1: TPopupMenu;
+    SaveDialog1: TSaveDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
     SynAutoComplete1: TSynAutoComplete;
     SynEdit1: TSynEdit;
     SynPasSyn1: TSynPasSyn;
     TabControl: TTabControl;
+    Project: TXMLConfig;
     procedure FormCreate(Sender: TObject);
+    procedure SaveProject ( Sender: TObject ) ;
     procedure TabControlChange(Sender: TObject);
     procedure dtslEditGraphDeleteBlockMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertBlockMenuItemClick(Sender: TObject);
@@ -78,6 +82,35 @@ end;
 procedure TdtslIdeMainWindow.RemoveBlock(Block:TCGraphBlock);
 begin
   _blocks.Remove(Block);
+end;
+
+procedure StreamBlock(data, arg: pointer);
+var
+  Path: string;
+begin
+  with TXMLConfig(arg), TCGraphBlock(data) do begin
+    Path := 'design/blocks/' + name + '/';
+    SetValue(Path + 'name', Caption);
+    SetValue(Path + 'type', Typ);
+    SetValue(Path + 'left', Left);
+    SetValue(Path + 'top', Top);
+    SetValue(Path + 'width', Width);
+    SetValue(Path + 'height', Height);
+  end;
+end;
+
+procedure TdtslIdeMainWindow.SaveProject ( Sender: TObject ) ;
+begin
+  with Project do begin
+    if Filename = '' then
+      if SaveDialog1.Execute then
+        FileName := SaveDialog1.FileName
+      else
+        Exit;
+    Clear;
+    _Blocks.ForEachCall(@StreamBlock, Project);
+    Flush;
+  end;
 end;
 
 procedure TdtslIdeMainWindow.FormCreate(Sender: TObject);
@@ -149,6 +182,8 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
+var
+  BlockQuantity: integer = 0;
 begin
   if Assigned(_selectedBlock) then
     _selectedBlock.Selected := False;
@@ -158,7 +193,15 @@ begin
     Left := Random(ScrollBox1.Width - Width);
     Top := Random(ScrollBox1.Height - Height);
     Color := clRed;
-    Caption := 'Block';
+    repeat
+      try
+        Name := 'block' + IntToStr(BlockQuantity);
+        break;
+      except
+        BlockQuantity += 1;
+      end;
+    until false;
+    Caption := 'Block ' + IntToStr(BlockQuantity);
     OnClick := @SelectBlock;
     OnDblClick := @ViewFile;
     Selected := True;
