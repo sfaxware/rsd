@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <OtherUnitFiles Value="fifo/;block/;num/"/>
-        <UnitOutputDirectory Value="lib/"/>
+        <UnitOutputDirectory Value="lib"/>
       </SearchPaths>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
@@ -83,11 +83,14 @@
         <UnitName Value="ShortIntVectors"/>
       </Item17>
     </Files>
-    <RequiredPkgs Count="1">
+    <RequiredPkgs Count="2">
       <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item1>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>
