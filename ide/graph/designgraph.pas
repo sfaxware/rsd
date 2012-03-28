@@ -44,13 +44,17 @@ end;
 destructor TCGraphDesign.Destroy;
 var
   CodeType: TCodeType;
+  CodeCache: TCodeCache;
 begin
   for CodeType := Low(CodeType) to High(CodeType) do begin
-    if Assigned(CodeBuffer[CodeType]) then
-      FreeAndNil(CodeBuffer[CodeType]);
+    if Assigned(CodeBuffer[CodeType]) then begin
+      CodeCache := CodeBuffer[CodeType].CodeCache;
+      if Assigned(CodeCache) then begin
+        FreeAndNil(CodeCache);
+      end;
     end;
   end;
-  inherited Destroy
+  inherited Destroy;
 end;
 
 procedure TCGraphDesign.ConnectPorts(Sender: TObject);
@@ -119,8 +123,7 @@ end;
 
 procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
 begin
-  Block.Destroy;
-  Block := nil;
+  FreeAndNil(Block);
 end;
 
 procedure TCGraphDesign.MouseWheele(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
