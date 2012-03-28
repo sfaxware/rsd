@@ -46,9 +46,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn('>>TBlock.Create(AOwner: TBlock): Name = ', Name, ', AOwner.ClassName = ', cn);
+  WriteLn(FuncB('TBlock.Create(AOwner: TBlock)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn('<<TBlock.Create(AOwner: TBlock): Name = ', Name, ', AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TBlock.Create(AOwner: TBlock)'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
 end;
 
 initialization

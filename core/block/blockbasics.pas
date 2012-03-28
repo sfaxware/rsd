@@ -121,7 +121,37 @@ type
     property InputPort: TIInputPort read FInputPort write FInputPort;
  end;
 
+  TFuncName = string[31];
+  TFuncPrefix = string[63];
+
+function FuncB(name: TFuncName): TFuncPrefix;
+function FuncC(name: TFuncName): TFuncPrefix;
+function FuncE(name: TFuncName): TFuncPrefix;
+
 implementation
+
+uses
+  LResources;
+
+var
+  FuncLevel: TFuncName;
+
+function FuncB(name: TFuncName): TFuncPrefix;
+begin
+  Result := FuncLevel + '>>' + name + ': ';
+  FuncLevel += '  ';
+end;
+
+function FuncC(name: TFuncName): TFuncPrefix;
+begin
+  Result := FuncLevel + name + ': ';
+end;
+
+function FuncE(name: TFuncName): TFuncPrefix;
+begin
+  SetLength(FuncLevel,  Length(FuncLevel) - 2);
+  Result := FuncLevel + '<<' + name + ': ';
+end;
 
 function TCDevice.GetName: string;
 begin
@@ -130,11 +160,11 @@ end;
 
 procedure TCDevice.ValidateContainer(AComponent: TComponent);
 begin
-  WriteLn('>>TCDevice.ValidateContainer: Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  WriteLn(FuncB('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
   if AComponent is TCBlock then with AComponent as TCBlock do begin
     ValidateInsert(Self);
   end;
-  WriteLn('<<TCDevice.ValidateContainer: Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
+  WriteLn(FuncE('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
 
 constructor TCDevice.Create(AOwner: TComponent);
@@ -147,11 +177,13 @@ end;
 constructor TCDevice.Create(AOwner: TCDevice);
 begin
   inherited Create(AOwner);
-  WriteLn('>>TCDevice.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
   if Assigned(AOwner) then begin
     WriteLn('AOwner.Name = ', AOwner.Name);
   end;
-  WriteLn('<<TCDevice.Create: ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
+  if not InitResourceComponent(Self, TCDevice) then
+    WriteLn(FuncC('TDevice.Create(AOwner: TDesign)'), 'Failure');
+  WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount, ', Name = ', Name);
 end;
 
 function TCPort.GetConnector: TIConnector;
@@ -183,11 +215,11 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn('>>TCBlock.Create(AOwner: TCDevice): AOwner.ClassName = ', cn);
+  WriteLn(FuncB('TCBlock.Create(AOwner: TCDevice)'), 'AOwner.ClassName = ', cn);
   if AOwner is TCBlock then begin
     Create(AOwner as TCBlock);
   end;
-  WriteLn('<<TCBlock.Create(AOwner: TCDevice): AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TCBlock.Create(AOwner: TCDevice)'), 'AOwner.ClassName = ', cn);
 end;
 
 constructor TCBlock.Create(AOwner: TCBlock);
@@ -199,9 +231,9 @@ begin
   end else begin
     cn := 'nil';
   end;
-  WriteLn('>>TCBlock.Create(AOwner: TCBlock): AOwner.ClassName = ', cn);
+  WriteLn(FuncB('TCBlock.Create(AOwner: TCBlock)'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  WriteLn('<<TCBlock.Create(AOwner: TCBlock): AOwner.ClassName = ', cn);
+  WriteLn(FuncE('TCBlock.Create(AOwner: TCBlock)'), 'AOwner.ClassName = ', cn);
 end;
 
 function TCBlock.GetInputQty: Integer;
@@ -242,9 +274,9 @@ procedure TCBlock.ValidateInsert(AComponent: TComponent);
 var
   l: Integer;
 begin
-  WriteLn('>>TCBlock.ValidateInsert: Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
-  WriteLn('  TCBlock.ValidateInsert: InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
-  WriteLn('  TCBlock.ValidateInsert: AComponent.ClassName = ', AComponent.ClassName);
+  WriteLn(FuncB('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
+  WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent.ClassName = ', AComponent.ClassName);
   if AComponent is TCInputPort then begin
     l := Length(FInputPorts);
     SetLength(FInputPorts, l + 1);
@@ -258,8 +290,8 @@ begin
     SetLength(FBlocks, l + 1);
     FBlocks[l] := AComponent as TCBlock;
   end;
-  WriteLn('  TCBlock.ValidateInsert: InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
-  WriteLn('<<TCBlock.ValidateInsert: Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
+  WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
 end;
 
 procedure TCBlock.ConnectPorts(Output: TIOutputPort; Input:TIInputPort);
@@ -276,7 +308,7 @@ procedure TCBlock.Execute;
 var
   i: Integer;
 begin
-  WriteLn('TCBlock.Execute : Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
   for i := Low(FInputPorts) to High(FInputPorts) do with FInputPorts[i] do begin
     if IsEmpty then
       Exit;
@@ -288,6 +320,7 @@ begin
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     Execute;
   end;
+  WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
 end;
 
 function TCConnector.GetIsEmpty: Boolean;
