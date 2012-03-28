@@ -88,7 +88,7 @@ begin
   if FSampleQty <= 0 then begin
     Include(FRunStatus, drfTerminated);
   end;
-  WriteLn(FuncE('TFileDumpProbe.Execute'));
+  WriteLn(FuncE('TFileDumpProbe.Execute'), 'SampleQty = ', FSampleQty, ', Terminated = ', drfTerminated in FRunStatus);
 end;
 
 destructor TFileDumpProbe.Destroy;
