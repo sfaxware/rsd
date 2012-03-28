@@ -776,6 +776,13 @@ end;
 function TCGraphBlock.AddNewPort(PortType: TPortType): TCGraphPort;
 begin
   Result := PortType.Create(Self);
+  if not Assigned(CodeBuffer[ctSource]) then begin
+    CodeBuffer[ctSource] := GetCodeBuffer(cttBlock, Self);
+  end;
+  CodeBuffer[ctSource].LockAutoDiskRevert;
+  CodeToolBoss.AddUnitToMainUsesSection(CodeBuffer[ctSource], Result.DeviceIdentifier, '');
+  CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], DeviceType, Result.DeviceIdentifier, Result.DeviceType);
+  CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
 function TCGraphBlock.GetUpdatedDescription(Indent: string): string;
