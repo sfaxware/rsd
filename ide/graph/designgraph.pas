@@ -59,8 +59,11 @@ end;
 
 constructor TDesign.Create(AOwner: TComponent);
 begin
+  if AOwner is TScrollBox then begin
+    {We are creating a top design}
+    ResetDeviceQty;
+  end;
   inherited Create(AOwner);
-  Name := 'Design';
   //WriteLn('Created new TDesign class instance');
   FMagnification := 1;
   SetViewed(not Assigned(SelectedDesign));
