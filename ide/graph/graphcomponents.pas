@@ -199,7 +199,7 @@ begin
       if Assigned(ACodeBuffer) then begin
         CodeToolBoss.FindFormAncestor(ACodeBuffer, DeviceType, DeviceAncestorType, True);
       end;
-      WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
+      //WriteLn('DeviceName = ', DeviceName, ', DeviceType = ', DeviceType, ', DeviceAncestorType = ', DeviceAncestorType);
     end;
   end;
   DeviceClass := GetDeviceClass(DeviceType);
@@ -263,7 +263,7 @@ begin
     ContextNode := Parent as TLFMObjectNode;
   end;
   Result := '';
-  WriteLn('GetPropertyValue: PropertyName = ', PropertyName);
+  //WriteLn('GetPropertyValue: PropertyName = ', PropertyName);
   PropertyNode := Self.FindProperty(PropertyName, nil);
   ValueNode := PropertyNode.Next;
   //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
@@ -503,7 +503,7 @@ begin
   Name := 'Port';
   FDeviceType := 'TInputPort';
   FDeviceAncestorType := 'TInputPort';
-  WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
+  //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
 procedure TCGraphInputPort.DoPaint(Sender: TObject);
@@ -557,7 +557,7 @@ begin
   Name := 'Port';
   FDeviceType := 'TOutputPort';
   FDeviceAncestorType := 'TOutputPort';
-  WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
+  //WriteLn('AOwner.Name = ', AOwner.Name, 'Name = ', Name);
 end;
 
 procedure TCGraphOutputPort.DoPaint(Sender: TObject);
@@ -701,7 +701,7 @@ begin
   DeviceDescription := FindObjectProperty(nil, DesignDescription);
   Port := nil;
   while Assigned(DeviceDescription) do begin
-    WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
+    //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
     if DeviceDescription.TypeName = 'TOutputPort' then begin
       Port := AddNewPort(TCGraphOutputPort);
       Port.Name := DeviceDescription.Name;
@@ -713,12 +713,12 @@ begin
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
-      WriteLn('OutputPortName = ', PortName);
+      //WriteLn('OutputPortName = ', PortName);
       PortName := GetPropertyValue(DeviceDescription, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
-      WriteLn('InputPortName = ', PortName);
+      //WriteLn('InputPortName = ', PortName);
     end else begin
       {if Assigned(SelectedBlock) then
         SelectedBlock.Selected := False;
