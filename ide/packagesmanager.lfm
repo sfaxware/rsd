@@ -45,11 +45,4 @@ object PackagesManagerForm: TPackagesManagerForm
     OnClick = UpdateInstalledPackages
     TabOrder = 2
   end
-  object PackageFiles: TXMLConfig
-    Filename = '/.lazarus/packagefiles.xml'
-    StartEmpty = False
-    RootName = 'CONFIG'
-    left = 152
-    top = 272
-  end
 end
