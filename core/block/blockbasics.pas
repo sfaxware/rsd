@@ -48,6 +48,7 @@ type
   protected
     function GetIsEmpty: Boolean;
   public
+    function Pop(out P: Pointer): Boolean;
     function Pop(out Samples; Qty: Word): Boolean;
     function Pop(out Sample: Integer): Boolean; inline;
     property IsEmpty: Boolean read GetIsEmpty;
@@ -56,6 +57,7 @@ type
   protected
     function GetIsFull: Boolean;
   public
+    function Push(P: Pointer): Boolean;
     function Push(const Samples; Qty: Word): Boolean;
     function Push(Sample: Integer): Boolean; inline;
     property IsFull: Boolean read GetIsFull;
@@ -65,6 +67,7 @@ type
     FInternalConnector: TCConnector;
     //function GetConnector: TCConnector; override;
     function GetIsFull: Boolean;
+    function Push(P: Pointer): Boolean;
     function Push(const Samples; Qty: Word): Boolean;
     function Push(Sample: Integer): Boolean;
    //procedure SetConnector(Value: TCConnector); override;
@@ -74,6 +77,7 @@ type
     FInternalConnector: TCConnector;
     //function GetConnector: TCConnector; override;
     function GetIsEmpty: Boolean;
+    function Pop(out P: Pointer): Boolean;
     function Pop(out Samples; Qty: Word): Boolean;
     function Pop(out Sample: Integer): Boolean;
     //procedure SetConnector(Value: TCConnector); override;
@@ -231,11 +235,9 @@ begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
 end;
 
-function TCInputPort.Pop(out Samples; Qty: Word): Boolean;
-var
-  P: PPortData;
+function TCInputPort.Pop(out P: Pointer): Boolean;
 begin
-  //WriteLn(FuncB('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+  //WriteLn(FuncB('TCInputPort.Pop(Pointer)'), 'Name = ', Owner.Name, '.', Name);
   if Assigned(FConnector) then begin
     //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
     Result := FConnector.Pop(P);
@@ -243,6 +245,15 @@ begin
     //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
     Result := False
   end;
+  //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+end;
+
+function TCInputPort.Pop(out Samples; Qty: Word): Boolean;
+var
+  P: PPortData;
+begin
+  //WriteLn(FuncB('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+  Result := Pop(P);
   if Result then with P^ do begin
     if Qty > Size then begin
       Qty := Size
@@ -263,6 +274,21 @@ begin
   Result := Assigned(FConnector) and FConnector.IsFull;
 end;
 
+function TCOutputPort.Push(P: Pointer): Boolean;
+begin
+  //WriteLn(FuncB('TCOutputPort.Push'), 'Name = ', Owner.Name, '.', Name, 'P = ', HexStr(P));
+  if Assigned(FConnector) then begin
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
+    Result := FConnector.Push(P);
+  end else begin
+    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
+    Result := False;
+  end;
+  if Result then begin
+  end;
+  //WriteLn(FuncE('TCOutputPort.Push'));
+end;
+
 function TCOutputPort.Push(const Samples; Qty: Word): Boolean;
 var
   P: PPortData;
@@ -276,15 +302,7 @@ begin
     Size := Qty;
     Move(Samples, Raw, Qty);
   end;
-  if Assigned(FConnector) then begin
-    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
-    Result := FConnector.Push(P);
-  end else begin
-    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
-    Result := False;
-  end;
-  if Result then begin
-  end;
+  Result := Push(P);
   //WriteLn(FuncE('TCOutputPort.Push'));
 end;
 
@@ -298,11 +316,26 @@ begin
   Result := Assigned(FConnector) and FConnector.IsFull;
 end;
 
+function TCInputPortRef.Push(P: Pointer): Boolean;
+begin
+  //WriteLn(FuncB('TCInputPortRef.Push'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+  if Assigned(FInternalConnector) then begin
+    //WriteLn(FuncC('TCInputPortRef.Push'), 'Connector assigned');
+    Result := FInternalConnector.Push(P);
+  end else begin
+    //WriteLn(FuncC('TCInputPortRef.Push'), 'Connector not assigned');
+    Result := False;
+  end;
+  if Result then begin
+  end;
+  //WriteLn(FuncE('TCInputPortRef.Push'));
+end;
+
 function TCInputPortRef.Push(const Samples; Qty: Word): Boolean;
 var
   P: PPortData;
 begin
-  //WriteLn(FuncB('TCOutputPort.Push'));
+  //WriteLn(FuncB('TCInputPortRef.Push'));
   P := GetMem(Qty + SizeOf(P^.Size));
   if not Assigned(P) then begin
     Exit(False)
@@ -311,16 +344,8 @@ begin
     Size := Qty;
     Move(Samples, Raw, Qty);
   end;
-  if Assigned(FConnector) then begin
-    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector assigned');
-    Result := FConnector.Push(P);
-  end else begin
-    //WriteLn(FuncC('TCOutputPort.Push'), 'Connector not assigned');
-    Result := False;
-  end;
-  if Result then begin
-  end;
-  //WriteLn(FuncE('TCOutputPort.Push'));
+  Result := Push(P);
+  //WriteLn(FuncE('TCInputPortRef.Push'));
 end;
 
 function  TCInputPortRef.Push(Sample: Integer): Boolean;
@@ -333,18 +358,25 @@ begin
   Result := Assigned(FConnector) and FConnector.IsEmpty;
 end;
 
+function TCOutputPortRef.Pop(out P: Pointer): Boolean;
+begin
+  //WriteLn(FuncB('TCOutputPortRef.Pop(Pointer)'), 'Name = ', Owner.Name, '.', Name);
+  if Assigned(FInternalConnector) then begin
+    //WriteLn(FuncC('TCOutputPortRef.Pop'), 'Connector assigned');
+    Result := FInternalConnector.Pop(P);
+  end else begin
+    //WriteLn(FuncC('TCOutputPortRef.Pop'), 'Connector not assigned');
+    Result := False
+  end;
+  //WriteLn(FuncE('TCOutputPortRef.Pop'), 'Name = ', Owner.Name, '.', Name, 'P = ', hexStr(P));
+end;
+
 function TCOutputPortRef.Pop(out Samples; Qty: Word): Boolean;
 var
   P: PPortData;
 begin
-  //WriteLn(FuncB('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
-  if Assigned(FConnector) then begin
-    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector assigned');
-    Result := FConnector.Pop(P);
-  end else begin
-    //WriteLn(FuncC('TCInputPort.Pop'), 'Connector not assigned');
-    Result := False
-  end;
+  //WriteLn(FuncB('TCOutputPortRef.Pop'), 'Name = ', Owner.Name, '.', Name);
+  Result := Pop(P);
   if Result then with P^ do begin
     if Qty > Size then begin
       Qty := Size
@@ -352,7 +384,7 @@ begin
     Move(Raw, Samples, Qty);
     Freemem(P);
   end;
-  //WriteLn(FuncE('TCInputPort.Pop'), 'Name = ', Owner.Name, '.', Name);
+  //WriteLn(FuncE('TCOutputPortRef.Pop'), 'Name = ', Owner.Name, '.', Name);
 end;
 
 function TCOutputPortRef.Pop(out Sample: Integer): Boolean;
@@ -415,24 +447,27 @@ procedure TCBlock.ValidateInsert(AComponent: TComponent);
 var
   l: Integer;
 begin
-  //WriteLn(FuncB('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  //WriteLn(FuncB('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName);
   //WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
   //WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent.ClassName = ', AComponent.ClassName);
   if AComponent is TCInputPort then begin
     l := Length(FInputPorts);
     SetLength(FInputPorts, l + 1);
     FInputPorts[l] := AComponent as TCInputPort;
+    //WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent = ', hexStr(AComponent), ', FInputPorts[', l, '] = ', HexStr(FInputPorts[l]));
   end else if AComponent is TCOutputPort then begin
     l := Length(FOutputPorts);
     SetLength(FOutputPorts, l + 1);
     FOutputPorts[l] := AComponent as TCOutputPort;
+    //WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent = ', hexStr(AComponent), ', FOutputPorts[', l, '] = ', HexStr(FOutputPorts[l]));
   end else if AComponent is TCBlock then begin
     l := Length(FBlocks);
     SetLength(FBlocks, l + 1);
     FBlocks[l] := AComponent as TCBlock;
+    //WriteLn(FuncC('TCBlock.ValidateInsert'), 'AComponent = ', hexStr(AComponent), ', FBlocks[', l, '] = ', HexStr(FBlocks[l]));
   end;
   //WriteLn(FuncC('TCBlock.ValidateInsert'), 'InputCount = ', Length(FInputPorts), ', OutputCount', Length(FOutputPorts), ', Blocks = ', Length(FBlocks));
-  //WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName);
+  //WriteLn(FuncE('TCBlock.ValidateInsert'), 'Name = ', Name, ', ClassName = ', ClassName);
 end;
 
 procedure TCBlock.Execute;
