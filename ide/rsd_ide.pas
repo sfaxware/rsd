@@ -11,7 +11,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.CreateForm(TdtslIdeMainWindow, dtslIdeMainWindow);
+  Application.CreateForm(TRsdIdeMainWindow, RsdIdeMainWindow);
   Application.CreateForm(TBlockPropertiesDialog, BlockPropertiesDialog);
   Application.Run;
 end.
