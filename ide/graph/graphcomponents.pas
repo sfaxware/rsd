@@ -21,6 +21,7 @@ type
     constructor Create(AOwner:TComponent);override;
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     CodeCache: array[TCodeType] of TCodeCache;
+    function Save: boolean;
   protected
     FSelected: Boolean;
     FType: string;
@@ -61,8 +62,59 @@ begin
   OnMouseMove := @Move;
   OnMouseLeave := @MouseLeaved;
   FType := 'TCGraphBlock';
-  for CodeType := Low(TCodeType) To High(TCodeType) do
+  for CodeType := Low(CodeType) To High(CodeType) do
     CodeCache[CodeType] := TCodeCache.Create;
+end;
+
+function TCGraphBlock.Save: boolean;
+var
+  f: System.Text;
+  CodeFile: array[TCodeType] of string;
+  CodeType: TCodeType;
+begin
+  CodeFile[ctSource] := '/tmp/' + Name + '.pas';
+  if not FileExists(CodeFile[ctSource]) then begin
+    System.Assign(f, CodeFile[ctSource]);
+    ReWrite(f);
+    WriteLn(f, 'unit ', Name, ';');
+    WriteLn(f, 'interface');
+    WriteLn(f, 'uses');
+    WriteLn(f, '  Blocks;');
+    WriteLn(f);
+    WriteLn(f, 'type');
+    WriteLn(f, '  T', Name, ' = class(TBlock)');
+    WriteLn(f, '    procedure Execute; override;');
+    WriteLn(f, '  end;');
+    WriteLn(f);
+    WriteLn(f, 'implementation');
+    WriteLn(f, 'procedure T', Name, '.Execute;');
+    WriteLn(f, 'begin;');
+    WriteLn(f, '  {Write here your code}');
+    WriteLn(f, 'end;');
+    WriteLn(f);
+    WriteLn(f, 'initialization');
+    WriteLn(f);
+    WriteLn(f, 'finalization');
+    WriteLn(f);
+    WriteLn(f, 'end.');
+    System.Close(f);
+  end;
+  CodeFile[ctDescription] := '/tmp/' + Name + '.lfm';
+  if not FileExists(CodeFile[ctDescription]) then begin
+    System.Assign(f, CodeFile[ctDescription]);
+    ReWrite(f);
+    WriteLn(f, 'object ', Name, ': T' + Name);
+    WriteLn(f, '  Name = ', Name);
+    WriteLn(f, '  Typ = ', Typ);
+    WriteLn(f, '  Left = ', Left);
+    WriteLn(f, '  Top = ', Top);
+    WriteLn(f, '  Width = ', Width);
+    WriteLn(f, '  Height = ', Height);
+    WriteLn(f, 'end');
+    System.Close(f);
+  end;
+  for CodeType := Low(CodeType) To High(CodeType) do
+    CodeBuffer[CodeType] := CodeCache[CodeType].LoadFile(CodeFile[CodeType]);
 end;
 
 procedure TCGraphBlock.StartMove(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer ) ;

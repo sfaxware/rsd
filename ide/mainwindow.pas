@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
   ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
-  SynEdit, RTTICtrls, XMLCfg;
+  SynEdit, RTTICtrls, XMLCfg, CodeCache;
 
 type
 
@@ -56,6 +56,7 @@ type
   private
     _Blocks:TFPList;
     _SelectedBlock:TCGraphBlock;
+    function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
     procedure InsertBlock(Block:TCGraphBlock);
     procedure RemoveBlock(Block:TCGraphBlock);
@@ -68,7 +69,7 @@ var
 implementation
 
 uses
-  LFMTrees, StdCodeTools, CodeCache, CodeToolManager, LinkScanner;
+  LFMTrees, StdCodeTools, CodeToolManager, LinkScanner;
 
 { TdtslIdeMainWindow }
 
@@ -137,65 +138,38 @@ begin
   end;
 end;
 
+function TdtslIdeMainWindow.SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
+var
+  FileName: string;
+begin
+  WriteLn('SrcFilename = ', SrcFilename);
+  WriteLn('TheUnitName = ', TheUnitName);
+  WriteLn('TheUnitInFilename = ', TheUnitInFilename);
+  FileName := ExtractFileDir(ParamStr(0)) + '/../core/block/' + LowerCase(TheUnitName) + '.pas';
+  WriteLn('FileName = ', FileName);
+  Result := CodeToolBoss.LoadFile(FileName, True, False);
+end;
+
 procedure TdtslIdeMainWindow.ViewFile(Sender: TObject);
 var
-  f: System.Text;
   LFMTree: TLFMTree;
-  SrcFile, DescrFile: string;
+  SrcFile: string;
 begin
   if Sender is TCGraphBlock then
     with Sender as TCGraphBlock do begin
+      Save;
       SrcFile := '/tmp/' + Name + '.pas';
-      if not FileExists(SrcFile) then begin
-        System.Assign(f, SrcFile);
-        ReWrite(f);
-        WriteLn(f, 'unit ', Name, ';');
-        WriteLn(f, 'interface');
-        WriteLn(f, 'uses');
-        WriteLn(f, '  Blocks;');
-        WriteLn(f);
-        WriteLn(f, 'type');
-        WriteLn(f, '  T', Name, ' = class(TBlock)');
-        WriteLn(f, '    procedure Execute;');
-        WriteLn(f, '  end;');
-        WriteLn(f);
-        WriteLn(f, 'implementation');
-        WriteLn(f, 'procedure T', Name, '.Execute;');
-        WriteLn(f, 'begin;');
-        WriteLn(f, '  {Write here your code}');
-        WriteLn(f, 'end;');
-        WriteLn(f);
-        WriteLn(f, 'initialization');
-        WriteLn(f);
-        WriteLn(f, 'finalization');
-        WriteLn(f);
-        WriteLn(f, 'end.');
-        System.Close(f);
-      end;
       SynEdit1.Lines.LoadFromFile(srcFile);
-      DescrFile := '/tmp/' + Name + '.lfm';
-      if not FileExists(DescrFile) then begin
-        System.Assign(f, DescrFile);
-        ReWrite(f);
-        WriteLn(f, 'object ', Name, ': T' + Name);
-        WriteLn(f, '  Name = ', Name);
-        WriteLn(f, '  Typ = ', Typ);
-        WriteLn(f, '  Left = ', Left);
-        WriteLn(f, '  Top = ', Top);
-        WriteLn(f, '  Width = ', Width);
-        WriteLn(f, '  Height = ', Height);
-        WriteLn(f, 'end');
-        System.Close(f);
+      with CodeToolBoss do begin
+        OnSearchUsedUnit := @SearchUsedUnit;
+        GetCodeToolForSource(CodeBuffer[ctSource], true, false);
+        if CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], LFMTree, False, False) then begin
+          TabControl.TabIndex := 1;
+          SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
+          SynEdit1.EnsureCursorPosVisible;
+        end else
+          ShowMessage('False');
       end;
-      CodeBuffer[ctDescription] := CodeCache[ctDescription].LoadFile(DescrFile);
-      CodeBuffer[ctSource] := CodeCache[ctSource].LoadFile(srcFile);
-      CodeToolBoss.GetCodeToolForSource(CodeBuffer[ctSource], true, false);
-      if CodeToolBoss.CheckLFM(CodeBuffer[ctSource], CodeBuffer[ctDescription], LFMTree, False, False) then begin
-        TabControl.TabIndex := 1;
-        SynEdit1.CaretXY := LFMTree.PositionToCaret(25);
-        SynEdit1.EnsureCursorPosVisible;
-      end else
-        ShowMessage('False');
     end;
 end;
 
