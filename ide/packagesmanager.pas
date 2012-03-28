@@ -37,11 +37,14 @@ var
 implementation
 
 uses
-  Configuration;
+  Configuration, PackageLinks, PackageDefs, EnvironmentOpts;
 
 const
   PackagesQty = 2;
   PackagesList: array[1..PackagesQty] of string[32] = ('rsdcore', 'toto');
+
+var
+  PkgLinks: TPackageLinks;
 
 { TPackagesManagerForm }
 
@@ -105,6 +108,12 @@ begin
     PackagePath := GetEnvironmentVariable('HOME') + PackagePath;
     FileName := PackagePath;
   end;
+  EnvironmentOptions := TEnvironmentOptions.Create;
+  PkgLinks:=TPackageLinks.Create;
+  with PkgLinks do begin
+    UpdateAll;
+    //DependencyOwnerGetPkgFilename:=@PkgLinksDependencyOwnerGetPkgFilename;
+  end;
 end;
 
 procedure TPackagesManagerForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -123,8 +132,10 @@ begin
       PackagePath := Items[n];
       DisposeStr(PackagePath);
     end;
-    Destroy;
   end;
+  FreeAndNil(PackagesList);
+  FreeAndNil(PkgLinks);
+  FreeAndNil(EnvironmentOptions);
 end;
 
 procedure TPackagesManagerForm.FormShow(Sender: TObject);
@@ -143,12 +154,13 @@ var
   n: Integer;
 begin
   if Sender = ApplyButton then with PackagesListCheckGroup do begin
-    for n := 0 to Items.Count do begin
+    for n := 0 to Items.Count - 1 do begin
       if Checked[n] then begin
         InstallPackage(n);
       end else begin
         UninstallPackage(n);
       end;
+      PkgLinks.SaveUserLinks;
     end;
   end else begin
   end;
@@ -202,7 +214,7 @@ begin
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
   PkgPath := PackagesList.Items[PkgIndex];
-  with PackageFiles do begin
+  {with PackageFiles do begin
     if n < 0 then begin
       n := GetValue('UserPkgLinks/Count', 1) + 1;
       SetValue('UserPkgLinks/Count', n);
@@ -211,7 +223,8 @@ begin
     SetValue(PkgXmlPath + '/Name/Value', PkgName);
     SetValue(PkgXmlPath + '/Filename/Value', PkgPath^);
     Flush;
-  end;
+  end;}
+  PkgLinks.AddUserLink(PkgPath^, PkgName);
 end;
 
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
@@ -224,10 +237,11 @@ begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
-  if n >= 0 then with PackageFiles do begin
+  {if n >= 0 then with PackageFiles do begin
     DeletePath('UserPkgLinks/Item' + IntToStr(n));
     Flush;
-  end;
+  end;}
+  PkgLinks.RemoveLink(PkgLinks.FindLinkWithPkgName(PkgName), True);
 end;
 
 initialization
