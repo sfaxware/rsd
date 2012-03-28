@@ -119,6 +119,7 @@ type
     procedure SetupChildrenEvents(Sender: TObject);
   public
     destructor Destroy; override;
+    procedure LoadProject(ProjectFileName: string);
   end;
 
 var
@@ -186,15 +187,12 @@ begin
   end;
 end;
 
-procedure TIdeMainWindow.LoadProject(Sender: TObject);
+procedure TIdeMainWindow.LoadProject(ProjectFileName: string);
 begin
-  NewProject(Sender);
-  with Project, ProjectSettings do begin
-    if OpenDialog1.Execute then
-      FileName := OpenDialog1.FileName
-    else
-      Exit;
-    Path := ExtractFilePath(FileName);
+  NewProject(Self);
+  if ProjectFileName <> '' then with Project, ProjectSettings do begin
+    FileName := ProjectFileName;
+    Path := ExtractFilePath(ProjectFileName);
     Units.Count := GetValue('ProjectOptions/Units/Count', 0);
     if Units.Count > 1 then begin
       Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
@@ -207,6 +205,13 @@ begin
   end;
   ViewFile(DesignLayout);
   TabControl.TabIndex := 0;
+end;
+
+procedure TIdeMainWindow.LoadProject(Sender: TObject);
+begin
+  if OpenDialog1.Execute then begin
+    LoadProject(OpenDialog1.FileName);
+  end;
 end;
 
 procedure TIdeMainWindow.SaveProject(Sender: TObject);
