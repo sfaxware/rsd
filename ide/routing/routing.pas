@@ -27,8 +27,9 @@ function Route(const P1, P2: TPoint; const Area: TArea; out ARoute: TRoute): Boo
 procedure InsertRoute(const R: TRoute; var Routes: TRoutes);
 procedure RemoveRoute(const R: TRoute; var Routes: Troutes);
 procedure AddRect(var A: TArea; const R: TRect);
+procedure RemoveRect(var A: TArea; n: TIndex);
 procedure RemoveRect(var A: TArea; const R: TRect);
-procedure RemoveRect(var A: TArea; const B, R: TRect);
+procedure RemoveRect(var A: TArea; n: TIndex; const R: TRect);
 function RemoveRect(const B, R: TRect):TArea;
 function Intersection(out I: TArea; const A: TArea; const P: TPoint): TIndexes;
 function Intersection(out I: TArea; const A: TArea; const R: TRect): TIndexes;
@@ -189,45 +190,53 @@ begin
   end;
 end;
 
-procedure RemoveRect(var A: TArea; const R: TRect);
+procedure RemoveRect(var A: TArea; n: TIndex);
 var
-  n, s, d: Integer;
-  I: TArea;
-  X: TIndexes;
+  p: TIndex;
 begin
-  Intersection(I, A, R);
-  s := 0;
-  d := 0;
-  for n := Low(X) to High(X) do begin
-    if s <> X[n] then begin
-      A[d] := A[s];
-      d += 1;
+  if(n >= Low(A)) and (n <= High(A)) then begin
+    for p := n to High(A) - 1 do begin
+      A[p] := A[p + 1];
     end;
-    s += 1;
-  end;
-  SetLength(A, d);
-  for n := Low(I) to High(I) do begin
-    RemoveRect(A, I[n], R);
+    SetLength(A, Length(A) - 1);
   end;
 end;
 
-procedure RemoveRect(var A: TArea; const B, R: TRect);
+procedure RemoveRect(var A: TArea; const R: TRect);
 var
-  S: TRect;
+  n: Integer;
+  I: TArea;
+  X: TIndexes;
+begin
+  X := Intersection(I, A, R);
+  for n := Low(X) to High(X) do begin
+    RemoveRect(A, X[n], R);
+  end;
+end;
+
+procedure RemoveRect(var A: TArea; n: TIndex; const R: TRect);
+var
+  B, S: TRect;
   RectQty: Integer;
 begin
+  B := A[n];
   if IntersectRect(S, R, B) then begin
-    AddRect(A, Rect(B.Left, B.Top, B.Right, S.Top));
-    AddRect(A, Rect(S.Left, S.Top, B.Right, B.Bottom));
-    AddRect(A, Rect(B.Left, S.Top, S.Left, S.Bottom));
-    AddRect(A, Rect(B.Left, S.Bottom, B.Right, B.Bottom));
+    if EqualRect(S, B) then begin
+      RemoveRect(A, n);
+    end else begin
+      AddRect(A, Rect(B.Left, B.Top, B.Right, S.Top));
+      AddRect(A, Rect(S.Left, S.Top, B.Right, B.Bottom));
+      AddRect(A, Rect(B.Left, S.Top, S.Left, S.Bottom));
+      AddRect(A, Rect(B.Left, S.Bottom, B.Right, B.Bottom));
+    end;
   end;
 end;
 
 function RemoveRect(const B, R: TRect): TArea;
 begin
-  SetLength(Result, 0);
-  RemoveRect(Result, B, R);
+  SetLength(Result, 1);
+  Result[0] := B;
+  RemoveRect(Result, 0, R);
 end;
 
 function Containers(const A: TArea; P: TPoint): TIndexes;
