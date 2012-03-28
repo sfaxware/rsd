@@ -10,8 +10,8 @@ uses
 const
   DefaultBlockWidth = 100;
   DefaultBlockHeight = 100;
-  DefaultPortWidth = 8;
-  DefaultPortHeight = 4;
+  DefaultPortWidth = 10;
+  DefaultPortHeight = 10;
   MinPortSpacing = 10;
 
 var
@@ -37,10 +37,12 @@ type
   end;
   TCGraphInputPort = class(TCGraphPort)
   protected
+    procedure Paint; override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TCGraphOutputPort = class(TCGraphPort)
   protected
+    procedure Paint; override;
     procedure UpdateBounds(Idx: Integer; Interval: Integer); override;
   end;
   TPortType = class of TCGraphPort;
@@ -242,9 +244,9 @@ end;
 procedure TCGraphPort.HandleMouseEnterLeaveEvents(Sender: TObject);
 begin
   //WriteLn('MouseEntered = ', MouseEntered);
-  Repaint;         
-end;                         
-                                          
+  Repaint;
+end;
+
 procedure TCGraphPort.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   //WriteLn('TCGraphPort.HandleMouseDownEvents');
@@ -279,12 +281,14 @@ var
   PaintRect: TRect;
   TXTStyle : TTextStyle;
 begin
-  //WriteLn('TCGraphPort.Paint ',Name,':',ClassName,' Parent.Name=',Parent.Name);
-  PaintRect:=ClientRect;
+  inherited Paint;
+  PaintRect := ClientRect;
+  Color := clBlack;
   with Canvas do begin
-    //WriteLn('TCGraphPort.Paint PaintRect=',PaintRect.Left,', ',PaintRect.TOp,', ',PaintRect.Right,', ',PaintRect.Bottom,', ',caption,', ', TXTStyle.SystemFont);
     with Brush do begin
       Style := bsSolid;
+      Color := clWhite;
+      Rectangle(PaintRect);
       If not Enabled then
         Color := clBtnShadow
       else if MouseEntered then
@@ -292,25 +296,9 @@ begin
       else
         Color:= clBlack;
     end;
-    Color := clBlack;
-    Rectangle(PaintRect);
-    {if Caption <> '' then begin
-      TXTStyle := Canvas.TextStyle;
-      with TXTStyle do begin
-        Opaque := False;
-        Clipping := True;
-        ShowPrefix := False;
-        Alignment := taCenter;
-        Layout := tlCenter;
-      end;
-    // set color here, otherwise SystemFont is wrong if the button was disabled before
-      Font.Color := Self.Font.Color;
-      TextRect(PaintRect, PaintRect.Left, PaintRect.Top, Caption, TXTStyle);
-    end;}
   end;
-  inherited Paint;
 end;
-          
+
 function TCGraphPort.Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
 var
   Path: string;
@@ -350,6 +338,23 @@ begin
   end;
 end;
 
+procedure TCGraphInputPort.Paint;
+var
+  PaintRect: TRect;
+  Triangle: array[0..2] of TPoint;
+begin
+  inherited Paint;
+  PaintRect := ClientRect;
+  with PaintRect do begin
+    Triangle[0] := Point(Left, Top + Height div 2);
+    Triangle[1] := Point(Left + Width, Top);
+    Triangle[2] := Point(Left + Width, Top + Height - 1);
+  end;
+  with Canvas do begin
+    Polygon(Triangle);
+  end;
+end;
+
 procedure TCGraphInputPort.UpdateBounds(Idx: Integer; Interval: Integer);
 var
   PortTop, PortLeft: Integer;
@@ -368,6 +373,23 @@ begin
   ChangeBounds(PortLeft, PortTop, DefaultPortWidth, DefaultPortHeight);
   if Assigned(FConnector) then with FConnector do begin
     UpdatePoints;
+  end;
+end;
+
+procedure TCGraphOutputPort.Paint;
+var
+  PaintRect: TRect;
+  Triangle: array[0..2] of TPoint;
+begin
+  inherited Paint;
+  PaintRect := ClientRect;
+  with PaintRect do begin
+    Triangle[0] := Point(Left, Top + Height div 2);
+    Triangle[1] := Point(Left + Width, Top);
+    Triangle[2] := Point(Left + Width, Top + Height - 1);
+  end;
+  with Canvas do begin
+    Polygon(Triangle);
   end;
 end;
 
@@ -536,7 +558,7 @@ var
   dx, dy: Integer;
 begin
   if(Sender = Self)and _MouseDown then begin
-    X += Left;           
+    X += Left;
     Y += Top;
     dx := X - _MousePos.x;
     dy := Y - _MousePos.y;
