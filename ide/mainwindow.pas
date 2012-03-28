@@ -513,13 +513,14 @@ end;
 
 procedure TIdeMainWindow.HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  //WriteLn('TPort.HandleMouseDownEvents');
+  //WriteLn('HandleMouseDownEvents');
   case Button of
     mbLeft: with TDesign.GetViewed do begin
-      if Sender is TOutputPort then
+      if Sender is TOutputPort then begin
        SelectedOutputPort := Sender as TOutputPort
-      else
+      end else begin
        SelectedOutputPort := nil;
+      end;
     end;
   end;
 end;
