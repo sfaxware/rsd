@@ -110,7 +110,6 @@ begin
     Filename := User.Home.Path + '.' + Exec.Name;
     User.Projects.Last.Path := GetValue('AppCfg/User/Projects/Last/Path', '');
   end;
-  Sleep(500);
 end;
 
 procedure TSplashWindow.SaveUserConfiguration(Sender: TObject);

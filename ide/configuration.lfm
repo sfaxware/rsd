@@ -8,8 +8,8 @@ object SplashWindow: TSplashWindow
   Caption = 'D.T.S.L. IDE'
   Font.Color = clDefault
   FormStyle = fsSplash
+  OnCreate = UpdateConfiguration
   OnDestroy = SaveUserConfiguration
-  OnHide = UpdateConfiguration
   Position = poScreenCenter
   LCLVersion = '0.9.28.2'
   Visible = True
