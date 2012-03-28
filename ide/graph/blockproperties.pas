@@ -1,4 +1,4 @@
-unit BlockPropeties;
+unit BlockProperties;
 
 {$mode objfpc}{$H+}
 
