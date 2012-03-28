@@ -17,6 +17,7 @@ type
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     function CreateNewBlock: TCGraphBlock; virtual;
     function GetUpdatedDescription: string;
     function Load: Boolean;
@@ -38,6 +39,16 @@ begin
   inherited Create(AOwner);
   //WriteLn('Created new TCGraphDesign class instance');
   OnMouseWheel := @MouseWheele;
+end;
+
+destructor TCGraphDesign.Destroy;
+var
+  CodeType: TCodeType;
+begin
+  for CodeType := Low(CodeType) to High(CodeType) do begin
+    CodeBuffer[CodeType].Free;
+  end;
+  inherited Destroy
 end;
 
 procedure TCGraphDesign.ConnectPorts(Sender: TObject);
@@ -221,6 +232,7 @@ begin
     end;
     BlockDescription := FindObjectProperty(BlockDescription, DesignDescription);
   end;
+  DesignDescription.Free;
 end;
 
 function TCGraphDesign.Save(DesignName: string): Boolean;
