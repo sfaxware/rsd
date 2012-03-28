@@ -343,7 +343,7 @@ procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
   if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
-    AddNewPort(TInputPort, '');
+    AddNewPort('', 'TInputPort');
   end;
 end;
 
@@ -355,7 +355,7 @@ end;
 procedure TIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
 begin
   if TDesign.GetViewed.PointedDevice is TBlock then with TDesign.GetViewed.PointedDevice as TBlock do begin
-    AddNewPort(TOutputPort, '');
+    AddNewPort('', 'TOutputPort');
   end;
 end;
 
