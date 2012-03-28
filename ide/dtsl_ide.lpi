@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <MainUnitIsPascalSource Value="False"/>
@@ -10,10 +10,10 @@
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <AlwaysBuild Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
     </General>
     <VersionInfo>
@@ -62,7 +62,6 @@
         <ComponentName Value="dtslIdeMainWindow"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="mainwindow.lrs"/>
         <UnitName Value="mainWindow"/>
       </Unit1>
       <Unit2>

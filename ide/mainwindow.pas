@@ -115,11 +115,33 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
+  function GetPropertyValue(BlockDescription: TLFMTree; PropertyName: string): string;
+  var
+    PropertyNode: TLFMPropertyNode;
+    ValueNode: TLFMTreeNode;
+    c: Char;
+  begin
+    Result := '';
+    PropertyNode := BlockDescription.FindProperty(PropertyName, nil);
+    ValueNode := PropertyNode.Next;
+    if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do
+      case ValueType of
+        lfmvString: Result := ReadString;
+        lfmvInteger: begin
+          c := Tree.LFMBuffer.Source[StartPos];
+          while c in ['0'..'9'] do begin
+            Result += c;
+            StartPos += 1;
+            c := Tree.LFMBuffer.Source[StartPos]
+          end;
+        end;
+      end;
+    WriteLn('GetPropertyValue(', PropertyName, ') = "', Result, '"');
+  end;
 var
   Path, BlockPath: string;
   BlocksCount: integer;
   BlockDescription: TLFMTree;
-  PropertyNode: TLFMPropertyNode;
 begin
   with Project, TProjectSettings(_ProjectSettings^) do begin
     if OpenDialog1.Execute then
@@ -146,11 +168,10 @@ begin
           continue;
         end;
         BlockDescription := GetBlockDescription(_SelectedBlock);
-        PropertyNode := BlockDescription.FindProperty(BlockPath + '.Left', nil);
-        Left := Random(ScrollBox1.Width - Width);
-        Top := Random(ScrollBox1.Height - Height);
+        Left := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Left'));
+        Top := StrToInt(GetPropertyValue(BlockDescription, BlockPath + '.Top'));
         Color := clRed;
-        Caption := GetValue(Path + BlockPath + '/name', BlockPath);
+        Caption := GetPropertyValue(BlockDescription, BlockPath + '.Name');
         OnClick := @SelectBlock;
         OnDblClick := @ViewFile;
         Selected := True;

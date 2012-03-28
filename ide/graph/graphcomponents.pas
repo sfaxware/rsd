@@ -104,8 +104,8 @@ begin
     System.Assign(f, CodeFile[ctDescription]);
     ReWrite(f);
     WriteLn(f, 'object ', Name, ': T' + Name);
-    WriteLn(f, '  Name = ', Name);
-    WriteLn(f, '  Typ = ', Typ);
+    WriteLn(f, '  Name = ''', Name, '''');
+    WriteLn(f, '  Typ = ''', Typ, '''');
     WriteLn(f, '  Left = ', Left);
     WriteLn(f, '  Top = ', Top);
     WriteLn(f, '  Width = ', Width);
