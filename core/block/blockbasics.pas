@@ -8,7 +8,7 @@ uses
   Classes, FifoBasics;
 
 type
-  TDeviceRunFlags = (drfTerminated, drfBlockedByInput, drfBlockedByOutput);
+  TDeviceRunFlags = (drfTerminated, drfRunning, drfBlockedByInput, drfBlockedByOutput);
   TDeviceRunStatus = set of TDeviceRunFlags;
   IDevice = interface
     function GetName:string;
@@ -501,14 +501,26 @@ var
   i: Integer;
   BlockRunStatus: TDeviceRunStatus;
   RunBlock: Boolean;
+  P: PPortData;
 begin
-  //WriteLn(FuncB('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncB('TCBlock.Execute'), 'Name = ', Name, ', BlocksCount = ', Length(FBlocks));
   BlockRunStatus := [drfTerminated];
+  FRunStatus := [drfRunning];
+  for i := Low(FInputPorts) to High(FInputPorts) do begin
+    if FInputPorts[i] is TCInputPortRef then with FInputPorts[i] as TCInputPortRef do begin
+      while Pop(P) do begin
+        Push(P);
+      end;
+    end;
+  end;
   for i := Low(FBlocks) to High(FBlocks) do with FBlocks[i] do begin
     RunBlock := False;
     if not (drfTerminated in RunStatus) then  begin
       Exclude(BlockRunStatus, drfTerminated);
       RunBlock := True;
+    end;
+    if drfRunning in RunStatus then begin
+      RunBlock := False;
     end;
     if drfBlockedByInput in RunStatus then  begin
       Include(BlockRunStatus, drfBlockedByInput);
@@ -518,13 +530,24 @@ begin
       Include(BlockRunStatus, drfBlockedByOutput);
       RunBlock := False;
     end;
-    //WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '].DeviceName = ', DeviceName, ', Terminated = ', drfTerminated in RunStatus, ', BlockedByInput = ', drfBlockedByInput in RunStatus, ', BlockedByOutput = ', drfBlockedByOutput in RunStatus);
+    //WriteLn(FuncC('TCBlock.Execute'), 'Block[', i, '].DeviceName = ', Name, ', Terminated = ', drfTerminated in RunStatus, ', BlockedByInput = ', drfBlockedByInput in RunStatus, ', BlockedByOutput = ', drfBlockedByOutput in RunStatus);
     if RunBlock then begin
       Execute;
     end;
   end;
+  //WriteLn(FuncC('TCBlock.Execute'), 'Low(FOutputPorts) = ', Low(FOutputPorts), ', High(FOutputPorts) = ', High(FOutputPorts));
+  //WriteLn(FuncC('TCBlock.Execute'), 'Length(FOutputPorts) = ', Length(FOutputPorts));
+  for i := Low(FOutputPorts) to High(FOutputPorts) do begin
+      //WriteLn(FuncC('TCBlock.Execute'), 'OutputPort[', i, '] = ', FOutputPorts[i].Name, ' is ', FOutputPorts[i].ClassName);
+    if FOutputPorts[i] is TCOutputPortRef then with FOutputPorts[i] as TCOutputPortRef do begin
+      //WriteLn(FuncC('TCBlock.Execute'), 'OutputPort[', i, '] = ', Name);
+      while Pop(P) do begin
+        Push(P);
+      end;
+    end;
+  end;
   FRunStatus := BlockRunStatus;
-  //WriteLn(FuncE('TCBlock.Execute'), 'Name = ', FDeviceName, ', BlocksCount = ', Length(FBlocks));
+  //WriteLn(FuncE('TCBlock.Execute'), 'Name = ', Name, ', BlocksCount = ', Length(FBlocks));
 end;
 
 function TCConnector.GetIsEmpty: Boolean;
