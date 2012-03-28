@@ -256,8 +256,8 @@ var
   i: TVectorIndex;
 begin
   with x do begin
-    for i:=0 to n do begin
-      Values[i]*=r;
+    for i := 0 to n do begin
+      Values[i] *= r;
     end;
   end;
 end;
