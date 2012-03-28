@@ -8,65 +8,141 @@ uses
   Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 function GetUserCodePosition(BlockName: string; Self: TCodeBuffer):TPoint;
 
 implementation
 
 uses
-  CodeToolManager;
+  CodeToolManager, DesignGraph;
 
 function UpdateUsedBlocks(Block: TComponent; Self: TCodeBuffer): Boolean;
-var
-  i: Integer;
-  Component: TComponent;
-  p, e: Integer;
-  usedBlocks: string;
+  var
+    BlockDeviceType: string;
+  function UpdateUsesClause: Boolean;
+  var
+    i: Integer;
+    Component: TComponent;
+    p, e: Integer;
+    usedBlocks: string;
+  begin
+    Result := True;
+    usedBlocks := 'uses' + LineEnding + '  ';
+    p := System.Pos(usedBlocks, Self.Source);
+    if p = 0 then
+      Exit(False);
+    //WriteLn(Self.source);
+    e := System.Pos('Blocks, Designs;' + LineEnding, Self.Source);
+    //WriteLn('p = ', p, ', e = ', e);
+    if e < p then
+      Exit(False);
+    for i := 0 to Block.ComponentCount - 1 do begin
+      Component := Block.Components[i];
+      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+        usedBlocks += Name + ', ';
+      end;
+    end;
+    //WriteLn('p = ', p, ', e = ', e);
+    //WriteLn(usedBlocks);
+    Self.Replace(p, e - p, usedBlocks);
+  end;
+  function UpdateBlocksIdentifiers: Boolean;
+  var
+    i: Integer;
+    Component: TComponent;
+  begin
+    Result := True;
+    for i := 0 to Block.ComponentCount - 1 do begin
+      Component := Block.Components[i];
+      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+        CodeToolBoss.AddPublishedVariable(Self, BlockDeviceType, DeviceIdentifier, DeviceType);
+      end;
+    end;
+  end;
+  function UpdatePortsIdentifiers: Boolean;
+  var
+    i: Integer;
+    Component: TComponent;
+  begin
+    Result := True;
+    for i := 0 to Block.ComponentCount - 1 do begin
+      Component := Block.Components[i];
+      if Component is TCGraphPort then with Component as TCGraphPort do begin
+        CodeToolBoss.AddPublishedVariable(Self, TCGraphDevice(Block).DeviceType, DeviceIdentifier, DeviceType);
+      end;
+    end;
+  end;
+  function UpdateConnectorsIdentifiers: Boolean;
+  begin
+    Result := True;
+  end;
 begin
-  usedBlocks := 'uses' + LineEnding + '  ';
-  p := System.Pos(usedBlocks, Self.Source);
-  if p = 0 then
-    Exit(False);
-  //WriteLn(Self.source);
-  e := System.Pos('Blocks, Designs;' + LineEnding, Self.Source);
-  //WriteLn('p = ', p, ', e = ', e);
-  if e < p then
-    Exit(False);
-  for i := 0 to Block.ComponentCount - 1 do begin
-    Component := Block.Components[i];
-    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      usedBlocks += Name + ', ';
+    if Block is TCGraphDesign then with Block as TCGraphDesign do begin
+      BlockDeviceType := DeviceType;
+    end else if Block is TCGraphBlock then with Block as TCGraphBlock do begin
+      BlockDeviceType := DeviceType;
+    end else begin
+      Exit(False);
     end;
-  end;
-  //WriteLn('p = ', p, ', e = ', e);
-  //WriteLn(usedBlocks);
-  Self.Replace(p, e - p, usedBlocks);
-  usedBlocks := 'class(TDesign)' + LineEnding;
-  p := System.Pos(usedBlocks, Self.Source);
-  if p = 0 then
-    Exit(False);
-  e := System.Pos('end;' + LineEnding, Self.Source);
-  //WriteLn('p = ', p, ', e = ', e);
-  if e < p then
-    Exit(False);
-  //WriteLn('Block.Name = ', Block.Name, ', Block.ComponentCount = ', Block.ComponentCount);
-  for i := 0 to Block.ComponentCount - 1 do begin
-    Component := Block.Components[i];
-    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      usedBlocks += '    ' + Name + ': ' + 'T' + Name + ';' + LineEnding;
-    end;
-  end;
-  //WriteLn('p = ', p, ', e = ', e);
-  //WriteLn(usedBlocks);
-  Self.Replace(p, e - p, usedBlocks + '  ');
-  Result := True;
+  Result := UpdateUsesClause and UpdateBlocksIdentifiers and UpdatePortsIdentifiers and UpdateConnectorsIdentifiers;
 end;
 
-procedure WriteBlockSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
+procedure WriteSimulatorSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
 begin
   with Self do begin
     Clear;
-    Insert(SourceLength, 'unit ' + Owner.Name + ';' + LineEnding +
+    Insert(SourceLength, 'program Simulate' + Owner.DeviceIdentifier + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + ';' + LineEnding +
+      LineEnding +
+      'var' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator: TCustom' + Owner.DeviceIdentifier + ';' + LineEnding +
+      LineEnding +
+      'begin' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator.Run;' + LineEnding +
+      '  ' + Owner.DeviceIdentifier + 'Simulator.Free;' + LineEnding +
+      'end.');
+  end;
+end;
+
+procedure WriteDesignSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
+begin
+  with Self do begin
+    Clear;
+    Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
+      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+      'interface' + LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  Blocks, Designs;' + LineEnding +
+      LineEnding +
+      'type' + LineEnding +
+      '  TCustom' + Owner.DeviceIdentifier + ' = class(TDesign)' + LineEnding +
+      '  end;' + LineEnding +
+      LineEnding +
+      'implementation' + LineEnding +
+      LineEnding +
+      'uses' + LineEnding +
+      '  Classes;' + LineEnding +
+      LineEnding +
+      'initialization' + LineEnding +
+      '  {$R *.lfm}' + LineEnding +
+      '  RegisterClass(T' + Owner.DeviceIdentifier + ');' + LineEnding +
+      LineEnding +
+      'finalization' + LineEnding +
+      LineEnding +
+      'end.');
+  end;
+end;
+
+procedure WriteBlockSourceTemplate(Owner: TIGraphDevice; Self: TCodeBuffer);
+begin
+  with Self do begin
+    Clear;
+    Insert(SourceLength, 'unit ' + Owner.DeviceIdentifier + ';' + LineEnding +
       '{$mode objfpc}{$H+}{$interfaces corba}' +
       LineEnding +
       'interface' + LineEnding +
@@ -75,7 +151,7 @@ begin
       '  Blocks;' + LineEnding +
       LineEnding +
       'type' + LineEnding +
-      '  T' + Owner.Name + ' = class(TBlock)' + LineEnding +
+      '  T' + Owner.DeviceIdentifier + ' = class(TBlock)' + LineEnding +
       '    procedure Execute; override;' + LineEnding +
       '  end;' + LineEnding +
       LineEnding +
@@ -84,72 +160,21 @@ begin
       'uses' + LineEnding +
       '  Classes;' + LineEnding +
       LineEnding +
-      'procedure T' + Owner.Name + '.Execute;' + LineEnding +
+      'procedure T' + Owner.DeviceIdentifier + '.Execute;' + LineEnding +
       'begin;' + LineEnding +
       '  {Write here your code}' + LineEnding +
       'end;' + LineEnding +
       LineEnding +
       'initialization' + LineEnding +
       '  {$R *.lfm}' + LineEnding +
-      '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
+      '  RegisterClass(T' + Owner.DeviceIdentifier + ');' + LineEnding +
       LineEnding +
       'finalization' + LineEnding +
       'end.');
   end;
 end;
 
-procedure WriteDesignSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
-begin
-  with Self do begin
-    Clear;
-    Insert(SourceLength, 'unit ' + Owner.Name + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
-      'interface' + LineEnding +
-      LineEnding +
-      'uses' + LineEnding +
-      '  Blocks, Designs;' + LineEnding +
-      LineEnding +
-      'type' + LineEnding +
-      '  TCustom' + Owner.Name + ' = class(TDesign)' + LineEnding +
-      '  end;' + LineEnding +
-      LineEnding +
-      'implementation' + LineEnding +
-      LineEnding +
-      'uses' + LineEnding +
-      '  Classes;' + LineEnding +
-      LineEnding +
-      'initialization' + LineEnding +
-      '  {$R *.lfm}' + LineEnding +
-      '  RegisterClass(T' + Owner.Name + ');' + LineEnding +
-      LineEnding +
-      'finalization' + LineEnding +
-      LineEnding +
-      'end.');
-  end;
-end;
-
-procedure WriteSimulatorSourceTemplate(Owner: TComponent; Self: TCodeBuffer);
-begin
-  with Self do begin
-    Clear;
-    Insert(SourceLength, 'program Simulate' + Owner.Name + ';' + LineEnding +
-      '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
-      LineEnding +
-      'uses' + LineEnding +
-      '  ' + Owner.Name + ';' + LineEnding +
-      LineEnding +
-      'var' + LineEnding +
-      '  ' + Owner.Name + 'Simulator: TCustom' + Owner.Name + ';' + LineEnding +
-      LineEnding +
-      'begin' + LineEnding +
-      '  ' + Owner.Name + 'Simulator := TCustomDesign.Create(nil);' + LineEnding +
-      '  ' + Owner.Name + 'Simulator.Run;' + LineEnding +
-      '  ' + Owner.Name + 'Simulator.Free;' + LineEnding +
-      'end.');
-  end;
-end;
-
-function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TComponent): TCodeBuffer;
+function GetCodeBuffer(FileName: string; template: TCodeTemplateType; Owner: TIGraphDevice): TCodeBuffer;
 begin
   Result := CodeToolBoss.LoadFile(FileName, False, False);
   if not Assigned(Result) then begin
@@ -157,7 +182,9 @@ begin
     case template of
       cttSimulator: WriteSimulatorSourceTemplate(Owner, Result);
       cttDesign: WriteDesignSourceTemplate(Owner, Result);
-      cttBlock: WriteBlockSourceTemplate(Owner, Result);
+      cttBlock,
+      cttSource,
+      cttProbe: WriteBlockSourceTemplate(Owner, Result);
     end;
   end;
 end;
