@@ -180,6 +180,9 @@ var
   Component: TComponent;
   i: Integer;
   f: System.Text;
+  CodeFileName: string;
+  p, e: Integer;
+  usedBlocks: string;
 begin
   with Project do begin
     SetValue('design/name', DesignName);
@@ -199,35 +202,52 @@ begin
   end;
   WriteLn(f, 'end');
   Close(f);
-  System.Assign(f, DesignDir + '/' + Name + '.pas');
-  ReWrite(f);
-  WriteLn(f, 'unit ', Name, ';');
-  WriteLn(f);
-  WriteLn(f, '{$mode objfpc}{$H+}{$interfaces corba}');
-  WriteLn(f);
-  WriteLn(f, 'interface');
-  WriteLn(f);
-  WriteLn(f, 'uses');
-  Write(f, '  ');
-  for i := 0 to ComponentCount - 1 do begin
-    Component := Components[i];
-    if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      Write(f, Name, ', ');
-    end;
+  CodeFileName := DesignDir + '/' + Name + '.pas';
+  if not Assigned(CodeBuffer[ctSource]) then with CodeBuffer[ctSource] do begin
+    CodeBuffer[ctSource] := TCodeCache.Create.LoadFile(CodeFileName);
   end;
-  WriteLn(f, 'Blocks;');
-  WriteLn(f);
-  WriteLn(f, '{$mode objfpc}{$H+}{$interfaces corba}');
-  WriteLn(f);
-  WriteLn(f, 'type');
-  WriteLn(f, '  TDesign = class(TBlock)');
-  WriteLn(f, '  end;');
-  WriteLn(f);
-  WriteLn(f, 'implementation');
-  WriteLn(f);
-  WriteLn(f, 'begin');
-  WriteLn(f, 'end.');
-  Close(f);
+  if not Assigned(CodeBuffer[ctSource]) then with CodeBuffer[ctSource] do begin
+    CodeBuffer[ctSource] := TCodeCache.Create.CreateFile(CodeFileName);
+    with CodeBuffer[ctSource] do begin
+      Insert(0, 'unit ' + Name + ';' + LineEnding);
+      Insert(SourceLength, '{$mode objfpc}{$H+}{$interfaces corba}' + LineEnding +
+        LineEnding +
+        'interface' + LineEnding +
+        LineEnding);
+      Insert(SourceLength, 'uses' + LineEnding + '  ');
+      for i := 0 to ComponentCount - 1 do begin
+        Component := Components[i];
+        if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+          Insert(SourceLength, Name + ', ');
+        end;
+      end;
+      Insert(SourceLength, 'Blocks;');
+      Insert(SourceLength,   LineEnding +
+        'type' + LineEnding +
+        '  TDesign = class(TBlock)' + LineEnding +
+        '  end;' + LineEnding +
+        LineEnding +
+        'implementation' + LineEnding +
+        LineEnding +
+        'begin' + LineEnding +
+        LineEnding +
+        'end.');
+    end;
+  end else with CodeBuffer[ctSource] do begin
+    usedBlocks := 'uses' + LineEnding + '  ';
+    p := System.Pos(usedBlocks, Source);
+    e := System.Pos('Blocks;' + LineEnding, Source);
+    for i := 0 to ComponentCount - 1 do begin
+      Component := Components[i];
+      if Component is TCGraphBlock then with Component as TCGraphBlock do begin
+        usedBlocks += Name + ', ';
+      end;
+    end;
+    //WriteLn('p = ', p, ', e = ', e);
+    //WriteLn(usedBlocks);
+    Replace(p, e - p, usedBlocks);
+  end;
+  Result := CodeBuffer[ctSource].Save;
   System.Assign(f, DesignDir + '/Simulate' + Name + '.pas');
   ReWrite(f);
   WriteLn(f, 'program Simulate', Name, ';');
