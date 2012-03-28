@@ -156,7 +156,7 @@ build-doc: patch debian-files build-doc-stamp
 build-doc-stamp:
 	@echo "--- Building Documentation"
 	dh_testdir
-	#$(MAKE) -C doc $(CONVERTER) $(BUILDOPTS) FPDOC=$(NEWFPDOC)
+	#$(MAKE) -C doc ${CONVERTER}
 	touch build-doc-stamp
 
 install-doc: build-doc install-doc-stamp
@@ -165,7 +165,9 @@ install-doc-stamp:
 	dh_testdir
 	dh_testroot
 	${MKDIR} ${DOC_DIR}
-	${CP} -t ${DOC_DIR} doc/*
+	${CP} --parents -t ${DOC_DIR} \
+	  doc/*
+	find ${DOC_DIR} -empty -delete
 	touch install-doc-stamp
 
 ###################
@@ -239,7 +241,7 @@ binary-arch: arrange-arch
 	dh_testdir
 	dh_testroot
 	dh_link
-	dh_installdocs -a
+	dh_installdocs -a -X.in
 	dh_installchangelogs -a
 	dh_installexamples -a
 	dh_installmenu
