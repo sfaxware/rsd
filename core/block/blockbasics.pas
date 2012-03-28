@@ -20,13 +20,10 @@ type
 
   TCDevice = class(TComponent, TIDevice)
   private
-    FDeviceName: string;
     function GetName: string;
   protected
     procedure ValidateContainer(AComponent: TComponent); override;
     procedure ValidateInsert(AComponent: TComponent); override; abstract;
-  published
-    property DeviceName: string read FDeviceName write FDeviceName;
   end;
 
   TCPort = class(TCDevice)
@@ -178,7 +175,7 @@ end;
 
 function TCDevice.GetName: string;
 begin
-  Result := FDeviceName;
+  Result := Name;
 end;
 
 procedure TCDevice.ValidateContainer(AComponent: TComponent);
@@ -303,7 +300,7 @@ var
 begin
   Result := -1;
   for i := Low(FInputPorts) to High(FInputPorts) do begin
-    if FInputPorts[i].DeviceName = InputName then begin
+    if FInputPorts[i].Name = InputName then begin
       Exit(i);
     end;
   end;
@@ -315,7 +312,7 @@ var
 begin
   Result := -1;
   for i := Low(FOutputPorts) to High(FOutputPorts) do begin
-    if FOutputPorts[i].DeviceName = OutputName then begin
+    if FOutputPorts[i].Name = OutputName then begin
       Exit(i);
     end;
   end;
