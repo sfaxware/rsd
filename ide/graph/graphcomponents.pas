@@ -1164,6 +1164,9 @@ procedure TBlock.SetSelected(AValue: Boolean);
 begin
   if FSelected <> AValue then begin
     FSelected := AValue;
+    if Assigned(TreeNode) then begin
+      TreeNode.Selected := AValue;
+    end;
     Refresh;
   end
 end;
