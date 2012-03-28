@@ -1,6 +1,6 @@
 unit MathVectors;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}{$interfaces corba}
 
 interface
 

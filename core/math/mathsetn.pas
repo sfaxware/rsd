@@ -1,6 +1,6 @@
 unit MathSetN;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}{$interfaces corba}
 
 interface
 
