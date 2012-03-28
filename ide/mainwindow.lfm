@@ -714,6 +714,7 @@ object IdeMainWindow: TIdeMainWindow
     ScrollBars = ssAutoBoth
     TabOrder = 2
     OnDblClick = DesignTreeViewClick
+    OnSelectionChanged = DesignTreeViewSelectionChanged
     Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoNoDoubleClickExpand, tvoThemedDraw]
   end
   object Label1: TLabel

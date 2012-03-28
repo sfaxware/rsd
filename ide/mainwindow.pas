@@ -88,6 +88,7 @@ type
     procedure CompileProject(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
     procedure DesignTreeViewClick(Sender: TObject);
+    procedure DesignTreeViewSelectionChanged(Sender: TObject);
     procedure dtslEditGraphInsertFileReadSourceMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
     procedure dtslEditGraphInsertRandomSourceMenuItemClick(Sender: TObject);
@@ -479,6 +480,20 @@ begin
         TabControl.TabIndex := 0;
       end else if Block is TBlock then begin
         ViewFile(Block);
+      end;
+    end;
+  end;
+end;
+
+procedure TIdeMainWindow.DesignTreeViewSelectionChanged(Sender: TObject);
+var
+  Block: TBlock;
+begin
+  if Assigned(DesignTreeView.Selected) then begin
+    Block := TBlock(DesignTreeView.Selected.Data);
+    if Assigned(Block) then with Block do begin
+      if not Selected and (Owner is TDesign) then with Owner as TDesign do begin
+        SelectBlock(Block);
       end;
     end;
   end;
