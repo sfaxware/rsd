@@ -14,7 +14,6 @@ type
   TBlock = class(TCBlock)
   private
   public
-    procedure Execute; virtual; abstract;
   end;
 
 implementation
