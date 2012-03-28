@@ -1189,6 +1189,10 @@ begin
     If not Enabled then
       Brush.Color := clBtnShadow;
     Rectangle(PaintRect);
+    if Self is TDesign then with PaintRect do begin
+      Line(Left, Top, Right, Bottom);
+      Line(Left, Bottom, Right, Top);
+    end;
     if Caption <> '' then begin
       TXTStyle := Canvas.TextStyle;
       with TXTStyle do begin
