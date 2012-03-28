@@ -133,7 +133,6 @@ end;
 
 procedure TdtslIdeMainWindow.LoadProject(Sender: TObject);
 var
-  APath: string;
   p: Integer;
 begin
   with Project, ProjectSettings do begin
@@ -147,12 +146,6 @@ begin
       Name := GetValue('ProjectOptions/Units/Unit1/UnitName/Value', 'Design');
     end;
     Self.Caption := 'D.T.S.L. IDE (' + Name + ')';
-    APath := GetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', '');
-    p := Pos(';', APath);
-    if p > 0 then begin
-      Delete(APath, p, Length(APath));
-    end;
-    //Core.Path := ExpandFileName(ExtractFilePath(Path + APath));
     WriteLn('Core.Path = "', Core.Path, '"');
     BuildDir := GetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', 'build');
   end;
@@ -195,9 +188,12 @@ begin
     SetValue('ProjectOptions/Units/Unit1/Loaded/Value', True);
     //WriteLn('Core.Blocks.Path = ', Core.Blocks.Path);
     //WriteLn('DesignDir = ', DesignDir);
-    Apath := ExtractRelativepath(APath, Core.Path) + 'block;' + ExtractRelativepath(APath, Core.Path) + 'fifo;$(LazarusDir)/lcl/units/$(TargetCPU)-$(TargetOS)';
-    //WriteLn('realtive path = ', path);
-    SetValue('CompilerOptions/SearchPaths/OtherUnitFiles/Value', APath);
+    SetValue('ProjectOptions/RequiredPackages/Count', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/PackageName/Value', 'dtslcore');
+    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Minor', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MaxVersion/Valid', True);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Minor', 1);
+    SetValue('ProjectOptions/RequiredPackages/Item1/MinVersion/Valid', True);
     SetValue('CompilerOptions/SearchPaths/UnitOutputDirectory/Value', BuildDir);
     Flush;
   end;
@@ -462,7 +458,7 @@ begin
 end;
 
 initialization
-  {$I mainwindow.lrs}
+  {$R mainwindow.lfm}
 
 end.
 
