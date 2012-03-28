@@ -1,4 +1,4 @@
-unit mainWindow; 
+unit mainWindow;
 
 {$mode objfpc}{$H+}
 
@@ -72,7 +72,7 @@ type
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
   public
     procedure ViewFile(Sender: TObject);
-  end; 
+  end;
 
 var
   dtslIdeMainWindow: TdtslIdeMainWindow;
@@ -81,7 +81,7 @@ implementation
 
 uses
   StdCodeTools, CodeToolManager, LinkScanner;
-  
+
 type
   PProjectSettings = ^ TProjectSettings;
   TProjectSettings = record
@@ -211,7 +211,7 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
-var             
+var
   Port: TCGraphOutputPort;
 begin
   Port := TCGraphOutputPort.Create(Design.SelectedBlock);
@@ -258,17 +258,16 @@ var
 begin
   if Sender is TCGraphBlock then begin
     with Sender as TCGraphBlock do begin
-      Save;
-      LFMTree := GetDescription;
-      if Assigned(LFMTree) then with SynEdit1 do begin
+      if Save then with SynEdit1 do begin
         if Assigned(EditorCodeBuffer) then begin
            EditorCodeBuffer.Source := Text;
         end;
         EditorCodeBuffer := CodeBuffer[ctSource];
         Text := EditorCodeBuffer.Source;
         TabControl.TabIndex := 1;
-        CaretXY := LFMTree.PositionToCaret(25);
+        CaretXY := Point(3, 17);
         EnsureCursorPosVisible;
+        SetFocus;
       end else
         ShowMessage('False');
     end;
@@ -280,7 +279,7 @@ begin
   if Assigned(Design.SelectedBlock) then begin
     //WriteLn('Removing block');
     Design.DestroyBlock(Design.SelectedBlock);
-  end;             
+  end;
 end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
