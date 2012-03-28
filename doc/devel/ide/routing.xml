@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<fpdoc-descriptions>
+  <package name="dtsl_ide">
+    <module name="routing">
+      <element name="TSegment">
+        <short>Modelizes a straight line linkling two points</short>
+      </element>
+      <element name="TSegments">
+        <short>Modelizes a set of segments.</short>
+      </element>
+      <element name="TRoute">
+        <short>Modelizes a path linking two points (the first and the last). Its a compact modelization of a set of segments.</short>
+        <descr>A roote should be kept so that none of its segments intersect.</descr>
+      </element>
+      <element name="TRoutes">
+        <short>Modelizes a set of routes.</short>
+      </element>
+      <element name="TArea">
+        <short>Modelizes a space region as an union of multiple rectangles.</short>
+        <descr>An area should always be contiguous and intersection of any two recatngles should be reduced to the common boundary.</descr>
+      </element>
+      <element name="Bounds">
+        <short>Creates the smallest rectangle containing all the route points.</short>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
