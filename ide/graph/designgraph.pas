@@ -9,22 +9,18 @@ uses
 
 type
   TCGraphDesign = class(TScrollBox)
-  private
-    _Blocks:TFPList;
   public
     CodeBuffer: array[TCodeType] of TCodeBuffer;
     SelectedBlock:TCGraphBlock;
     SelectedInputPort: TCGraphInputPort;
     SelectedOutputPort: TCGraphOutputPort;
     constructor Create(AOwner: TComponent); override;
-    function BlockCount: Integer; inline;
     function CreateNewBlock: TCGraphBlock; virtual;
     function Load: Boolean;
     function Load(Path: string; const Project: TXMLConfig): Boolean;
     function Save(DesignName: string; var Project: TXMLConfig): Boolean;
     procedure ConnectPorts(Sender: TObject);
-    procedure InsertBlock(Block:TCGraphBlock);
-    procedure RemoveBlock(var Block:TCGraphBlock);
+    procedure DestroyBlock(var Block: TCGraphBlock);
     procedure SelectBlock(Sender: TObject);
   end;
   TScrollBox = class(TCGraphDesign);
@@ -36,13 +32,7 @@ uses
 constructor TCGraphDesign.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  _blocks := TFPList.Create;
   //WriteLn('Created new TCGraphDesign class instance');
-end;
-
-function TCGraphDesign.BlockCount: Integer; inline;
-begin
-  Result := _Blocks.Count;
 end;
 
 procedure TCGraphDesign.ConnectPorts(Sender: TObject);
@@ -82,14 +72,8 @@ begin
   end;
 end;
 
-procedure TCGraphDesign.InsertBlock(Block:TCGraphBlock);
+procedure TCGraphDesign.DestroyBlock(var Block: TCGraphBlock);
 begin
-  _blocks.Add(Block);
-end;
-
-procedure TCGraphDesign.RemoveBlock(var Block:TCGraphBlock);
-begin
-  _blocks.Remove(Block);
   Block.Destroy;
   Block := nil;
 end;
@@ -167,7 +151,6 @@ begin
         OnClick := @SelectBlock;
         OnDblClick := Self.OnDblClick;
         PopupMenu := Self.PopupMenu;
-        InsertBlock(SelectedBlock);
       end;
       //WriteLn('++++++++++++++');
     end;
