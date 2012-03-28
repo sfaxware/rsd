@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -40,8 +40,8 @@
         <Filename Value="mathvectors.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathVectors"/>
-        <CursorPos X="1" Y="14"/>
-        <TopLine Value="2"/>
+        <CursorPos X="1" Y="29"/>
+        <TopLine Value="10"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
@@ -61,7 +61,7 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="MathMatrices"/>
         <CursorPos X="26" Y="11"/>
-        <TopLine Value="3"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
@@ -105,11 +105,35 @@
         <UsageCount Value="11"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="7" HistoryIndex="6">
       <Position1>
         <Filename Value="mathtest.lpr"/>
         <Caret Line="6" Column="62" TopLine="1"/>
       </Position1>
+      <Position2>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="34" Column="1" TopLine="16"/>
+      </Position3>
+      <Position4>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="32" Column="51" TopLine="10"/>
+      </Position4>
+      <Position5>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="48" Column="13" TopLine="29"/>
+      </Position5>
+      <Position6>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="56" Column="19" TopLine="38"/>
+      </Position6>
+      <Position7>
+        <Filename Value="mathvectors.pas"/>
+        <Caret Line="29" Column="1" TopLine="10"/>
+      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
