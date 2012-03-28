@@ -99,6 +99,7 @@ end;
 
 function TDesign.AddNewSubBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock;
 begin
+  //WriteLn(Name, '.AddNewSubBlock(', ADeviceName, ', ', ADeviceType, ', ', ADeviceAncestorType, ')');
   Result := AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType);
 end;
 
@@ -124,7 +125,8 @@ begin
     end;
   end;
   with Result do begin
-    Selected := True;
+    Visible := IsSelected;
+    Selected := IsSelected;
     OnClick := @SelectBlock;
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
@@ -147,6 +149,7 @@ function TDesign.AddNewConnector(ADeviceName, ADeviceType: string): TConnector;
 begin
   Result := inherited AddNewConnector(ADeviceName, ADeviceType, SelectedOutputPort, SelectedInputPort);
   with Result do begin
+    Visible := IsSelected;
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
   end;
