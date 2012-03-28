@@ -472,6 +472,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
           7DD58E62FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF93665AC3834ECA8F54C2884DC2
           884DC2894DC3894DC38952C08D456F4322FFFFFFFFFFFFFFFFFF
         }
+        OnClick = LoadProject
       end
       object dtslIdeFileOpenMenuItem: TMenuItem
         Caption = '&Open'
@@ -503,6 +504,7 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
           E7EABB88A28B46FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEAC39DE6
           BF96E4BB92E4BB92CC9C6ECF9E6AAE8051FFFFFFFFFFFFFFFFFF
         }
+        OnClick = LoadProject
       end
       object dtslIdeFileSaveMenuItem: TMenuItem
         Caption = 'Save'
@@ -729,5 +731,8 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object SaveDialog1: TSaveDialog
     left = 128
+  end
+  object OpenDialog1: TOpenDialog
+    left = 160
   end
 end
