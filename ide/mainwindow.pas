@@ -5,9 +5,10 @@ unit mainWindow;
 interface
 
 uses
-  Classes, process, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, ExtCtrls, ComCtrls, SynHighlighterPas, SynCompletion, GraphComponents,
-  SynEdit, RTTICtrls, XMLCfg, CodeCache, LFMTrees, DesignGraph;
+  AsyncProcess, Classes, process, SysUtils, LResources, Forms, Controls,
+  Graphics, Dialogs, Menus, ExtCtrls, ComCtrls, SynHighlighterPas,
+  SynCompletion, GraphComponents, SynEdit, RTTICtrls, XMLCfg, CodeCache,
+  LFMTrees, DesignGraph;
 
 type
   { TIdeMainWindow }
@@ -18,6 +19,7 @@ type
     AddOutputPortMenuItem: TMenuItem;
     AddProbeMenuItem: TMenuItem;
     AddSourceMenuItem: TMenuItem;
+    BuilderProcess: TAsyncProcess;
     DesignColorMenuItem: TMenuItem;
     BlockColorMenuItem: TMenuItem;
     DesignNameMenuItem: TMenuItem;
@@ -41,12 +43,12 @@ type
     DeleteConnectorMenuItem: TMenuItem;
     FileReadSourceMenuItem: TMenuItem;
     IdeOpenInLazarusMenuItem: TMenuItem;
+    IdleTimer1: TIdleTimer;
     RandomSourceMenuItem: TMenuItem;
     IdeViewLayoutMenuItem: TMenuItem;
     IdeViewSourceCodeMenuItem: TMenuItem;
     ConnectorPopupMenu: TPopupMenu;
     PortsSubMenu: TMenuItem;
-    BuilderProcess: TProcess;
     IdeViewMenuItem: TMenuItem;
     IdeEditGraphSubMenu: TMenuItem;
     IdeEditGraphInsertBlockMenuItem: TMenuItem;
@@ -68,6 +70,7 @@ type
     Project: TXMLConfig;
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
+    procedure BuilderProcessTerminate(Sender: TObject);
     procedure CompileProject(Sender: TObject);
     procedure ConnectPorts(Sender: TObject);
     procedure DeleteConnector(Sender: TObject);
@@ -93,10 +96,12 @@ type
     procedure IdeEditGraphInsertBlockMenuItemClick(Sender: TObject);
     procedure ExitApplication(Sender: TObject);
   private
+    FSavedWindowState: TWindowState;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
     procedure AddNewBlock(ADeviceType: string);
     procedure AddNewConnector(ADeviceType: string);
+    procedure ExecuteProcess(ExecName: string);
     procedure HandleMouseDownEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure HandleMouseUpEvents(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure SetupChildrenEvents(Sender: TObject);
@@ -153,8 +158,6 @@ begin
 end;
 
 procedure TIdeMainWindow.LoadProject(Sender: TObject);
-var
-  p: Integer;
 begin
   with Project, ProjectSettings do begin
     if OpenDialog1.Execute then
@@ -281,26 +284,6 @@ begin
   NewProject(Sender);
 end;
 
-procedure TIdeMainWindow.IdeOpenInLazarusMenuItemClick(Sender: TObject);
-begin
-  SaveProject(Sender);
-  with BuilderProcess do begin
-    CommandLine := 'lazarus-ide ' + Project.FileName;
-    try
-      Execute;
-    except
-      ShowMessage('Could not find Lazarus builder, please ensure "lazbuild" is in your ${PATH}');
-      Exit;
-    end;
-    case ExitStatus of
-      0: ShowMessage('Design compiled successfully');
-      2: ShowMessage('Design failed to compile, please check compiler error message');
-    else
-      ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
-    end;
-  end;
-end;
-
 procedure TIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
 begin
   //WriteLn('Sender.ClassName = ', Sender.ClassName);
@@ -318,20 +301,44 @@ end;
 
 procedure TIdeMainWindow.CompileProject(Sender: TObject);
 begin
-  SaveProject(Sender);
+  ExecuteProcess('lazbuild');
+end;
+
+procedure TIdeMainWindow.IdeOpenInLazarusMenuItemClick(Sender: TObject);
+begin
+  ExecuteProcess('lazarus-ide');
+end;
+
+procedure TIdeMainWindow.ExecuteProcess(ExecName: string);
+begin
+  SaveProject(Self);
   with BuilderProcess do begin
-    CommandLine := 'lazbuild ' + Project.FileName;
+    CommandLine := ExecName + ' ' + Project.FileName;
     try
       Execute;
     except
-      ShowMessage('Could not find Lazarus builder, please ensure "lazbuild" is in your ${PATH}');
+      ShowMessage('Could not find Lazarus builder, please ensure "' + ExecName + '" is in your ${PATH}');
       Exit;
     end;
-    case ExitStatus of
-      0: ShowMessage('Design compiled successfully');
-      2: ShowMessage('Design failed to compile, please check compiler error message');
-    else
-      ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
+    Active := True;
+  end;
+  FSavedWindowState := WindowState;
+  WindowState := wsMinimized;
+  IdleTimer1.Enabled := True;
+end;
+
+procedure TIdeMainWindow.BuilderProcessTerminate(Sender: TObject);
+begin
+  with BuilderProcess do begin
+    if not Running then begin
+      IdleTimer1.Enabled := False;
+      WindowState := FSavedWindowState;
+      case ExitStatus of
+        0: ShowMessage('Design compiled successfully');
+        2: ShowMessage('Design failed to compile, please check compiler error message');
+      else
+        ShowMessage('Design compilation failed with error code ' + IntToStr(ExitStatus));
+      end;
     end;
   end;
 end;
