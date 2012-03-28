@@ -10,7 +10,7 @@ version=0.0.1
 packages=
 
 [target]
-programs=rsd_ide
+programs=rsd
 dirs=
 exampledirs=
 
