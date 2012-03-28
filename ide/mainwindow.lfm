@@ -978,6 +978,14 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
         Caption = 'Add block'
         OnClick = dtslEditGraphInsertBlockMenuItemClick
       end
+      object AddSourceMenuItem: TMenuItem
+        Caption = 'Add source'
+        OnClick = dtslEditGraphInsertSourceMenuItemClick
+      end
+      object AddProbeMenuItem: TMenuItem
+        Caption = 'Add probe'
+        OnClick = dtslEditGraphInsertProbeMenuItemClick
+      end
     end
     object PortsSubMenu: TMenuItem
       Caption = 'Ports'

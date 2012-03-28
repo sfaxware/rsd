@@ -27,6 +27,8 @@ type
     AddBlockMenuItem: TMenuItem;
     CompileMenuItem: TMenuItem;
     CompileProjectMenuItem: TMenuItem;
+    AddSourceMenuItem: TMenuItem;
+    AddProbeMenuItem: TMenuItem;
     PortsSubMenu: TMenuItem;
     dtslEditGraphDeleteBlockMenuItem: TMenuItem;
     MenuItem11: TMenuItem;
@@ -60,6 +62,8 @@ type
     procedure AddInputPortMenuItemClick(Sender: TObject);
     procedure AddOutputPortMenuItemClick(Sender: TObject);
     procedure CompileProject(Sender: TObject);
+    procedure dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
+    procedure dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure NewProject(Sender: TObject);
     procedure LoadProject(Sender: TObject);
@@ -77,6 +81,7 @@ type
     _ProjectSettings: pointer;
     EditorCodeBuffer: TCodeBuffer;
     function SearchUsedUnit(const SrcFilename: string; const TheUnitName, TheUnitInFilename: string): TCodeBuffer;
+    procedure AddNewBlock(BlockType: TCGraphBlockClass);
   public
     destructor Destroy; override;
   end;
@@ -240,28 +245,28 @@ begin
 end;
 
 procedure TdtslIdeMainWindow.AddInputPortMenuItemClick(Sender: TObject);
-var
-  Port: TCGraphInputPort;
 begin
-  Port := TCGraphInputPort.Create(Design.SelectedBlock);
-  with Port do begin
-    Parent := Design;
-  end;
+  Design.SelectedBlock.AddNewPort(TCGraphInputPort);
 end;
 
 procedure TdtslIdeMainWindow.AddOutputPortMenuItemClick(Sender: TObject);
-var
-  Port: TCGraphOutputPort;
 begin
-  Port := TCGraphOutputPort.Create(Design.SelectedBlock);
-  with Port do begin
-    Parent := Design;
-  end;
+  Design.SelectedBlock.AddNewPort(TCGraphOutputPort);
 end;
 
 procedure TdtslIdeMainWindow.CompileProject(Sender: TObject);
 begin
 
+end;
+
+procedure TdtslIdeMainWindow.dtslEditGraphInsertProbeMenuItemClick(Sender: TObject);
+begin
+  AddNewBlock(TCGraphProbe);
+end;
+
+procedure TdtslIdeMainWindow.dtslEditGraphInsertSourceMenuItemClick(Sender: TObject);
+begin
+  AddNewBlock(TCGraphSource);
 end;
 
 procedure TdtslIdeMainWindow.TabControlChange(Sender: TObject);
@@ -303,6 +308,13 @@ begin
     Result := nil
   else
     Result := GetCodeBuffer(FileName, cttNone, Self);
+end;
+
+procedure TdtslIdeMainWindow.AddNewBlock(BlockType: TCGraphBlockClass);
+begin
+  if Assigned(Design.SelectedBlock) then
+    Design.SelectedBlock.Selected := False;
+  Design.SelectedBlock := Design.AddNewBlock(BlockType);
 end;
 
 destructor TdtslIdeMainWindow.Destroy;
@@ -362,9 +374,7 @@ end;
 
 procedure TdtslIdeMainWindow.dtslEditGraphInsertBlockMenuItemClick(Sender:TObject);
 begin
-  if Assigned(Design.SelectedBlock) then
-    Design.SelectedBlock.Selected := False;
-  Design.SelectedBlock := Design.CreateNewBlock;
+  AddNewBlock(TCGraphBlock);
 end;
 
 procedure TdtslIdeMainWindow.SetCoreBlocksPath(Sender: TObject);

@@ -37,7 +37,7 @@ procedure TDesign.Run;
 begin
   repeat
     Execute;
-  until True;//False;
+  until False;
 end;
 
 initialization
