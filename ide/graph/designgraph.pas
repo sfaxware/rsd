@@ -12,12 +12,14 @@ type
   private
     FInternalConnector: TConnector;
     function GetConnector: TConnector; override;
+    function Unplug(AConnector: TConnector): Boolean; override;
     procedure SetConnector(AConnector: TConnector); override;
   end;
   TOutputPortRef = class(TOutputPort, IInputPort)
   private
     FInternalConnector: TConnector;
     function GetConnector: TConnector; override;
+    function Unplug(AConnector: TConnector): Boolean; override;
     procedure SetConnector(AConnector: TConnector); override;
   end;
   TDesign = class(TBlock)
@@ -72,15 +74,31 @@ begin
     end else begin
       Result := FConnector;
     end;
+  end else begin
+    Result := nil;
+  end;
+end;
+
+function TInputPortRef.Unplug(AConnector: TConnector): Boolean;
+begin
+  Result := FInternalConnector = AConnector;
+  if Result then begin
+    FInternalConnector := nil;
+  end else begin
+    Result := inherited Unplug(AConnector);
   end;
 end;
 
 procedure TInputPortRef.SetConnector(AConnector: TConnector);
 begin
-  if AConnector.Owner = Owner then begin
-    FInternalConnector := AConnector;
+  if Assigned(AConnector) then begin
+    if AConnector.Owner = Owner then begin
+      FInternalConnector := AConnector;
+    end else begin
+      FConnector := AConnector;
+    end;
   end else begin
-    FConnector := AConnector;
+    // raise ;
   end;
 end;
 
@@ -92,15 +110,31 @@ begin
     end else begin
       Result := FConnector;
     end;
+  end else begin
+    Result := nil;
+  end;
+end;
+
+function TOutputPortRef.Unplug(AConnector: TConnector): Boolean;
+begin
+  Result := FInternalConnector = AConnector;
+  if Result then begin
+    FInternalConnector := nil;
+  end else begin
+    Result := inherited Unplug(AConnector);
   end;
 end;
 
 procedure TOutputPortRef.SetConnector(AConnector: TConnector);
 begin
-  if AConnector.Owner = Owner then begin
-    FInternalConnector := AConnector;
+  if Assigned(AConnector) then begin
+    if AConnector.Owner = Owner then begin
+      FInternalConnector := AConnector;
+    end else begin
+      FConnector := AConnector;
+    end;
   end else begin
-    FConnector := AConnector;
+    //raise ;
   end;
 end;
 
