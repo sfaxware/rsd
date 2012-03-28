@@ -30,7 +30,7 @@ type
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
-    function GetUpdatedDescription(Indent: string): string;
+    function DeviceDescription(Indent: string): string;
     function Load: Boolean;
     function Save: Boolean;
     procedure DeleteConnector(var Connector: TCGraphConnector);
@@ -149,7 +149,7 @@ begin
   Result := 'TDesign';
 end;
 
-function TCGraphDesign.GetUpdatedDescription(Indent: string): string;
+function TCGraphDesign.DeviceDescription(Indent: string): string;
 var
   Component: TComponent;
   i: Integer;
@@ -158,9 +158,9 @@ begin
   for i := 0 to ComponentCount - 1 do begin
     Component := Components[i];
     if Component is TCGraphConnector then with Component as TCGraphConnector do begin
-      Result += GetUpdatedDescription(Indent + '  ');
+      Result += DeviceDescription(Indent + '  ');
     end else if Component is TCGraphBlock then with Component as TCGraphBlock do begin
-      Result += GetUpdatedDescription(Indent + '  ');
+      Result += DeviceDescription(Indent + '  ');
     end;
   end;
   Result += Indent + 'end' + LineEnding;
@@ -317,7 +317,7 @@ var
 begin
   CodeFileName := ResourceFileName(Name);
   CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
-  CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
+  CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttDesign, Self);

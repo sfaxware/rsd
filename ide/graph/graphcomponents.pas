@@ -21,6 +21,7 @@ type
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
+    function DeviceDescription(Indent: string): string;
   end;
   TCGraphDevice = class(TMagnifier, TIGraphDevice)
   private
@@ -35,6 +36,7 @@ type
     function DeviceIdentifier: string;
     function DeviceType: string;
     function DeviceAncestorType: string;
+    function DeviceDescription(Indent: string): string; virtual;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
   end;
   TCGraphDeviceClass = class of TCGraphDevice;
@@ -49,7 +51,7 @@ type
     procedure ValidateContainer(AComponent: TComponent); override;
   public
     constructor Create(AOwner: TComponent); override;
-    function GetUpdatedDescription(Indent: string): string;
+    function DeviceDescription(Indent: string): string; override;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
   end;
   TCGraphInputPort = class(TCGraphPort)
@@ -89,7 +91,7 @@ type
     constructor Create(AOwner: TComponent);override;
     destructor Destroy; override;
     function AddNewPort(PortType: TPortType): TCGraphPort; virtual;
-    function GetUpdatedDescription(Indent: string): string;
+    function DeviceDescription(Indent: string): string; override;
     function Load: boolean;
     function Load(const DesignDescription: TLFMTree; ContextNode:TLFMObjectNode): Boolean;
     function Save: boolean;
@@ -114,7 +116,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function GetUpdatedDescription(Indent: string): string;
+    function DeviceDescription(Indent: string): string; override;
     procedure Connect(AOutputPort: TCGraphOutputPort; AInputPort: TCGraphInputPort);
   published
     property InputPort: TCGraphInputPort read FInputPort write SetInputPort;
@@ -126,6 +128,7 @@ type
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
+    function DeviceDescription(Indent: string): string; override;
   end;
   TCGraphProbe = class(TCGraphBlock)
   protected
@@ -133,6 +136,7 @@ type
   public
     constructor Create(AOwner: TComponent);override;
     function AddNewPort(PortType: TPortType): TCGraphPort; override;
+    function DeviceDescription(Indent: string): string; override;
   end;
 
 function CreateDevice(DeviceName, DeviceType: string; AncestorType: TCGraphDeviceClass; AOwner: TComponent): TCGraphDevice;
@@ -396,6 +400,12 @@ begin
   Result := FDeviceAncestorType;
 end;
 
+function TCGraphDevice.DeviceDescription(Indent: string): string;
+begin
+  Result := Indent + 'object ' + Name + ': ' +  FDeviceType + LineEnding +
+    Indent + 'end' + LineEnding;
+end;
+
 constructor TCGraphPort.Create(AOwner: TComponent);
 begin
   Inherited Create(AOwner);
@@ -449,7 +459,7 @@ begin
   Result := True;
 end;
 
-function TCGraphPort.GetUpdatedDescription(Indent: string): string;
+function TCGraphPort.DeviceDescription(Indent: string): string;
 var
   PortType: string;
 begin
@@ -634,7 +644,7 @@ end;
 function TCGraphBlock.Load: boolean;
 var
   DesignDescription: TLFMTree;
-  DeviceDescription: TLFMObjectNode;
+  DeviceDescriptionNode: TLFMObjectNode;
   PortName: string;
   BlockName: string;
   p: Integer;
@@ -671,23 +681,23 @@ begin
     end;
   end;
   WriteLn('TCGraphBlock.Load : LFM created');
-  DeviceDescription := FindObjectProperty(nil, DesignDescription);
+  DeviceDescriptionNode := FindObjectProperty(nil, DesignDescription);
   Port := nil;
-  while Assigned(DeviceDescription) do begin
+  while Assigned(DeviceDescriptionNode) do begin
     //WriteLn('DeviceDescription.TypeName = ', DeviceDescription.TypeName);
-    if DeviceDescription.TypeName = 'TOutputPort' then begin
+    if DeviceDescriptionNode.TypeName = 'TOutputPort' then begin
       Port := AddNewPort(TCGraphOutputPort);
-      Port.Name := DeviceDescription.Name;
-    end else if DeviceDescription.TypeName = 'TInputPort' then begin
+      Port.Name := DeviceDescriptionNode.Name;
+    end else if DeviceDescriptionNode.TypeName = 'TInputPort' then begin
       Port := AddNewPort(TCGraphInputPort);
-      Port.Name := DeviceDescription.Name;
-    end else if DeviceDescription.TypeName = 'TConnector' then begin
-      PortName := GetPropertyValue(DeviceDescription, 'OutputPort', DesignDescription);
+      Port.Name := DeviceDescriptionNode.Name;
+    end else if DeviceDescriptionNode.TypeName = 'TConnector' then begin
+      PortName := GetPropertyValue(DeviceDescriptionNode, 'OutputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
       //WriteLn('OutputPortName = ', PortName);
-      PortName := GetPropertyValue(DeviceDescription, 'InputPort', DesignDescription);
+      PortName := GetPropertyValue(DeviceDescriptionNode, 'InputPort', DesignDescription);
       p := Pos('.', PortName);
       BlockName := Copy(PortName, 1, p - 1);
       PortName := Copy(PortName, p + 1, length(PortName));
@@ -708,11 +718,11 @@ begin
     end;
     if Assigned(Port) then with Port do begin
       Parent := Self.Parent;
-      Load(DesignDescription, DeviceDescription);
+      Load(DesignDescription, DeviceDescriptionNode);
       OnDblClick := Self.OnDblClick;
       Port := nil;
     end;
-    DeviceDescription := FindObjectProperty(DeviceDescription, DesignDescription);
+    DeviceDescriptionNode := FindObjectProperty(DeviceDescriptionNode, DesignDescription);
   end;
   Selected := True;
 end;
@@ -725,7 +735,7 @@ var
 begin
   CodeFileName := ReSourceFileName(Name);
   CodeBuffer[ctDescription] := GetCodeBuffer(CodeFileName, cttNone,Self);
-  CodeBuffer[ctDescription].Source := GetUpdatedDescription('');
+  CodeBuffer[ctDescription].Source := DeviceDescription('');
   Result := CodeBuffer[ctDescription].Save;
   CodeFileName := SourceFileName(Name);
   CodeBuffer[ctSource] := GetCodeBuffer(CodeFileName, cttBlock, Self);
@@ -760,14 +770,14 @@ begin
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
 
-function TCGraphBlock.GetUpdatedDescription(Indent: string): string;
+function TCGraphBlock.DeviceDescription(Indent: string): string;
 var
   i: Integer;
 begin
   Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
   if Indent = '' then begin
-    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
-      Result += GetUpdatedDescription(Indent + '  ');
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphDevice do begin
+      Result += DeviceDescription(Indent + '  ');
     end;
   end else with OriginalBounds do begin
     Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
@@ -931,7 +941,7 @@ begin
   inherited Destroy;
 end;
 
-function TCGraphConnector.GetUpdatedDescription(Indent: string): string;
+function TCGraphConnector.DeviceDescription(Indent: string): string;
 begin
   Result := Indent + 'object ' + Name + ': TConnector' + LineEnding +
     Indent + '  OutputPort = ' + OutputPort.Owner.Name + '.' + OutputPort.Name + LineEnding +
@@ -1046,6 +1056,28 @@ begin
   end;
 end;
 
+function TCGraphSource.DeviceDescription(Indent: string): string;
+var
+  i: Integer;
+begin
+  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
+  if Indent = '' then begin
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      if Name <> 'Input' then begin
+        Result += DeviceDescription(Indent + '  ');
+      end;
+    end;
+  end else with OriginalBounds do begin
+    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
+      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+  end;
+  Result += Indent + 'end' + LineEnding;
+end;
+
 constructor TCGraphProbe.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
@@ -1098,6 +1130,28 @@ begin
     Result := TCGraphInputPort.Create(Self);
     Result.Name := 'Input';
   end;
+end;
+
+function TCGraphProbe.DeviceDescription(Indent: string): string;
+var
+  i: Integer;
+begin
+  Result := Indent + 'object ' + Name + ': T' + Name + LineEnding;
+  if Indent = '' then begin
+    for i := 0 to ComponentCount - 1 do with Components[i] as TCGraphPort do begin
+      if Name <> 'Output' then begin
+        Result += DeviceDescription(Indent + '  ');
+      end;
+    end;
+  end else with OriginalBounds do begin
+    Result += Indent + '  DeviceName = ''' + Caption + '''' + LineEnding +
+      Indent + '  Color = $' + HexStr(Canvas.Brush.Color, 8) + LineEnding +
+      Indent + '  Left = ' + IntToStr(Left) + LineEnding +
+      Indent + '  Top = ' + IntToStr(Top) + LineEnding +
+      Indent + '  Width = ' + IntToStr(Right - Left) + LineEnding +
+      Indent + '  Height = ' + IntToStr(Bottom - Top) + LineEnding;
+  end;
+  Result += Indent + 'end' + LineEnding;
 end;
 
 end.
