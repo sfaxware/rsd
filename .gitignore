@@ -1,0 +1,17 @@
+*.o
+*.ppu
+*.swp
+*.lps
+*.compiled
+*.rc
+*.lrs
+*.manifest
+build/*.lfm
+*.deb
+*.dsc
+*.gz
+*.changes
+build/bin/rsd
+*.or
+*.log
+*.rst
