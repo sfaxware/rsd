@@ -1088,11 +1088,12 @@ begin
     FOnChildrenCreate(Result);
   end;
   CodeBuffer[ctSource].LockAutoDiskRevert;
-  with Result do begin
+  with CodeToolBoss, Result do begin
     if PortName <> '' then begin
       Name := PortName;
     end;
-    CodeToolBoss.AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
+    AddUnitToMainUsesSection(CodeBuffer[ctSource], DeviceAncestorUnitName, '');
+    AddPublishedVariable(CodeBuffer[ctSource], Self.DeviceType, DeviceIdentifier, DeviceType);
   end;
   CodeBuffer[ctSource].UnlockAutoDiskRevert;
 end;
