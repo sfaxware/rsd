@@ -964,6 +964,13 @@ object dtslIdeMainWindow: TdtslIdeMainWindow
   end
   object PopupMenu1: TPopupMenu
     left = 64
+    object BlocksSubMenu: TMenuItem
+      Caption = 'Blocks'
+      object AddBlockMenuItem: TMenuItem
+        Caption = 'Add block'
+        OnClick = dtslEditGraphInsertBlockMenuItemClick
+      end
+    end
     object PortsSubMenu: TMenuItem
       Caption = 'Ports'
       object AddInputPortMenuItem: TMenuItem
