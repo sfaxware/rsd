@@ -25,8 +25,6 @@ type
   protected
     procedure ValidateContainer(AComponent: TComponent); override;
     procedure ValidateInsert(AComponent: TComponent); override; abstract;
-  public
-    constructor Create(AOwner: TComponent); override;
   published
     property DeviceName: string read FDeviceName write FDeviceName;
   end;
@@ -129,6 +127,43 @@ begin
   Result := FuncLevel + '<<' + name + ': ';
 end;
 
+function InitComponentFromResource(Instance: TComponent; ClassType: TClass): Boolean;
+var
+  FPResource: TFPResourceHandle;
+  ResName: String;
+  Stream: TStream;
+  Reader: TReader;
+  DestroyDriver: Boolean;
+  Driver: TAbstractObjectReader;
+begin
+  Result := False;
+  Stream := nil;
+  ResName := ClassType.ClassName;
+  if Stream = nil then
+  begin
+    FPResource := FindResource(HInstance, PChar(ResName), RT_RCDATA);
+    if FPResource <> 0 then
+      Stream := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource);
+  end;
+  if Stream = nil then
+    Exit;
+  DestroyDriver:=false;
+  try
+    Reader := CreateLRSReader(Stream, DestroyDriver);
+    try
+      Reader.ReadRootComponent(Instance);
+    finally
+      Driver := Reader.Driver;
+      Reader.Free;
+      if DestroyDriver then
+        Driver.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
+  Result := True;
+end;
+
 function TCDevice.GetName: string;
 begin
   Result := FDeviceName;
@@ -144,61 +179,6 @@ begin
     ValidateInsert(Self);
   end;
   //WriteLn(FuncE('TCDevice.ValidateContainer'), 'Name = ', Name, ', ClassName = ', ClassName, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
-end;
-
-constructor TCDevice.Create(AOwner: TComponent);
-  function InitComponentFromResource(Instance: TComponent; ClassType: TClass): Boolean;
-  var
-    FPResource: TFPResourceHandle;
-    ResName: String;
-    Stream: TStream;
-    Reader: TReader;
-    DestroyDriver: Boolean;
-    Driver: TAbstractObjectReader;
-  begin
-    Result := False;
-    Stream := nil;
-    ResName := ClassType.ClassName;
-    if Stream = nil then
-    begin
-      FPResource := FindResource(HInstance, PChar(ResName), RT_RCDATA);
-      if FPResource <> 0 then
-        Stream := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource);
-    end;
-    if Stream = nil then
-      Exit;
-    DestroyDriver:=false;
-    try
-      Reader := CreateLRSReader(Stream, DestroyDriver);
-      try
-        Reader.ReadRootComponent(Instance);
-      finally
-        Driver := Reader.Driver;
-        Reader.Free;
-        if DestroyDriver then
-          Driver.Free;
-      end;
-    finally
-      Stream.Free;
-    end;
-    Result := True;
-  end;
-var
-  cn: string;
-begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
-  end else begin
-    cn := 'nil';
-  end;
-  //WriteLn(FuncB('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', Owner.Name = ', cn, ', ComponentCount = ', ComponentCount);
-  inherited Create(AOwner);
-  if not InitComponentFromResource(Self, ClassType) then begin
-    WriteLn('Failed to initilize component ', AOwner.Name, '.', Name, ': ', ClassName);
-  end;
-  if FDeviceName = '' then
-    FDeviceName := Name;
-  //WriteLn(FuncE('TCDevice.Create'), 'ClassName = ', ClassName, ', Name = ', Name, ', DeviceName = ', DeviceName, ', ComponentCount = ', ComponentCount);
 end;
 
 function TCPort.GetConnector: TCConnector;
@@ -248,17 +228,20 @@ begin
 end;
 
 constructor TCBlock.Create(AOwner: TComponent);
-var
-  cn: string;
+//var
+//  cn: string;
 begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
-  end else begin
-    cn := 'nil';
-  end;
-  //WriteLn(FuncB('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
+  //if Assigned(AOwner) then begin
+  //  cn := AOwner.ClassName;
+  //end else begin
+  //  cn := 'nil';
+  //end;
+  //WriteLn(FuncB('TCBlock.Create'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
-  //WriteLn(FuncE('TCBlock.Create(AOwner: TComponent)'), 'AOwner.ClassName = ', cn);
+  if not InitComponentFromResource(Self, ClassType) then begin
+    WriteLn('Failed to initilize component ', AOwner.Name, '.', Name, ': ', ClassName);
+  end;
+  //WriteLn(FuncE('TCBlock.Create'), 'AOwner.ClassName = ', cn);
 end;
 
 function TCBlock.GetInputQty: Integer;
@@ -320,8 +303,6 @@ begin
 end;
 
 function TCBlock.GetRunStatus: TDeviceRunStatus;
-var
-  i: Integer;
 begin
   Result := FRunStatus;
 end;
@@ -386,14 +367,14 @@ begin
 end;
 
 constructor TCConnector.Create(AOwner: TComponent);
-var
-  cn: string;
+//var
+  //cn: string;
 begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
-  end else begin
-    cn := 'nil';
-  end;
+  //if Assigned(AOwner) then begin
+    //cn := AOwner.ClassName;
+  //end else begin
+    //cn := 'nil';
+  //end;
   //WriteLn(FuncB('TCConnector.Create'), 'AOwner.ClassName = ', cn);
   inherited Create(AOwner);
   //WriteLn(FuncC('TCConnector.Create'), Name, '.InputPort = $', HexStr(PtrInt(FInputPort), 8));
@@ -437,7 +418,7 @@ end;
 
 function TCConnector.Pop(out Sample: Integer): Boolean;
 begin
-  WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Samples.Qty = ', FSamples.GetPendingQty);
+  //WriteLn(FuncB('TCConnector.Pop'), Owner.Name, '.', Name, ', Samples.Qty = ', FSamples.GetPendingQty);
   repeat
     Result := FSamples.Pop(Pointer(Sample));
     //WriteLn(FuncC('TCConnector.Pop'), 'Could pop = ', Result);
@@ -453,7 +434,7 @@ begin
       end;
     end;
   until Result;
-  WriteLn(FuncE('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
+  //WriteLn(FuncE('TCConnector.Pop'), Owner.Name, '.', Name, ', Sample = ', Sample, ', Samples.FreeQty = ', FSamples.GetAvailableQty);
 end;
 
 end.
