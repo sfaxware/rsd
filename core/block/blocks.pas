@@ -33,14 +33,14 @@ type
 implementation
 
 constructor TBlock.Create(AOwner: TComponent);
-var
-  cn: string;
+//var
+//  cn: string;
 begin
-  if Assigned(AOwner) then begin
-    cn := AOwner.ClassName;
-  end else begin
-    cn := 'nil';
-  end;
+//  if Assigned(AOwner) then begin
+//    cn := AOwner.ClassName;
+//  end else begin
+//    cn := 'nil';
+//  end;
   //WriteLn(FuncB('TBlock.Create'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
   inherited Create(AOwner);
   //WriteLn(FuncE('TBlock.Create'), 'Name = ', Name, ', AOwner.ClassName = ', cn);
