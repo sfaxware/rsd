@@ -41,7 +41,7 @@
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <UnitOutputDirectory Value="../../build/lib/dtsl/core/fifo"/>
+      <UnitOutputDirectory Value="../../build/lib/rsd/core/fifo"/>
     </SearchPaths>
     <Other>
       <CompilerPath Value="$(CompPath)"/>

@@ -1,9 +1,8 @@
-{ Ce fichier a Ã © t Ã © automatiquement cr Ã © Ã © par Lazarus. Ne pas l ' Ã © 
-  diter ! 
-  Cette source est seulement employ Ã © e pour compiler et installer le paquet.
+{ This file was automatically created by Lazarus. do not edit!
+  This source is only used to compile and install the package.
  }
 
-unit dtslcore; 
+unit rsdcore; 
 
 interface
 

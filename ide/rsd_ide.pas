@@ -1,4 +1,4 @@
-program dtsl_ide;
+program rsd_ide;
 
 {$mode objfpc}{$H+}
 

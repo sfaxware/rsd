@@ -49,14 +49,14 @@
     </RequiredPackages>
     <Units Count="9">
       <Unit0>
-        <Filename Value="dtsl_ide.lpr"/>
+        <Filename Value="rsd_ide.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="dtsl_ide"/>
+        <UnitName Value="rsd_ide"/>
       </Unit0>
       <Unit1>
         <Filename Value="mainwindow.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="dtslIdeMainWindow"/>
+        <ComponentName Value="rsdIdeMainWindow"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWindow"/>
       </Unit1>
@@ -102,7 +102,7 @@
   <CompilerOptions>
     <Version Value="8"/>
     <Target>
-      <Filename Value="../build/bin/dtsl_ide"/>
+      <Filename Value="../build/bin/rsd"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)/"/>

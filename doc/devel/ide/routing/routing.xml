@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <fpdoc-descriptions>
-  <package name="dtsl_ide">
+  <package name="rsd_ide">
     <module name="Routing">
       <element name="TSegment">
         <short>Modelizes a straight line joining two points</short>
