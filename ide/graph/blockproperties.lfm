@@ -14,9 +14,9 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     Top = 0
     Width = 400
     Anchors = [akTop, akLeft, akRight, akBottom]
-    AutoFillColumns = True
+    AutoAdvance = aaDown
     ColCount = 3
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goEditing, goAlwaysShowEditor, goSmoothScroll]
     RowCount = 1
     ScrollBars = ssBoth
     TabOrder = 0
@@ -24,9 +24,9 @@ object BlockPropertiesDialog: TBlockPropertiesDialog
     OnEditingDone = ValidateInput
     OnSelectCell = StringGrid1SelectCell
     ColWidths = (
-      160
-      118
-      118
+      142
+      127
+      127
     )
     Cells = (
       3
