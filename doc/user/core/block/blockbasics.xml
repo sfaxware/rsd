@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<fpdoc-descriptions>
+  <package name="rsdcore">
+    <module name="BlockBasics">
+      <element name="IDevice">
+        <short>Device interface: the top ascendent interface for modeling a simulation device</short>
+        <descr>Device interface: the top ascendent interface for modeling a simulation device</descr>
+      </element>
+      <element name="TCDevice">
+        <short>Basic FCL component descendent implementing IDevice simulation interface</short>
+        <descr>This calss is a basic FCL coponenet decendent implementing the IDevice simulation inerface.</descr>
+      </element>
+    </module>
+  </package>
+</fpdoc-descriptions>
