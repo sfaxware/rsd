@@ -215,7 +215,7 @@ begin
     PkgPath := Items[PkgIndex];
     //WriteLn('PkgPath = ', PkgPath^);
     //WriteLn('Filename = ', Filename);
-    Result := Filename = PkgPath^;
+    Result := GetEffectiveFilename = PkgPath^;
   end else begin
     Result := False;
   end;
@@ -245,7 +245,7 @@ begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
-  PkgLinks.RemoveLink(PkgLinks.FindLinkWithPkgName(PkgName));
+  PkgLinks.RemoveUserLink(PkgLinks.FindLinkWithPkgName(PkgName));
 end;
 
 initialization

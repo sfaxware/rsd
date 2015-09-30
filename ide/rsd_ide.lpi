@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -6,7 +6,6 @@
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
-        <AlwaysBuild Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -31,21 +30,27 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="6">
       <Item1>
-        <PackageName Value="CodeTools"/>
+        <PackageName Value="DebuggerIntf"/>
       </Item1>
       <Item2>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="IDEIntf"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="CodeTools"/>
       </Item3>
       <Item4>
-        <PackageName Value="SynEdit"/>
+        <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
       </Item4>
+      <Item5>
+        <PackageName Value="LCL"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="SynEdit"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item6>
     </RequiredPackages>
     <Units Count="10">
       <Unit0>
@@ -57,6 +62,7 @@
         <Filename Value="mainwindow.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="IdeMainWindow"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWindow"/>
       </Unit1>
@@ -91,34 +97,33 @@
         <ComponentName Value="SplashWindow"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Configuration"/>
       </Unit7>
       <Unit8>
         <Filename Value="graph/blockproperties.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="BlockPropertiesDialog"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="BlockProperties"/>
       </Unit8>
       <Unit9>
         <Filename Value="packagesmanager.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="PackagesManagerForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PackagesManager"/>
       </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="../build/bin/rsd"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);$(LazarusDir)/ide/include/$(TargetOS);$(LazarusDir)/ide/include"/>
-      <OtherUnitFiles Value="graph;routing;$(LazarusDir)/packager;$(LazarusDir)/ide"/>
+      <OtherUnitFiles Value="graph;routing;$(LazarusDir)/packager;$(LazarusDir)/ide;$(LazarusDir)/units/$(TargetCPU)-$(TargetOS)/$(LCLWidgetType)"/>
       <UnitOutputDirectory Value="../build"/>
-      <SrcPath Value="$(LazarusDir)/lcl;$(LazarusDir)/lcl/interfaces/$(LCLWidgetType)"/>
+      <SrcPath Value="$(LazarusDir)/lcl"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -128,7 +133,7 @@
     </Parsing>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="True"/>
+        <DebugInfoType Value="dsStabs"/>
         <UseHeaptrc Value="True"/>
       </Debugging>
       <Options>
@@ -137,12 +142,6 @@
         </Win32>
       </Options>
     </Linking>
-    <Other>
-      <CompilerMessages>
-        <UseMsgFile Value="True"/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="1">
