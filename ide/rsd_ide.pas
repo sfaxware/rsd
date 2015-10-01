@@ -7,7 +7,8 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, mainWindow, BlockProperties, PackagesManager, Configuration;
+  PackagesManager, ExtToolEditDlg,
+  Forms, mainWindow, BlockProperties, Configuration;
 
 var
   ProjectFileName: string;
