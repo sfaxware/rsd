@@ -19,7 +19,7 @@ type
 operator +(x, y: TVector): TVector;{Use at your own risk}
 operator -(x, y: TVector): TVector;{Those functions creates ther results}
 operator *(x, y: TVector): TVectorBase;{and it is up to you to take care}
-operator *(r: TVectorBase; x: TVector): TVector;{of avalable memory and}
+operator *(r: TVectorBase; x: TVector): TVector;{of available memory and}
 procedure Acc(var x: TVector; r: TVectorBase; y: TVector);{to free them.}
 {This procedure adds to vector "x" a vector "y" mutiplied by a scalar "r"
 result is stored in "x". It is equavalent to x:=x+r*y;. This
