@@ -91,6 +91,7 @@
         <UnitName Value="ShortIntVectors"/>
       </Item17>
     </Files>
+    <LazDoc Paths="/usr/local/src/rsd/doc/user/core/block;/usr/local/src/rsd/doc/user/core/fifo;/usr/local/src/rsd/doc/user/core/math;/usr/local/src/rsd/doc/user/core/num"/>
     <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="LCL"/>
