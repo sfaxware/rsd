@@ -36,14 +36,15 @@ var
 implementation
 
 uses
-  Configuration, PackageLinks, PackageDefs, EnvironmentOpts, Laz_XMLCfg, CompilerOptions;
+  Configuration, PackageLinks, PackageLinkIntf, PackageDefs, EnvironmentOpts,
+  Laz_XMLCfg, CompilerOptions;
 
 const
   PackagesQty = 2;
   PackagesList: array[1..PackagesQty] of string[32] = ('rsdcore', 'toto');
 
 var
-  PkgLinks: TPackageLinks;
+  PkgLinks: TLazPackageLinks;
 
 { TPackagesManagerForm }
 
@@ -103,7 +104,7 @@ begin
   with GlobalBuildProperties do begin
     AddStandardModes;
   end;}
-  PkgLinks:=TPackageLinks.Create;
+  PkgLinks:=TLazPackageLinks.Create;
   with PkgLinks do begin
     UpdateUserLinks;
     //DependencyOwnerGetPkgFilename:=@PkgLinksDependencyOwnerGetPkgFilename;
@@ -142,24 +143,6 @@ begin
       Checked[n] := PackageIsInstalled(n);
     end;
   end;
-end;
-
-function AddUserLink(const PkgFilename, PkgName: string): TPackageLink;
-var
-  NewPackage: TLazPackage;
-  XmlConfig: TXMLConfig;
-begin
-  NewPackage := TLazPackage.Create;
-  XmlConfig := TXMLConfig.Create(PkgFilename);
-  with NewPackage do begin
-    Filename := PkgFilename;
-    LoadFromXMLConfig(XmlConfig, 'Package/');
-  end;
-  with PkgLinks do begin
-    Result := AddUserLink(NewPackage);
-  end;
-  FreeAndNil(XmlConfig);
-  FreeAndNil(NewPackage);
 end;
 
 procedure TPackagesManagerForm.UpdateInstalledPackages(Sender: TObject);
@@ -232,7 +215,7 @@ begin
   //WriteLn('PkgPath = "', PkgPath, '"');
   n := IndexOfPackage(PkgName);
   PkgPath := PackagesList.Items[PkgIndex];
-  AddUserLink(PkgPath^, PkgName);
+  PkgLinks.AddUserLink(PkgPath^, PkgName);
 end;
 
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
