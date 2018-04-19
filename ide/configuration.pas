@@ -72,6 +72,7 @@ var
 
 function ReSourceFileName(BlockName: string): string;
 function SourceFileName(BlockName: string): string;
+function ExtractFileNameOnly(filePath: string): string;
 
 implementation
 
@@ -96,6 +97,11 @@ begin
   //WriteLn('SourceFileName = ', Result);
 end;
 
+function ExtractFileNameOnly(filePath: string): string;
+begin
+  Result := ChangeFileExt(ExtractFileName(filePath), '');
+end;
+
 { TSplashWindow }
 
 procedure TSplashWindow.UpdateConfiguration(Sender: TObject);
@@ -106,8 +112,8 @@ begin
     Exec.Name := ExtractFileNameOnly(Exec.Name);
     Lib.Path += Exec.Name + PathDelim;
     ChDir(Prefix);
-    User.Home.Path := AppendPathDelim(GetEnvironmentVariable('HOME'));
-    Filename := User.Home.Path + '.' + Exec.Name;
+    User.Home.Path := GetEnvironmentVariable('HOME');
+    Filename := ConcatPaths([User.Home.Path, '.' + Exec.Name]);
     User.Projects.Last.Path := GetValue('AppCfg/User/Projects/Last/Path', '');
   end;
 end;
