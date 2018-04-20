@@ -1,8 +1,7 @@
 #!/usr/bin/make -f
 # debian/rules for rsd
 
-DEB_PACKAGE_NAME = rsd
-DEB_DH_BUILDDEB_ARGS := -- -Z bzip2
+DEB_PACKAGE_NAME=rsd
 export DH_ALWAYS_EXCLUDE := COPYING:LICENSE
 export LANG:=C
 
@@ -54,8 +53,6 @@ LAZBUILD=lazbuild
 endif
 # Set default compilation options
 BUILDOPTS=
-# Configure patch system
-include /usr/share/quilt/quilt.make
 
 #export DH_VERBOSE=1
 
@@ -63,17 +60,10 @@ include /usr/share/quilt/quilt.make
 # Clean
 #
 
-clean: patch configure clean-patched unpatch
-	${RM} build-arch-stamp install-arch-stamp arrange-arch-stamp configure-stamp
-	${RM} build-doc-stamp install-doc-stamp
-	${RM} build-indep-stamp install-indep-stamp
-	${RM} debian-files-stamp
-	${RM} debian/files debian/docs debian/dirs debian/*.files debian/*.docs debian/*.examples debian/*.postinst debian/*.postrm
-	${RM} .pc
-	# Remove auto-generated version file.
-	${RM} version.inc
-	# Remove auto-generated make files.
-	find -name Makefile.fpc -execdir 'sh' '-c' '${RM} $$(basename {} .fpc)' ';'
+clean: configure clean-patched
+	${MAKE} cleanall
+	${RM} Makefile version.inc
+	# dh_clean gets a list of files from the debian/clean file
 	dh_clean
 clean-patched:
 	@echo "--- Cleaning"
@@ -87,7 +77,7 @@ clean-patched:
 # Debian files
 #
 
-debian-files: patch debian-files-stamp
+debian-files: debian-files-stamp
 debian-files-stamp:
 	@echo "--- Creating/fixing *.install files"
 	#/bin/bash debian/fixdeb debian $(FPCTARGET) $(PPNEW)
@@ -152,7 +142,7 @@ arrange-arch-stamp:
 	dh_install -s --sourcedir=debian/tmp --list-missing
 	touch arrange-arch-stamp
 
-build-indep: patch
+build-indep:
 install-indep:
 	touch install-indep-stamp
 
@@ -166,7 +156,7 @@ install-man-stamp:
 # Documentation
 #
 
-build-doc: patch debian-files build-doc-stamp
+build-doc: build-doc-stamp
 build-doc-stamp:
 	@echo "--- Building Documentation"
 	dh_testdir
@@ -279,3 +269,6 @@ binary-arch: arrange-arch
 
 get-orig-source:
 	-uscan --upstream-version=0 --rename
+
+pack-source:
+	tar -C .. -vacf ../${DEB_PACKAGE_NAME}_${DEB_UPSTREAM_VERSION}.orig.tar.xz --exclude-vcs rsd
