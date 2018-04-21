@@ -323,6 +323,8 @@ begin
 end;
 
 procedure TIdeMainWindow.FormCreate(Sender: TObject);
+var
+  TabControlOptions: TCTabControlOptions;
 begin
   with CodeToolBoss do begin
     OnSearchUsedUnit := @SearchUsedUnit;
@@ -333,6 +335,9 @@ begin
   with SaveDialog1, AppCfg do begin
     InitialDir := User.Home.Path;
   end;
+  TabControlOptions := TabControl.Options;
+  Include(TabControlOptions, nboDoChangeOnSetIndex);
+  TabControl.Options := TabControlOptions;
   NewProject(Sender);
 end;
 
