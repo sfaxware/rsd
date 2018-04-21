@@ -22,6 +22,9 @@ type
     function Unplug(AConnector: TConnector): Boolean; override;
     procedure SetConnector(AConnector: TConnector); override;
   end;
+
+  { TDesign }
+
   TDesign = class(TBlock)
   private
     FMagnification: Real;
@@ -46,6 +49,7 @@ type
     procedure Cleanup;
     function AddNewBlock(ADeviceName, ADeviceType, ADeviceAncestorType: string): TBlock; virtual;
     function AddNewConnector(ADeviceName, ADeviceType: string): TConnector; virtual;
+    function AddNewPort(ADeviceName, ADeviceType: string): TPort; override;
     function BlockBoundsDescription(Indent: string): string; override;
     function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DeviceDescription(Indent: string): string;
@@ -247,6 +251,15 @@ begin
     OnMouseEnter := @Self.HandleMouseEnter;
     OnMouseLeave := @Self.HandleMouseLeave;
   end;
+end;
+
+function TDesign.AddNewPort(ADeviceName, ADeviceType: string): TPort;
+begin
+  {Fix port type and call ancestor method}
+  if not ADeviceType.EndsWith('Ref') then begin
+    ADeviceType += 'Ref';
+  end;
+  Result := inherited;
 end;
 
 function TDesign.DeviceCodeTemplateType: TCodeTemplateType;

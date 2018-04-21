@@ -383,9 +383,7 @@ var
   PointedDevice: TDevice;
 begin
   PointedDevice := TDesign.GetViewed.PointedDevice;
-  if PointedDevice is TDesign then with PointedDevice as TDesign do begin
-    AddNewPort('', 'TInputPortRef');
-  end else if PointedDevice is TBlock then with PointedDevice as TBlock do begin
+  if PointedDevice is TBlock then with PointedDevice as TBlock do begin
     AddNewPort('', 'TInputPort');
   end;
 end;
@@ -400,9 +398,7 @@ var
   PointedDevice: TDevice;
 begin
   PointedDevice := TDesign.GetViewed.PointedDevice;
-  if PointedDevice is TDesign then with PointedDevice as TDesign do begin
-    AddNewPort('', 'TOutputPortRef');
-  end else if PointedDevice is TBlock then with PointedDevice as TBlock do begin
+  if PointedDevice is TBlock then with PointedDevice as TBlock do begin
     AddNewPort('', 'TOutputPort');
   end;
 end;
