@@ -7,7 +7,7 @@ interface
 uses
   AsyncProcess, Classes, process, StdCtrls, SysUtils, LResources, Forms,
   Controls, Graphics, Dialogs, Menus, ExtCtrls, ComCtrls, SynHighlighterPas,
-  SynCompletion, GraphComponents, SynEdit, XMLCfg, CodeCache, LFMTrees,
+  SynCompletion, GraphComponents, SynEdit, XMLConf, CodeCache, LFMTrees,
   DesignGraph;
 
 type
