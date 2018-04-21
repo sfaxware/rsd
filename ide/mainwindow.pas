@@ -143,8 +143,8 @@ uses
 resourcestring
   AppTitle = 'Rapid Simulator Designer (RSD)';
   AppAuthor = 'Mazen NEIFER';
-  AppVersion = '0.0.1';
-  AppAboutMessage = '%s' + LineEnding + 'Copyright (c) 2010 %s' + LineEnding + 'Version %s';
+  AppVersion = '0.0.2';
+  AppAboutMessage = '%s' + LineEnding + 'Copyright (c) 2010-2018 %s' + LineEnding + 'Version %s';
 
 { TIdeMainWindow }
 
