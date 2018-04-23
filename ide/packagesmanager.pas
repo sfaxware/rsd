@@ -37,7 +37,7 @@ implementation
 
 uses
   Configuration, PackageLinks, PackageLinkIntf, PackageDefs, EnvironmentOpts,
-  Laz_XMLCfg, CompilerOptions;
+  Laz_XMLCfg, CompilerOptions, TransferMacros;
 
 const
   PackagesQty = 2;
@@ -100,6 +100,7 @@ begin
   PackagesList := BuildPackagesList;
   UpdateForm(PackagesList);
   EnvironmentOptions := TEnvironmentOptions.Create;
+  GlobalMacroList:=TTransferMacroList.Create;
   {GlobalBuildProperties := TGlobalBuildProperties.Create;
   with GlobalBuildProperties do begin
     AddStandardModes;
@@ -130,6 +131,7 @@ begin
   end;
   FreeAndNil(PackagesList);
   FreeAndNil(PkgLinks);
+  FreeAndNil(GlobalMacroList);
   FreeAndNil(EnvironmentOptions);
   //FreeAndNil(GlobalBuildProperties);
 end;
