@@ -208,28 +208,22 @@ end;
 
 procedure TPackagesManagerForm.InstallPackage(PkgIndex: Integer);
 var
-  n: Integer;
   PkgName: string;
   PkgPath: PString;
   PkgXmlPath: string;
 begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
-  n := IndexOfPackage(PkgName);
   PkgPath := PackagesList.Items[PkgIndex];
   PkgLinks.AddUserLink(PkgPath^, PkgName);
 end;
 
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
 var
-  n: Integer;
   PkgName: string;
-  PkgPath: PString;
-  PkgXmlPath: string;
 begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('PkgPath = "', PkgPath, '"');
-  n := IndexOfPackage(PkgName);
   PkgLinks.RemoveUserLink(PkgLinks.FindLinkWithPkgName(PkgName));
 end;
 
