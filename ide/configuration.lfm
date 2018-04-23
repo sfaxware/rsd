@@ -6,16 +6,15 @@ object SplashWindow: TSplashWindow
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'Rapid Simulators Designer'
-  Font.Color = clDefault
   FormStyle = fsSplash
   OnCreate = UpdateConfiguration
   OnDestroy = SaveUserConfiguration
   Position = poScreenCenter
-  LCLVersion = '0.9.28.2'
-  Visible = True
+  LCLVersion = '1.8.2.0'
   object UserConfig: TXMLConfig
     StartEmpty = False
     RootName = 'CONFIG'
+    ReadOnly = False
     left = 96
   end
 end

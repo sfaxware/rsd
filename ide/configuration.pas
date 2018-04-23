@@ -5,7 +5,7 @@ unit Configuration;
 interface
 
 uses
-  Classes, SysUtils, LResources, Forms, XMLCfg;
+  Classes, SysUtils, LResources, Forms, XMLConf;
 
 type
 
