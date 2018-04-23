@@ -37,11 +37,7 @@ implementation
 
 uses
   Configuration, PackageLinks, PackageLinkIntf, PackageDefs, EnvironmentOpts,
-  Laz_XMLCfg, CompilerOptions, TransferMacros;
-
-const
-  PackagesQty = 2;
-  PackagesList: array[1..PackagesQty] of string[32] = ('rsdcore', 'toto');
+  CompilerOptions, TransferMacros;
 
 var
   PkgLinks: TLazPackageLinks;
@@ -188,7 +184,6 @@ function TPackagesManagerForm.PackageIsInstalled(PkgIndex: Integer): boolean;
 var
   PkgName: string;
   PkgPath: PString;
-  PkgXmlPath: string;
   PkgLink: TPackageLink;
 begin
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
@@ -210,7 +205,6 @@ procedure TPackagesManagerForm.InstallPackage(PkgIndex: Integer);
 var
   PkgName: string;
   PkgPath: PString;
-  PkgXmlPath: string;
 begin
   //WriteLn('[TPackagesManagerForm.InstallPackage] PkgIndex = ', PkgIndex);
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
