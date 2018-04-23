@@ -71,6 +71,7 @@ type
     function Push(P: Pointer): Boolean;
     function Push(const Samples; Qty: Word): Boolean;
     function Push(Sample: Integer): Boolean;
+  protected
     procedure SetConnector(Value: TCConnector); override;
   end;
   TCOutputPortRef = class(TCOutputPort, IInputPort)
@@ -81,6 +82,7 @@ type
     function Pop(out P: Pointer): Boolean;
     function Pop(out Samples; Qty: Word): Boolean;
     function Pop(out Sample: Integer): Boolean;
+  protected
     procedure SetConnector(Value: TCConnector); override;
   end;
 
