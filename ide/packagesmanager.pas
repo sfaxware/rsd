@@ -212,9 +212,13 @@ var
   PkgPath: PString;
   PkgXmlPath: string;
 begin
+  //WriteLn('[TPackagesManagerForm.InstallPackage] PkgIndex = ', PkgIndex);
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
-  //WriteLn('PkgPath = "', PkgPath, '"');
+  //WriteLn('[TPackagesManagerForm.InstallPackage] PkgName = "', PkgName, '"');
+  PkgIndex := IndexOfPackage(PkgName);
+  //WriteLn('[TPackagesManagerForm.InstallPackage] PkgIndex = ', PkgIndex);
   PkgPath := PackagesList.Items[PkgIndex];
+  //WriteLn('[TPackagesManagerForm.InstallPackage] PkgPath = "', PkgPath^, '"');
   PkgLinks.AddUserLink(PkgPath^, PkgName);
 end;
 
@@ -222,8 +226,9 @@ procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
 var
   PkgName: string;
 begin
+  //WriteLn('[TPackagesManagerForm.UninstallPackage] PkgIndex = "', PkgIndex, '"');
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
-  //WriteLn('PkgPath = "', PkgPath, '"');
+  //WriteLn('[TPackagesManagerForm.UninstallPackage] PkgName = "', PkgName, '"');
   PkgLinks.RemoveUserLink(PkgLinks.FindLinkWithPkgName(PkgName));
 end;
 
