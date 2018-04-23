@@ -72,8 +72,8 @@ end;
 constructor TSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FAmplitude := MaxUIntValue;
-  FSampleQty := MaxUIntValue;
+  FAmplitude := High(FAmplitude);
+  FSampleQty := High(FSampleQty);
 end;
 
 procedure TSource.Execute;

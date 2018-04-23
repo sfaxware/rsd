@@ -40,7 +40,7 @@ uses
 constructor TProbe.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FSampleQty := MaxUIntValue;
+  FSampleQty := High(FSampleQty);
 end;
 
 procedure TProbe.Execute;
