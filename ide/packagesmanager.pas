@@ -219,11 +219,15 @@ end;
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
 var
   PkgName: string;
+  PkgLink: TPackageLink;
 begin
   //WriteLn('[TPackagesManagerForm.UninstallPackage] PkgIndex = "', PkgIndex, '"');
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
   //WriteLn('[TPackagesManagerForm.UninstallPackage] PkgName = "', PkgName, '"');
-  PkgLinks.RemoveUserLink(PkgLinks.FindLinkWithPkgName(PkgName));
+  PkgLink := PkgLinks.FindLinkWithPkgName(PkgName);
+  if Assigned(PkgLink) then begin
+    PkgLinks.RemoveUserLink(PkgLink);
+  end;
 end;
 
 initialization
