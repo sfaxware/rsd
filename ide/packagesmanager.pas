@@ -107,6 +107,10 @@ begin
     UpdateUserLinks;
     //DependencyOwnerGetPkgFilename:=@PkgLinksDependencyOwnerGetPkgFilename;
   end;
+  {Emulate an apply button pressed to update packages including adding units
+   path of already installed packages to compiler units search path.}
+  UpdatePackagesInstallState(Sender);
+  UpdateInstalledPackages(ApplyButton);
 end;
 
 procedure TPackagesManagerForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
