@@ -73,11 +73,12 @@ var
 function ReSourceFileName(BlockName: string): string;
 function SourceFileName(BlockName: string): string;
 function ExtractFileNameOnly(filePath: string): string;
+procedure SetupToolsConfiguration;
 
 implementation
 
 uses
-  FileUtil;
+  FileUtil, CodeToolsConfig, CodeToolManager;
 
 function ReSourceFileName(BlockName: string): string;
 begin
@@ -100,6 +101,23 @@ end;
 function ExtractFileNameOnly(filePath: string): string;
 begin
   Result := ChangeFileExt(ExtractFileName(filePath), '');
+end;
+
+procedure SetupToolsConfiguration;
+var
+  Options: TCodeToolsOptions;
+begin
+  Options := TCodeToolsOptions.Create;
+  with Options do begin
+    //LoadFromFile('config.xml');
+    FPCPath := '/usr/bin/fpc';
+    FPCSrcDir := '/usr/share/fpcsrc/default';
+    LazarusSrcDir := '/usr/lib/lazarus/default';
+    ProjectDir := ProjectSettings.Path;
+  end;
+  CodeToolBoss.Init(Options);
+  //Options.SaveToFile('config.xml');
+  Options.Free;
 end;
 
 { TSplashWindow }

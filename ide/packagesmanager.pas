@@ -107,6 +107,7 @@ begin
     UpdateUserLinks;
     //DependencyOwnerGetPkgFilename:=@PkgLinksDependencyOwnerGetPkgFilename;
   end;
+  SetupToolsConfiguration;
   {Emulate an apply button pressed to update packages including adding units
    path of already installed packages to compiler units search path.}
   UpdatePackagesInstallState(Sender);
