@@ -19,7 +19,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure UpdatePackagesInstallState(Sender: TObject);
     procedure UpdateInstalledPackages(Sender: TObject);
   private
     PackagesList: TFPList;
@@ -132,7 +132,7 @@ begin
   //FreeAndNil(GlobalBuildProperties);
 end;
 
-procedure TPackagesManagerForm.FormShow(Sender: TObject);
+procedure TPackagesManagerForm.UpdatePackagesInstallState(Sender: TObject);
 var
   n: Integer;
 begin

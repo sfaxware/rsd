@@ -11,7 +11,7 @@ object PackagesManagerForm: TPackagesManagerForm
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
+  OnShow = UpdatePackagesInstallState
   LCLVersion = '1.8.2.0'
   object PackagesListCheckGroup: TCheckGroup
     Left = 8
