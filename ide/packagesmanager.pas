@@ -37,7 +37,8 @@ implementation
 
 uses
   Configuration, PackageLinks, PackageLinkIntf, PackageDefs, EnvironmentOpts,
-  CompilerOptions, TransferMacros;
+  CompilerOptions, TransferMacros, CodeToolManager, DefineTemplates,
+  Laz_XMLCfg, CodeCache, DialogProcs;
 
 var
   PkgLinks: TLazPackageLinks;
@@ -205,6 +206,14 @@ procedure TPackagesManagerForm.InstallPackage(PkgIndex: Integer);
 var
   PkgName: string;
   PkgPath: PString;
+  PkgLink: TPackageLink;
+  Directory: String;
+  UnitPathTemplate: TDefineTemplate;
+  UnitPath: string;
+  PkgFileName: String;
+  Pkg: TLazPackage;
+  XMLConfig: TXMLConfig;
+  Code: TCodeBuffer;
 begin
   //WriteLn('[TPackagesManagerForm.InstallPackage] PkgIndex = ', PkgIndex);
   PkgName := PackagesListCheckGroup.Items[PkgIndex];
@@ -213,7 +222,29 @@ begin
   //WriteLn('[TPackagesManagerForm.InstallPackage] PkgIndex = ', PkgIndex);
   PkgPath := PackagesList.Items[PkgIndex];
   //WriteLn('[TPackagesManagerForm.InstallPackage] PkgPath = "', PkgPath^, '"');
-  PkgLinks.AddUserLink(PkgPath^, PkgName);
+  PkgLink := PkgLinks.AddUserLink(PkgPath^, PkgName);
+  Directory := ExtractFilePath(PkgPath^);
+  Directory := Directory.Replace('/lib/rsd/', '/src/rsd/');
+  //WriteLn('Directory="',Directory,'"');
+  PkgFileName := PkgLink.GetEffectiveFilename;
+  XMLConfig:=TXMLConfig.Create(nil);
+  Pkg:=TLazPackage.Create;
+  Pkg.Filename:=PkgFileName;
+  if LoadXMLConfigFromCodeBuffer(PkgFileName,XMLConfig, Code,[lbfUpdateFromDisk,lbfRevert], False) = mrOK then begin
+    Pkg.LoadFromXMLConfig(XMLConfig,'Package/');
+    Pkg.LPKSource:=Code;
+    UnitPath := ';' + Pkg.CompilerOptions.OtherUnitFiles;
+    //WriteLn('Directory="', UnitPath,'"');
+    UnitPath := '$(' + UnitPathMacroName + ')' + UnitPath.Replace(';', ';' + Directory );
+    {add a sub template to extend the include search path #UnitPath.}
+    UnitPathTemplate:=TDefineTemplate.Create(PkgName, PkgName + ' package units search path', UnitPathMacroName, UnitPath, da_DefineRecurse);
+    {add the include path template to the tree.}
+    CodeToolBoss.DefineTree.Add(UnitPathTemplate);
+  end;
+  //writeln('Directory="',Directory,'"', ' UnitPath="',CodeToolBoss.GetUnitPathForDirectory(Directory),'"');
+  Code.free;
+  XMLConfig.Free;
+  Pkg.Free;
 end;
 
 procedure TPackagesManagerForm.UninstallPackage(PkgIndex: Integer);
