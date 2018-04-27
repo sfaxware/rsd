@@ -9,14 +9,14 @@ uses
 
 type
   TInputPortRef = class(TInputPort, IOutputPort)
-  private
+  protected
     FInternalConnector: TConnector;
     function GetConnector: TConnector; override;
     function Unplug(AConnector: TConnector): Boolean; override;
     procedure SetConnector(AConnector: TConnector); override;
   end;
   TOutputPortRef = class(TOutputPort, IInputPort)
-  private
+  protected
     FInternalConnector: TConnector;
     function GetConnector: TConnector; override;
     function Unplug(AConnector: TConnector): Boolean; override;
@@ -53,7 +53,7 @@ type
     function BlockBoundsDescription(Indent: string): string; override;
     function DeviceCodeTemplateType: TCodeTemplateType; override;
     function DeviceDescription(Indent: string): string;
-    function DeviceUnitName: string;
+    function DeviceUnitName: string; override;
     function IsSelected: Boolean; inline;
     function Save: Boolean;
     procedure DeleteConnector(var Connector: TConnector);
