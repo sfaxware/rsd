@@ -5,7 +5,7 @@ unit CodeWriter;
 interface
 
 uses
-  Classes, SysUtils, ComCtrls,CodeCache, CodeTree, GraphComponents;
+  Classes, SysUtils, ComCtrls,CodeCache, GraphComponents;
 
 function GetDeviceRandomCaption(AName: string): string;
 function GetDeviceRandomName(AName: string): string;
@@ -54,6 +54,7 @@ begin
     end;
     CodeBuffer[ctSource].UnlockAutoDiskRevert;
   end;
+  Result := True;
 end;
 
 procedure WriteSimulatorSourceTemplate(Owner: IDevice; Self: TCodeBuffer);
