@@ -120,7 +120,6 @@
       <IncludeFiles Value="$(ProjOutDir);$(LazarusDir)/ide/include/$(TargetOS);$(LazarusDir)/ide/include"/>
       <OtherUnitFiles Value="graph;routing;$(LazarusDir)/packager;$(LazarusDir)/ide;$(LazarusDir)/units/$(TargetCPU)-$(TargetOS)/$(LCLWidgetType)"/>
       <UnitOutputDirectory Value="../build"/>
-      <SrcPath Value="$(LazarusDir)/lcl"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
