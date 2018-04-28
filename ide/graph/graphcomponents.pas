@@ -330,7 +330,7 @@ begin
         c := Tree.LFMBuffer.Source[p];
         Digits := [];
         case c of
-          '0'..'9': Digits := ['0'..'9'];
+          '-', '0'..'9': Digits := ['0'..'9'];
           '$': begin
             Digits := ['0'..'9', 'A'..'F', 'a'..'f'];
             Result += c;
@@ -340,11 +340,11 @@ begin
         else
           WriteLn('Invalid integer start digit "', c, '"');
         end;
-        while c in Digits do begin
+        repeat
           Result += c;
           p += 1;
           c := Tree.LFMBuffer.Source[p];
-        end;
+        until not (c in Digits);
       end;
       lfmvSymbol: begin
         p := StartPos;
