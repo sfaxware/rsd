@@ -320,8 +320,9 @@ begin
     Exit('');
   end;
   ValueNode := PropertyNode.Next;
-  //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', Integer(ValueNode.TheType));
+  //WriteLn('GetPropertyValue : PropertyName = ', PropertyName, ', PropertyType = ', ValueNode.TheType);
   if ValueNode.TheType = lfmnValue then with ValueNode as TLFMValueNode do begin
+    //WriteLn('ValueType = ', ValueType);
     case ValueType of
       lfmvString: Result := ReadString;
       lfmvInteger: begin
