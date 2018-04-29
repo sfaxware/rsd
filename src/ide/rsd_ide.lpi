@@ -9,7 +9,9 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
+      <Title Value="Rapid Simulators Designer IDE"/>
       <ResourceType Value="res"/>
+      <Icon Value="0"/>
     </General>
     <LazDoc Paths="../doc/devel/ide/;../doc/devel/ide/graph/;../doc/devel/ide/routing/"/>
     <BuildModes Count="1">

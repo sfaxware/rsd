@@ -13,7 +13,10 @@ uses
 var
   ProjectFileName: string;
 
+{$R *.res}
+
 begin
+  Application.Title := 'Rapid Simulators Designer IDE';
   if ParamCount > 0 then  begin
     ProjectFileName := ParamStr(1);
     if not (ProjectFileName[1] in AllowDirectorySeparators) then begin
