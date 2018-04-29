@@ -1100,9 +1100,6 @@ begin
       _MousePos.x := X + Left;
       _MousePos.y := Y + Top;
     end;
-    mbRight:begin
-      PopupMenu.PopUp;
-    end;
   end;
 end;
 
