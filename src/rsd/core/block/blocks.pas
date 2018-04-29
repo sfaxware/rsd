@@ -10,7 +10,6 @@ uses
 type
   TInputPort = class(TCInputPort);
   TOutputPort = class(TCOutputPort);
-  TConnector = class(TCConnector);
   TBlock = class(TCBlock)
   private
     FCaption: string;
@@ -49,7 +48,6 @@ end;
 initialization
   RegisterClass(TInputPort);
   RegisterClass(TOutputPort);
-  RegisterClass(TConnector);
   RegisterClass(TBlock);
 end.
 

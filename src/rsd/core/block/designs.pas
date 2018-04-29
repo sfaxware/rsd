@@ -8,6 +8,7 @@ uses
   Classes, Blocks, BlockBasics;
 
 type
+  TConnector = class(TCConnector);
   TInputPortRef = class(TCInputPortRef);
   TOutputPortRef = class(TCOutputPortRef);
   TDesign = class(TBlock)
@@ -40,6 +41,7 @@ begin
 end;
 
 initialization
+  RegisterClass(TConnector);
   RegisterClass(TInputPortRef);
   RegisterClass(TOutputPortRef);
   RegisterClass(TDesign);
