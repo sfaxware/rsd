@@ -269,6 +269,3 @@ binary-arch: arrange-arch
 
 get-orig-source:
 	-uscan --upstream-version=0 --rename
-
-pack-source:
-	tar -C .. -vacf ../${DEB_PACKAGE_NAME}_${DEB_UPSTREAM_VERSION}.orig.tar.xz --exclude-vcs rsd

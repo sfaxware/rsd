@@ -3,7 +3,8 @@
   <Package Version="4">
     <Name Value="rsdcore"/>
     <Type Value="RunTimeOnly"/>
-    <AutoUpdate Value="Manually"/>
+    <AddToProjectUsesSection Value="False"/>
+    <AutoUpdate Value="AsNeeded"/>
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>

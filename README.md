@@ -6,7 +6,6 @@ $ make # Build
 
 In order to build Debian packages:
 ```sh
-$ git clean -df
-$ ./debian/rules pack-source
-$ dpkg-buildpackage
+$ fpcmake # Generate make file
+$ make deb # Build Debian packages
 ```

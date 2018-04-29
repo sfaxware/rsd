@@ -17,19 +17,18 @@ exampledirs=
 [compiler]
 
 [clean]
-files=$(wildcard $(addprefix build/,bin/${TARGET_PROGRAMS} *$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES} ${TEST_PROGS}
+files=$(wildcard bin/${TARGET_PROGRAMS} $(addprefix build/,*$(OEXT) *$(PPUEXT) *$(RSTEXT) *.compiled *.lrs *.or *.lfm)) ${MO_FILES} ${TEST_PROGS}
 
 [install]
 fpcpackage=n
 basedir=usr
 
 [prerules]
-TEST_PROGS=$(wildcard build/bin/test*)
+TEST_PROGS=$(wildcard bin/test*)
 PACKAGES=core/${PACKAGE_NAME}core
 PO_FILES=$(wildcard locale/*_*.po)
-MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,build/share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
-LPK_FILTERS= -e 's@\.\./build/lib/rsd/[a-zA-Z_][a-zA-Z_0-9]*@$$(PkgDir)/@g'
-LPK_FILTERS+= -e 's@AutoUpdate Value=".*"@AutoUpdate Value="Manually"@'
+MO_FILES=$(foreach prog,${TARGET_PROGRAMS},$(patsubst locale/${prog}_%.po,share/locale/%/LC_MESSAGES/${prog}.mo,${PO_FILES}))
+LPK_FILTERS= -e 's@AutoUpdate Value=".*"@AutoUpdate Value="Manually"@'
 #-----------------------------------------------------------------------------
 [rules]
 .PHONY: all clean install ide packages
@@ -40,25 +39,22 @@ all:mo_files ide packages
 clean:fpc_clean clean_packages
 
 clean_packages:
-	${DELTREE} $(wildcard $(addprefix build/,lib/${PACKAGE_NAME}/*))
+	${DELTREE} $(wildcard $(addprefix lib/,${PACKAGE_NAME}/*/*/*))
 
-ide:$(addprefix build/bin/,${TARGET_PROGRAMS})
+ide:$(addprefix bin/,${TARGET_PROGRAMS})
 
-build/bin/%:ide/%_ide.lpi
+bin/%:src/ide/%_ide.lpi
 	lazbuild $<
 
-packages:$(addprefix build/lib/rsd/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
+packages:$(addprefix lib/rsd/,$(addsuffix .pas,${PACKAGES}) $(addsuffix .lpk,${PACKAGES}))
 
-build/lib/rsd/%.pas:%.pas build/lib/rsd/%.lpk
-	${COPY} $< $@
-
-build/lib/rsd/%.lpk:%.lpk %.pas
+%.lpk:%.lpk %.pas
 	lazbuild -B $<
-	sed ${LPK_FILTERS} $< > $@
+	sed ${LPK_FILTERS} -i $@
 
 mo_files:${MO_FILES}
 
-build/share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
+share/locale/%/LC_MESSAGES/${PACKAGE_NAME}.mo:locale/${PACKAGE_NAME}_%.po
 	${MKDIR} $(dir $@)
 	msgfmt -o $@ $<
 #-----------------------------------------------------------------------------
@@ -68,9 +64,9 @@ install:
 	# copy rsd to /usr
 	${MKDIR} ${INSTALL_PREFIX}/usr
 	${COPYTREE} -t ${INSTALL_PREFIX}/usr \
-		build/bin \
-		build/lib \
-		build/share
+		bin \
+		lib \
+		share
 
 ##########################################################################
 # Debian
@@ -129,9 +125,9 @@ endif
 ifdef SNAPSHOT
 DEBUSESVN=1
 endif
-ifeq ($(wildcard ${DEBSRC_ORIG}.tar.gz),)
+ifeq ($(wildcard ${DEBSRC_ORIG}.tar.xz),)
 ifndef DEBUSESVN
-$(error Need "${DEBSRC_ORIG}.tar.gz" to build for DEBBUILD = "${DEBBUILD}" > 1)
+$(error Need "${DEBSRC_ORIG}.tar.xz" to build for DEBBUILD = "${DEBBUILD}" > 1)
 endif
 endif
 ifndef SIGN
@@ -150,11 +146,13 @@ debcopy: clean
 ifdef DEBUSESVN
 	$(LINKTREE) -t $(DEBSRCDIR) \
 		Makefile.fpc \
-		build doc locale \
-		core ide
+		doc \
+		lib \
+		share \
+		src
 	echo -e "const\n  RevisionStr = '${SVNVERSION}';" > $(DEBSRCDIR)/version.inc
 else
-	tar -C ${BUILDDIR} -zxf ${DEBSRC_ORIG}.tar.gz ${DEBSRC}
+	tar -C ${BUILDDIR} -vaxf ${DEBSRC_ORIG}.tar.xz ${DEBSRC}
 	${DELTREE} $(DEBSRCDIR)/debian
 endif
 
@@ -178,24 +176,25 @@ endif
 
 debclean:
 ifndef DEBUSESVN
-	${DEL} ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz
+	${DEL} ${BUILDDIR}/${DEBSRC_ORIG}.tar.xz
 endif
-	mv -v -t . \
+	mv -v -t .. \
 	$(DEBSRCDIR)/../*.changes \
 	$(DEBSRCDIR)/../*.deb \
 	$(DEBSRCDIR)/../*.dsc \
-	$(DEBSRCDIR)/../*.gz
+	$(DEBSRCDIR)/../*.buildinfo \
+	$(DEBSRCDIR)/../*.xz
 	${DELTREE} $(DEBSRCDIR)
 	rmdir $(BUILDDIR)
 
-deb: debcheck debcopy deborigtargz debsetup debbuild debcheckpolicy debclean
+deb: debcheck debcopy deborigtarxz debsetup debbuild debcheckpolicy debclean
 
-deborigtargz:
+deborigtarxz:
 ifdef DEBUSESVN
 	#$(MAKE) fpc_zipinstall USETAR=y ZIPTARGET=debcopy PACKDIR=$(DEBSRCDIR) FULLZIPNAME=${DEBSRC_ORIG}
-	tar -C ${BUILDDIR} -zcf ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz --exclude-vcs ${DEBSRC}
+	tar -C ${BUILDDIR} -vacf ${BUILDDIR}/${DEBSRC_ORIG}.tar.xz --exclude-vcs ${DEBSRC}
 else
-	${LINKTREE} ${DEBSRC_ORIG}.tar.gz ${BUILDDIR}/${DEBSRC_ORIG}.tar.gz
+	${LINKTREE} ${DEBSRC_ORIG}.tar.xz ${BUILDDIR}/${DEBSRC_ORIG}.tar.xz
 endif
 
 endif   # changelog found
