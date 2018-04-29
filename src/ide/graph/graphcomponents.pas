@@ -1042,9 +1042,7 @@ begin
   if Assigned(FOnChildrenCreate) then begin
     FOnChildrenCreate(Result);
   end;
-  if not Assigned(CodeBuffer[ctSource]) then begin
-    CodeBuffer[ctSource] := GetCodeBuffer(cttDesign, Self);
-  end;
+  InsertDevice(Result, Self);
 end;
 
 function TBlock.AddNewPort(ADeviceName, ADeviceType: string): TPort;
