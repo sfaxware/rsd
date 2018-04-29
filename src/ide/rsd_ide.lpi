@@ -114,12 +114,12 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="../build/bin/rsd"/>
+      <Filename Value="../../bin/rsd"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);$(LazarusDir)/ide/include/$(TargetOS);$(LazarusDir)/ide/include"/>
       <OtherUnitFiles Value="graph;routing;$(LazarusDir)/packager;$(LazarusDir)/ide;$(LazarusDir)/units/$(TargetCPU)-$(TargetOS)/$(LCLWidgetType)"/>
-      <UnitOutputDirectory Value="../build"/>
+      <UnitOutputDirectory Value="../../build"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

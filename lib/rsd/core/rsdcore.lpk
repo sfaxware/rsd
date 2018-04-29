@@ -2,97 +2,93 @@
 <CONFIG>
   <Package Version="4">
     <Name Value="rsdcore"/>
+    <Type Value="RunTimeOnly"/>
     <AutoUpdate Value="Manually"/>
     <CompilerOptions>
       <Version Value="11"/>
       <SearchPaths>
-        <OtherUnitFiles Value="fifo;block;num"/>
-        <UnitOutputDirectory Value="../build/lib/rsd/core/units/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="fifo;block;num"/>
+        <OtherUnitFiles Value="../../../src/rsd/core/fifo;../../../src/rsd/core/block;../../../src/rsd/core/num"/>
+        <UnitOutputDirectory Value="$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="../../../src/rsd/core/fifo;../../../src/rsd/core/block;../../../src/rsd/core/num"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
           <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
-      <Other>
-        <ExecuteAfter>
-          <Command Value="cp rsdcore.lpk ../build/lib/rsd/core/"/>
-        </ExecuteAfter>
-      </Other>
     </CompilerOptions>
     <Version Minor="1"/>
     <Files Count="17">
       <Item1>
-        <Filename Value="fifo/fifobasics.pas"/>
+        <Filename Value="../../../src/rsd/core/fifo/fifobasics.pas"/>
         <UnitName Value="FifoBasics"/>
       </Item1>
       <Item2>
-        <Filename Value="block/blockbasics.pas"/>
+        <Filename Value="../../../src/rsd/core/block/blockbasics.pas"/>
         <UnitName Value="BlockBasics"/>
       </Item2>
       <Item3>
-        <Filename Value="block/blocks.pas"/>
+        <Filename Value="../../../src/rsd/core/block/blocks.pas"/>
         <UnitName Value="Blocks"/>
       </Item3>
       <Item4>
-        <Filename Value="block/designs.pas"/>
+        <Filename Value="../../../src/rsd/core/block/designs.pas"/>
         <UnitName Value="Designs"/>
       </Item4>
       <Item5>
-        <Filename Value="block/probes.pas"/>
+        <Filename Value="../../../src/rsd/core/block/probes.pas"/>
         <UnitName Value="Probes"/>
       </Item5>
       <Item6>
-        <Filename Value="block/sources.pas"/>
+        <Filename Value="../../../src/rsd/core/block/sources.pas"/>
         <UnitName Value="Sources"/>
       </Item6>
       <Item7>
-        <Filename Value="num/reals.pas"/>
+        <Filename Value="../../../src/rsd/core/num/reals.pas"/>
         <UnitName Value="Reals"/>
       </Item7>
       <Item8>
-        <Filename Value="num/complex.pas"/>
+        <Filename Value="../../../src/rsd/core/num/complex.pas"/>
         <UnitName Value="Complex"/>
       </Item8>
       <Item9>
-        <Filename Value="num/complexmatrix.pas"/>
+        <Filename Value="../../../src/rsd/core/num/complexmatrix.pas"/>
         <UnitName Value="ComplexMatrix"/>
       </Item9>
       <Item10>
-        <Filename Value="num/complexvectors.pas"/>
+        <Filename Value="../../../src/rsd/core/num/complexvectors.pas"/>
         <UnitName Value="ComplexVectors"/>
       </Item10>
       <Item11>
-        <Filename Value="num/filters.pas"/>
+        <Filename Value="../../../src/rsd/core/num/filters.pas"/>
         <UnitName Value="Filters"/>
       </Item11>
       <Item12>
-        <Filename Value="num/integervectors.pas"/>
+        <Filename Value="../../../src/rsd/core/num/integervectors.pas"/>
         <UnitName Value="IntegerVectors"/>
       </Item12>
       <Item13>
-        <Filename Value="num/lmsfilter.pas"/>
+        <Filename Value="../../../src/rsd/core/num/lmsfilter.pas"/>
         <UnitName Value="LMSfilter"/>
       </Item13>
       <Item14>
-        <Filename Value="num/longintvectors.pas"/>
+        <Filename Value="../../../src/rsd/core/num/longintvectors.pas"/>
         <UnitName Value="LongIntVectors"/>
       </Item14>
       <Item15>
-        <Filename Value="num/realmatrix.pas"/>
+        <Filename Value="../../../src/rsd/core/num/realmatrix.pas"/>
         <UnitName Value="RealMatrix"/>
       </Item15>
       <Item16>
-        <Filename Value="num/realvectors.pas"/>
+        <Filename Value="../../../src/rsd/core/num/realvectors.pas"/>
         <UnitName Value="RealVectors"/>
       </Item16>
       <Item17>
-        <Filename Value="num/shortintvectors.pas"/>
+        <Filename Value="../../../src/rsd/core/num/shortintvectors.pas"/>
         <UnitName Value="ShortIntVectors"/>
       </Item17>
     </Files>
-    <LazDoc Paths="/usr/local/src/rsd/doc/user/core/block;/usr/local/src/rsd/doc/user/core/fifo;/usr/local/src/rsd/doc/user/core/math;/usr/local/src/rsd/doc/user/core/num"/>
+    <LazDoc Paths="../../../share/doc/rsd/core/block;../../../share/doc/rsd/core/fifo;../../../share/doc/rsd/core/math;../../../share/doc/rsd/core/num"/>
     <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="LCL"/>

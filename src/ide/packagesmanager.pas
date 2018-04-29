@@ -229,7 +229,6 @@ begin
   //WriteLn('[TPackagesManagerForm.InstallPackage] PkgPath = "', PkgPath^, '"');
   PkgLink := PkgLinks.AddUserLink(PkgPath^, PkgName);
   Directory := ExtractFilePath(PkgPath^);
-  Directory := Directory.Replace('/lib/rsd/', '/src/rsd/');
   //WriteLn('Directory="',Directory,'"');
   PkgFileName := PkgLink.GetEffectiveFilename;
   XMLConfig:=TXMLConfig.Create(nil);
