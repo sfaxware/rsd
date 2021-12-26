@@ -12,10 +12,11 @@ type
   private
     FBounds: TRect;
     FMagnification: Integer;
+    procedure DoMagnify;
+  protected
     function GetMagnification: Real;
     function GetOriginalBounds: TRect;
     procedure SetOriginalBounds(B: TRect);
-    procedure DoMagnify;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Magnify(m:Real); virtual;
