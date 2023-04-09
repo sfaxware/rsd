@@ -446,11 +446,16 @@ begin
             TPort(Components[j]).Visible := Visibility;
           end;
         end;
-        UpdatePortsBounds(TInputPort);
-        UpdatePortsBounds(TOutputPort);
       end else if Component is TBlock then with Component as TBlock do begin
         SetControlsVisibility(Visibility);
       end;
+    end;
+  end;
+  for i := 0 to ComponentCount - 1 do begin
+    Component := Components[i];
+    if Component is TBlock then with Component as TBlock do begin
+      UpdatePortsBounds(TInputPort);
+      UpdatePortsBounds(TOutputPort);
     end;
   end;
 end;
