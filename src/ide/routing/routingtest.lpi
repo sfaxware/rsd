@@ -50,10 +50,10 @@
   <CompilerOptions>
     <Version Value="8"/>
     <Target>
-      <Filename Value="../../build/bin/testrouting"/>
+      <Filename Value="../../../build/bin/testrouting"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)/"/>
+      <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="../../build"/>
     </SearchPaths>
     <Other>
